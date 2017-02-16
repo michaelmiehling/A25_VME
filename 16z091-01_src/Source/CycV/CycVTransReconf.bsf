@@ -1,0 +1,155 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2014 Altera Corporation. All rights reserved.
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, the Altera Quartus II License Agreement,
+the Altera MegaCore Function License Agreement, or other 
+applicable license agreement, including, without limitation, 
+that your use is for the sole purpose of programming logic 
+devices manufactured by Altera and sold by Altera or its 
+authorized distributors.  Please refer to the applicable 
+agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 0 0 544 344)
+	(text "CycVTransReconf" (rect 218 -1 298 11)(font "Arial" (font_size 10)))
+	(text "inst" (rect 8 328 20 340)(font "Arial" ))
+	(port
+		(pt 0 72)
+		(input)
+		(text "cal_busy_in" (rect 0 0 48 12)(font "Arial" (font_size 8)))
+		(text "cal_busy_in" (rect 4 61 70 72)(font "Arial" (font_size 8)))
+		(line (pt 0 72)(pt 176 72)(line_width 1))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "mgmt_clk_clk" (rect 0 0 56 12)(font "Arial" (font_size 8)))
+		(text "mgmt_clk_clk" (rect 4 101 76 112)(font "Arial" (font_size 8)))
+		(line (pt 0 112)(pt 176 112)(line_width 1))
+	)
+	(port
+		(pt 0 152)
+		(input)
+		(text "mgmt_rst_reset" (rect 0 0 66 12)(font "Arial" (font_size 8)))
+		(text "mgmt_rst_reset" (rect 4 141 88 152)(font "Arial" (font_size 8)))
+		(line (pt 0 152)(pt 176 152)(line_width 1))
+	)
+	(port
+		(pt 0 192)
+		(input)
+		(text "reconfig_mgmt_address[6..0]" (rect 0 0 119 12)(font "Arial" (font_size 8)))
+		(text "reconfig_mgmt_address[6..0]" (rect 4 181 166 192)(font "Arial" (font_size 8)))
+		(line (pt 0 192)(pt 176 192)(line_width 3))
+	)
+	(port
+		(pt 0 208)
+		(input)
+		(text "reconfig_mgmt_read" (rect 0 0 84 12)(font "Arial" (font_size 8)))
+		(text "reconfig_mgmt_read" (rect 4 197 112 208)(font "Arial" (font_size 8)))
+		(line (pt 0 208)(pt 176 208)(line_width 1))
+	)
+	(port
+		(pt 0 256)
+		(input)
+		(text "reconfig_mgmt_write" (rect 0 0 84 12)(font "Arial" (font_size 8)))
+		(text "reconfig_mgmt_write" (rect 4 245 118 256)(font "Arial" (font_size 8)))
+		(line (pt 0 256)(pt 176 256)(line_width 1))
+	)
+	(port
+		(pt 0 272)
+		(input)
+		(text "reconfig_mgmt_writedata[31..0]" (rect 0 0 125 12)(font "Arial" (font_size 8)))
+		(text "reconfig_mgmt_writedata[31..0]" (rect 4 261 184 272)(font "Arial" (font_size 8)))
+		(line (pt 0 272)(pt 176 272)(line_width 3))
+	)
+	(port
+		(pt 0 312)
+		(input)
+		(text "reconfig_from_xcvr[229..0]" (rect 0 0 112 12)(font "Arial" (font_size 8)))
+		(text "reconfig_from_xcvr[229..0]" (rect 4 301 160 312)(font "Arial" (font_size 8)))
+		(line (pt 0 312)(pt 176 312)(line_width 3))
+	)
+	(port
+		(pt 544 72)
+		(output)
+		(text "reconfig_busy" (rect 0 0 57 12)(font "Arial" (font_size 8)))
+		(text "reconfig_busy" (rect 470 61 548 72)(font "Arial" (font_size 8)))
+		(line (pt 544 72)(pt 368 72)(line_width 1))
+	)
+	(port
+		(pt 0 224)
+		(output)
+		(text "reconfig_mgmt_readdata[31..0]" (rect 0 0 125 12)(font "Arial" (font_size 8)))
+		(text "reconfig_mgmt_readdata[31..0]" (rect 4 213 178 224)(font "Arial" (font_size 8)))
+		(line (pt 0 224)(pt 176 224)(line_width 3))
+	)
+	(port
+		(pt 0 240)
+		(output)
+		(text "reconfig_mgmt_waitrequest" (rect 0 0 110 12)(font "Arial" (font_size 8)))
+		(text "reconfig_mgmt_waitrequest" (rect 4 229 154 240)(font "Arial" (font_size 8)))
+		(line (pt 0 240)(pt 176 240)(line_width 1))
+	)
+	(port
+		(pt 544 112)
+		(output)
+		(text "reconfig_to_xcvr[349..0]" (rect 0 0 100 12)(font "Arial" (font_size 8)))
+		(text "reconfig_to_xcvr[349..0]" (rect 420 101 564 112)(font "Arial" (font_size 8)))
+		(line (pt 544 112)(pt 368 112)(line_width 3))
+	)
+	(drawing
+		(text "reconfig_busy" (rect 369 43 816 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reconfig_busy" (rect 303 67 684 144)(font "Arial" (color 0 0 0)))
+		(text "cal_busy_in" (rect 108 43 282 99)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "cal_busy_in" (rect 181 67 428 144)(font "Arial" (color 0 0 0)))
+		(text "mgmt_clk_clk" (rect 96 83 264 179)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "clk" (rect 181 107 380 224)(font "Arial" (color 0 0 0)))
+		(text "mgmt_rst_reset" (rect 82 123 248 259)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reset" (rect 181 147 392 304)(font "Arial" (color 0 0 0)))
+		(text "reconfig_mgmt" (rect 89 163 256 339)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "address" (rect 181 187 404 384)(font "Arial" (color 0 0 0)))
+		(text "read" (rect 181 203 386 416)(font "Arial" (color 0 0 0)))
+		(text "readdata" (rect 181 219 410 448)(font "Arial" (color 0 0 0)))
+		(text "waitrequest" (rect 181 235 428 480)(font "Arial" (color 0 0 0)))
+		(text "write" (rect 181 251 392 512)(font "Arial" (color 0 0 0)))
+		(text "writedata" (rect 181 267 416 544)(font "Arial" (color 0 0 0)))
+		(text "reconfig_to_xcvr" (rect 369 83 834 179)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reconfig_to_xcvr" (rect 290 107 676 224)(font "Arial" (color 0 0 0)))
+		(text "reconfig_from_xcvr" (rect 63 283 234 579)(font "Arial" (color 128 0 0)(font_size 9)))
+		(text "reconfig_from_xcvr" (rect 181 307 470 624)(font "Arial" (color 0 0 0)))
+		(text " alt_xcvr_reconfig " (rect 464 328 1042 666)(font "Arial" ))
+		(line (pt 176 32)(pt 368 32)(line_width 1))
+		(line (pt 368 32)(pt 368 328)(line_width 1))
+		(line (pt 176 328)(pt 368 328)(line_width 1))
+		(line (pt 176 32)(pt 176 328)(line_width 1))
+		(line (pt 367 52)(pt 367 76)(line_width 1))
+		(line (pt 366 52)(pt 366 76)(line_width 1))
+		(line (pt 177 52)(pt 177 76)(line_width 1))
+		(line (pt 178 52)(pt 178 76)(line_width 1))
+		(line (pt 177 92)(pt 177 116)(line_width 1))
+		(line (pt 178 92)(pt 178 116)(line_width 1))
+		(line (pt 177 132)(pt 177 156)(line_width 1))
+		(line (pt 178 132)(pt 178 156)(line_width 1))
+		(line (pt 177 172)(pt 177 276)(line_width 1))
+		(line (pt 178 172)(pt 178 276)(line_width 1))
+		(line (pt 367 92)(pt 367 116)(line_width 1))
+		(line (pt 366 92)(pt 366 116)(line_width 1))
+		(line (pt 177 292)(pt 177 316)(line_width 1))
+		(line (pt 178 292)(pt 178 316)(line_width 1))
+		(line (pt 0 0)(pt 544 0)(line_width 1))
+		(line (pt 544 0)(pt 544 344)(line_width 1))
+		(line (pt 0 344)(pt 544 344)(line_width 1))
+		(line (pt 0 0)(pt 0 344)(line_width 1))
+	)
+)

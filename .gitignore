@@ -1,0 +1,51 @@
+# +---------------------------------------------------------------------------+
+# | general ignore setup                                                      |
+# +---------------------------------------------------------------------------+
+# ignore temporary files from editor
+*.bak
+*.elc
+*.swp
+*.s
+*.tmp
+*.vhd.~y.yy~
+*.vhd.~
+
+# ignore editor configuration settings
+Session.vim
+tags
+
+# ignore CVS directories if present
+/**/CVS
+
+# ignore all files in simulator work
+Simulation/work/
+
+# ignore Riviera-PRO files
+Simulation/library.cfg
+Simulation/work.acdb
+Simulation/dataset.asdb
+
+# ignore ModelSim files
+*.wlf
+Simulation/modelsim.ini
+
+# ignore quartus database
+Synthesis/db/
+Synthesis/greybox_tmp/
+Synthesis/incremental_db/
+
+
+# +---------------------------------------------------------------------------+
+# | project specific ignore setup                                             |
+# +---------------------------------------------------------------------------+
+# C source related ignore settings (only add if needed)
+*.o
+*.ko
+*.obj
+*.elf
+*.gch
+*.pch
+*.so
+*.out
+*.app
+# add all your specific ignores here

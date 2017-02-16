@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pinplan
+ variation_name="CycVTransReconf"
+ megafunction_name="ALT_XCVR_RECONFIG"
+ intended_family="Cyclone V"
+ specifies="all_ports">
+ <global>
+  <pin name="reconfig_busy" direction="output" scope="external" />
+  <pin name="cal_busy_in" direction="input" scope="external" />
+  <pin name="mgmt_clk_clk" direction="input" scope="external" />
+  <pin name="mgmt_rst_reset" direction="input" scope="external" />
+  <pin name="reconfig_mgmt_address[6..0]" direction="input" scope="external" />
+  <pin name="reconfig_mgmt_read" direction="input" scope="external" />
+  <pin
+     name="reconfig_mgmt_readdata[31..0]"
+     direction="output"
+     scope="external" />
+  <pin name="reconfig_mgmt_waitrequest" direction="output" scope="external" />
+  <pin name="reconfig_mgmt_write" direction="input" scope="external" />
+  <pin
+     name="reconfig_mgmt_writedata[31..0]"
+     direction="input"
+     scope="external" />
+  <pin name="reconfig_to_xcvr[349..0]" direction="output" scope="external" />
+  <pin name="reconfig_from_xcvr[229..0]" direction="input" scope="external" />
+ </global>
+</pinplan>

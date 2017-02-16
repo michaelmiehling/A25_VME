@@ -1,0 +1,447 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/altera_xcvr_functions.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/altera_xcvr_functions.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_h.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_h.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_resync.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_resync.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_h.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_h.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_cal_seq.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_cal_seq.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xreconf_cif.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xreconf_cif.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xreconf_uif.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xreconf_uif.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xreconf_basic_acq.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xreconf_basic_acq.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_analog.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_analog.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_analog_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_analog_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xreconf_analog_datactrl_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xreconf_analog_datactrl_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xreconf_analog_rmw_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xreconf_analog_rmw_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xreconf_analog_ctrlsm.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xreconf_analog_ctrlsm.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_offset_cancellation.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_offset_cancellation.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_offset_cancellation_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_offset_cancellation_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_eyemon.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_eyemon.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_dfe.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_dfe.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_adce.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_adce.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_dcd.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_dcd.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_dcd_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_dcd_cal_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_dcd_control_av.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_dcd_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_dcd_cal_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_dcd_control_av.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_mif.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_mif.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_reconfig_mif.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_reconfig_mif_ctrl.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_reconfig_mif_avmm.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_reconfig_mif.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_reconfig_mif_ctrl.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_reconfig_mif_avmm.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_pll.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_pll.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_reconfig_pll.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_reconfig_pll_ctrl.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_reconfig_pll.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_reconfig_pll_ctrl.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_soc.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_cpu_ram.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_cpu_ram.hex"
+   type="OTHER"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_direct.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_arbiter_acq.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_reconfig_basic.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_arbiter_acq.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_reconfig_basic.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xrbasic_l2p_addr.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xrbasic_l2p_ch.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xrbasic_l2p_rom.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xrbasic_lif_csr.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xrbasic_lif.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_xcvr_reconfig_basic.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xrbasic_l2p_addr.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xrbasic_l2p_ch.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xrbasic_l2p_rom.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xrbasic_lif_csr.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xrbasic_lif.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_xcvr_reconfig_basic.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_arbiter.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_m2s.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/altera_wait_generate.v"
+   type="VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/alt_xcvr_csr_selector.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_arbiter.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_m2s.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/altera_wait_generate.v"
+   type="VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/alt_xcvr_csr_selector.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/sv_reconfig_bundle_to_basic.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/sv_reconfig_bundle_to_basic.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_reconfig_bundle_to_basic.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/av_reconfig_bundle_to_xcvr.sv"
+   type="SYSTEM_VERILOG"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_reconfig_bundle_to_basic.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor/av_reconfig_bundle_to_xcvr.sv"
+   type="SYSTEM_VERILOG_ENCRYPT"
+   library="CycVTransReconf"
+   simulator="modelsim" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/plain_files.txt"
+   type="OTHER"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/mentor_files.txt"
+   type="OTHER"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/cadence_files.txt"
+   type="OTHER"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/synopsys_files.txt"
+   type="OTHER"
+   library="CycVTransReconf" />
+ <file
+   path="CycVTransReconf_sim/alt_xcvr_reconfig/aldec_files.txt"
+   type="OTHER"
+   library="CycVTransReconf" />
+ <file path="CycVTransReconf_sim/CycVTransReconf.vhd" type="VHDL" />
+ <topLevel name="CycVTransReconf" />
+ <deviceFamily name="cyclonev" />
+</simPackage>

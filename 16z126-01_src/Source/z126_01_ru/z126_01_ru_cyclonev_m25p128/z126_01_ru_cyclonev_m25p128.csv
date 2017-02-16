@@ -1,0 +1,18 @@
+# system info z126_01_ru_cyclonev_m25p128 on 2014.11.19.13:38:23
+system_info:
+name,value
+DEVICE,5CGXFC4C6F27I7
+DEVICE_FAMILY,Cyclone V
+GENERATION_ID,1416400702
+#
+#
+# Files generated for z126_01_ru_cyclonev_m25p128 on 2014.11.19.13:38:23
+files:
+filepath,kind,attributes,module,is_top
+simulation/z126_01_ru_cyclonev_m25p128.vhd,VHDL,,z126_01_ru_cyclonev_m25p128,true
+simulation/submodules/z126_01_ru_cyclonev_m25p128_remote_update_0.vhd,VHDL,,z126_01_ru_cyclonev_m25p128_remote_update_0,false
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+z126_01_ru_cyclonev_m25p128.remote_update_0,z126_01_ru_cyclonev_m25p128_remote_update_0

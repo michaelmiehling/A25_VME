@@ -1,0 +1,17 @@
+	component CycVTransReconf is
+		port (
+			reconfig_busy             : out std_logic;                                         -- reconfig_busy
+			cal_busy_in               : in  std_logic                      := 'X';             -- cal_busy_in
+			mgmt_clk_clk              : in  std_logic                      := 'X';             -- clk
+			mgmt_rst_reset            : in  std_logic                      := 'X';             -- reset
+			reconfig_mgmt_address     : in  std_logic_vector(6 downto 0)   := (others => 'X'); -- address
+			reconfig_mgmt_read        : in  std_logic                      := 'X';             -- read
+			reconfig_mgmt_readdata    : out std_logic_vector(31 downto 0);                     -- readdata
+			reconfig_mgmt_waitrequest : out std_logic;                                         -- waitrequest
+			reconfig_mgmt_write       : in  std_logic                      := 'X';             -- write
+			reconfig_mgmt_writedata   : in  std_logic_vector(31 downto 0)  := (others => 'X'); -- writedata
+			reconfig_to_xcvr          : out std_logic_vector(349 downto 0);                    -- reconfig_to_xcvr
+			reconfig_from_xcvr        : in  std_logic_vector(229 downto 0) := (others => 'X')  -- reconfig_from_xcvr
+		);
+	end component CycVTransReconf;
+

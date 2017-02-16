@@ -1,0 +1,433 @@
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 1991-2011 Altera Corporation
+# Your use of Altera Corporation's design tools, logic functions 
+# and other software and tools, and its AMPP partner logic 
+# functions, and any output files from any of the foregoing 
+# (including device programming or simulation files), and any 
+# associated documentation or information are expressly subject 
+# to the terms and conditions of the Altera Program License 
+# Subscription Agreement, Altera MegaCore Function License 
+# Agreement, or other applicable license agreement, including, 
+# without limitation, that your use is for the sole purpose of 
+# programming logic devices manufactured by Altera and sold by 
+# Altera or its authorized distributors.  Please refer to the 
+# applicable agreement for further details.
+#
+# -------------------------------------------------------------------------- #
+#
+# Quartus II 64-Bit
+# Version 11.1 Build 173 11/01/2011 SJ Full Version
+# Date created = 13:24:16  January 16, 2012
+#
+# -------------------------------------------------------------------------- #
+#
+# Notes:
+#
+# 1) The default values for assignments are stored in the file:
+#		A25_top_assignment_defaults.qdf
+#    If this file doesn't exist, see file:
+#		assignment_defaults.qdf
+#
+# 2) Altera recommends that you do not modify this file. This
+#    file is updated automatically by the Quartus II software
+#    and any changes you make may be lost or overwritten.
+#
+# -------------------------------------------------------------------------- #
+
+
+set_global_assignment -name FAMILY "Cyclone IV GX"
+set_global_assignment -name DEVICE EP4CGX30CF23I7
+set_global_assignment -name TOP_LEVEL_ENTITY A25_top
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 11.1
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:24:16  JANUARY 16, 2012"
+set_global_assignment -name GENERATE_RBF_FILE ON
+set_global_assignment -name LAST_QUARTUS_VERSION 15.1.0
+set_global_assignment -name CRC_ERROR_CHECKING OFF
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_global_assignment -name CYCLONEII_RESERVE_NCEO_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
+set_global_assignment -name MAX_CORE_JUNCTION_TEMP 100
+set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "ALL PATHS"
+set_global_assignment -name RESERVE_ALL_UNUSED_PINS_WEAK_PULLUP "AS INPUT TRI-STATED WITH WEAK PULL-UP"
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+set_global_assignment -name STRATIXIII_UPDATE_MODE REMOTE
+set_global_assignment -name FORCE_CONFIGURATION_VCCIO ON
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_NEAR_END_VMEAS "HALF VCCIO" -fall
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -rise
+set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
+set_global_assignment -name ACTIVE_SERIAL_CLOCK FREQ_40MHZ
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name FMAX_REQUIREMENT "100 MHz" -section_id refclk
+set_global_assignment -name POST_MODULE_SCRIPT_FILE "quartus_sh:gen_programming_files.tcl"
+
+set_location_assignment PIN_M22 -to clk_16mhz
+set_location_assignment PIN_A2 -to fpga_test[1]
+set_location_assignment PIN_A1 -to fpga_test[2]
+set_location_assignment PIN_B1 -to fpga_test[3]
+set_location_assignment PIN_C2 -to fpga_test[4]
+set_location_assignment PIN_C1 -to fpga_test[5]
+set_location_assignment PIN_V2 -to pcie_tx[0]
+set_location_assignment PIN_P2 -to pcie_tx[1]
+set_location_assignment PIN_K2 -to pcie_tx[2]
+set_location_assignment PIN_F2 -to pcie_tx[3]
+set_location_assignment PIN_A17 -to vme_am_dir
+set_location_assignment PIN_A18 -to vme_am[0]
+set_location_assignment PIN_B18 -to vme_am[1]
+set_location_assignment PIN_F17 -to vme_am[2]
+set_location_assignment PIN_A19 -to vme_am[3]
+set_location_assignment PIN_C19 -to vme_am[4]
+set_location_assignment PIN_D17 -to vme_am[5]
+set_location_assignment PIN_R17 -to vme_a_dir
+set_location_assignment PIN_A22 -to vme_a[0]
+set_location_assignment PIN_F20 -to vme_a[10]
+set_location_assignment PIN_E22 -to vme_a[11]
+set_location_assignment PIN_D20 -to vme_a[12]
+set_location_assignment PIN_G17 -to vme_a[13]
+set_location_assignment PIN_B22 -to vme_a[14]
+set_location_assignment PIN_B21 -to vme_a[15]
+set_location_assignment PIN_A15 -to vme_a[16]
+set_location_assignment PIN_B15 -to vme_a[17]
+set_location_assignment PIN_C15 -to vme_a[18]
+set_location_assignment PIN_A14 -to vme_a[19]
+set_location_assignment PIN_H20 -to vme_a[1]
+set_location_assignment PIN_D15 -to vme_a[20]
+set_location_assignment PIN_C14 -to vme_a[21]
+set_location_assignment PIN_B13 -to vme_a[22]
+set_location_assignment PIN_D14 -to vme_a[23]
+set_location_assignment PIN_U20 -to vme_a[24]
+set_location_assignment PIN_W22 -to vme_a[25]
+set_location_assignment PIN_V21 -to vme_a[26]
+set_location_assignment PIN_V22 -to vme_a[27]
+set_location_assignment PIN_R16 -to vme_a[28]
+set_location_assignment PIN_T20 -to vme_a[29]
+set_location_assignment PIN_G21 -to vme_a[2]
+set_location_assignment PIN_T21 -to vme_a[30]
+set_location_assignment PIN_U22 -to vme_a[31]
+set_location_assignment PIN_F22 -to vme_a[3]
+set_location_assignment PIN_G19 -to vme_a[4]
+set_location_assignment PIN_C22 -to vme_a[5]
+set_location_assignment PIN_G16 -to vme_a[6]
+set_location_assignment PIN_C20 -to vme_a[7]
+set_location_assignment PIN_G22 -to vme_a[8]
+set_location_assignment PIN_G20 -to vme_a[9]
+set_location_assignment PIN_M17 -to vme_bbsy_o
+set_location_assignment PIN_C3 -to vme_br_o[0]
+set_location_assignment PIN_C4 -to vme_br_o[1]
+set_location_assignment PIN_D4 -to vme_br_o[2]
+set_location_assignment PIN_E5 -to vme_br_o[3]
+set_location_assignment PIN_N19 -to vme_d_dir
+set_location_assignment PIN_A10 -to vme_ds_oe
+set_location_assignment PIN_A3 -to vme_d[0]
+set_location_assignment PIN_B4 -to vme_d[10]
+set_location_assignment PIN_E6 -to vme_d[11]
+set_location_assignment PIN_D6 -to vme_d[12]
+set_location_assignment PIN_B7 -to vme_d[13]
+set_location_assignment PIN_C8 -to vme_d[14]
+set_location_assignment PIN_D8 -to vme_d[15]
+set_location_assignment PIN_R20 -to vme_d[16]
+set_location_assignment PIN_R21 -to vme_d[17]
+set_location_assignment PIN_R22 -to vme_d[18]
+set_location_assignment PIN_P14 -to vme_d[19]
+set_location_assignment PIN_C5 -to vme_d[1]
+set_location_assignment PIN_P13 -to vme_d[20]
+set_location_assignment PIN_P22 -to vme_d[21]
+set_location_assignment PIN_N20 -to vme_d[22]
+set_location_assignment PIN_N21 -to vme_d[23]
+set_location_assignment PIN_L15 -to vme_d[24]
+set_location_assignment PIN_L20 -to vme_d[25]
+set_location_assignment PIN_L19 -to vme_d[26]
+set_location_assignment PIN_K19 -to vme_d[27]
+set_location_assignment PIN_K20 -to vme_d[28]
+set_location_assignment PIN_K22 -to vme_d[29]
+set_location_assignment PIN_A4 -to vme_d[2]
+set_location_assignment PIN_J22 -to vme_d[30]
+set_location_assignment PIN_J21 -to vme_d[31]
+set_location_assignment PIN_C7 -to vme_d[3]
+set_location_assignment PIN_A7 -to vme_d[4]
+set_location_assignment PIN_F8 -to vme_d[5]
+set_location_assignment PIN_D7 -to vme_d[6]
+set_location_assignment PIN_A8 -to vme_d[7]
+set_location_assignment PIN_B3 -to vme_d[8]
+set_location_assignment PIN_D5 -to vme_d[9]
+set_location_assignment PIN_J20 -to vme_irq_o[1]
+set_location_assignment PIN_J19 -to vme_irq_o[2]
+set_location_assignment PIN_E21 -to vme_irq_o[3]
+set_location_assignment PIN_E20 -to vme_irq_o[4]
+set_location_assignment PIN_D19 -to vme_irq_o[5]
+set_location_assignment PIN_F18 -to vme_irq_o[6]
+set_location_assignment PIN_F16 -to vme_irq_o[7]
+set_location_assignment PIN_N22 -to vme_retry_oe
+set_location_assignment PIN_M18 -to vme_scon
+set_location_assignment PIN_AA22 -to vme_sysclk
+set_location_assignment PIN_M19 -to vme_sysfail_o
+set_location_assignment PIN_N17 -to vme_sysres_o
+set_location_assignment PIN_M7 -to refclk
+set_location_assignment PIN_Y2 -to pcie_rx[0]
+set_location_assignment PIN_T2 -to pcie_rx[1]
+set_location_assignment PIN_M2 -to pcie_rx[2]
+set_location_assignment PIN_H2 -to pcie_rx[3]
+set_location_assignment PIN_AA13 -to sr_a[0]
+set_location_assignment PIN_W18 -to sr_a[10]
+set_location_assignment PIN_AB13 -to sr_a[11]
+set_location_assignment PIN_T13 -to sr_a[12]
+set_location_assignment PIN_W13 -to sr_a[13]
+set_location_assignment PIN_Y13 -to sr_a[14]
+set_location_assignment PIN_R14 -to sr_a[15]
+set_location_assignment PIN_T14 -to sr_a[16]
+set_location_assignment PIN_U14 -to sr_a[17]
+set_location_assignment PIN_R13 -to sr_a[18]
+set_location_assignment PIN_AB14 -to sr_a[1]
+set_location_assignment PIN_AB15 -to sr_a[2]
+set_location_assignment PIN_AA15 -to sr_a[3]
+set_location_assignment PIN_AB16 -to sr_a[4]
+set_location_assignment PIN_AA16 -to sr_a[5]
+set_location_assignment PIN_Y20 -to sr_a[6]
+set_location_assignment PIN_AA21 -to sr_a[7]
+set_location_assignment PIN_W19 -to sr_a[8]
+set_location_assignment PIN_Y18 -to sr_a[9]
+set_location_assignment PIN_H9 -to sr_clk
+set_location_assignment PIN_Y14 -to sr_d[0]
+set_location_assignment PIN_AB20 -to sr_d[10]
+set_location_assignment PIN_AA19 -to sr_d[11]
+set_location_assignment PIN_AB19 -to sr_d[12]
+set_location_assignment PIN_AA18 -to sr_d[13]
+set_location_assignment PIN_AB18 -to sr_d[14]
+set_location_assignment PIN_AB17 -to sr_d[15]
+set_location_assignment PIN_W14 -to sr_d[1]
+set_location_assignment PIN_U15 -to sr_d[2]
+set_location_assignment PIN_W15 -to sr_d[3]
+set_location_assignment PIN_Y15 -to sr_d[4]
+set_location_assignment PIN_Y16 -to sr_d[5]
+set_location_assignment PIN_W17 -to sr_d[6]
+set_location_assignment PIN_Y17 -to sr_d[7]
+set_location_assignment PIN_AB21 -to sr_d[8]
+set_location_assignment PIN_AA20 -to sr_d[9]
+set_location_assignment PIN_D11 -to led_green_n
+set_location_assignment PIN_D10 -to led_red_n
+set_location_assignment PIN_AA4 -to v2p_rstn
+set_location_assignment PIN_A12 -to vme_acfail_i_n
+set_location_assignment PIN_B19 -to vme_am_oe_n
+set_location_assignment PIN_C16 -to vme_as_i_n
+set_location_assignment PIN_B16 -to vme_as_o_n
+set_location_assignment PIN_G15 -to vme_as_oe
+set_location_assignment PIN_L14 -to vme_bbsy_i_n
+set_location_assignment PIN_L13 -to vme_bclr_i_n
+set_location_assignment PIN_M13 -to vme_bclr_o_n
+set_location_assignment PIN_C6 -to vme_berr_i_n
+set_location_assignment PIN_J13 -to vme_bg_i_n[0]
+set_location_assignment PIN_G12 -to vme_bg_i_n[1]
+set_location_assignment PIN_H13 -to vme_bg_i_n[2]
+set_location_assignment PIN_J14 -to vme_bg_i_n[3]
+set_location_assignment PIN_C11 -to vme_bg_o_n[0]
+set_location_assignment PIN_C10 -to vme_bg_o_n[1]
+set_location_assignment PIN_A11 -to vme_bg_o_n[2]
+set_location_assignment PIN_H12 -to vme_bg_o_n[3]
+set_location_assignment PIN_G14 -to vme_br_i_n[0]
+set_location_assignment PIN_A13 -to vme_br_i_n[1]
+set_location_assignment PIN_B12 -to vme_br_i_n[2]
+set_location_assignment PIN_C13 -to vme_br_i_n[3]
+set_location_assignment PIN_R19 -to vme_d_oe_n
+set_location_assignment PIN_D9 -to vme_ds_i_n[0]
+set_location_assignment PIN_E8 -to vme_ds_i_n[1]
+set_location_assignment PIN_B10 -to vme_ds_o_n[0]
+set_location_assignment PIN_C9 -to vme_ds_o_n[1]
+set_location_assignment PIN_A5 -to vme_dtack_i_n
+set_location_assignment PIN_A20 -to vme_iack_n
+set_location_assignment PIN_H14 -to vme_iack_i_n
+set_location_assignment PIN_C12 -to vme_iack_o_n
+set_location_assignment PIN_H22 -to vme_irq_i_n[1]
+set_location_assignment PIN_H21 -to vme_irq_i_n[2]
+set_location_assignment PIN_D22 -to vme_irq_i_n[3]
+set_location_assignment PIN_D21 -to vme_irq_i_n[4]
+set_location_assignment PIN_A21 -to vme_irq_i_n[5]
+set_location_assignment PIN_B20 -to vme_irq_i_n[6]
+set_location_assignment PIN_A16 -to vme_irq_i_n[7]
+set_location_assignment PIN_Y22 -to vme_retry_i_n
+set_location_assignment PIN_W21 -to vme_retry_o_n
+set_location_assignment PIN_T22 -to vme_sysfail_i_n
+set_location_assignment PIN_V20 -to vme_sysres_i_n
+set_location_assignment PIN_E17 -to vme_write_n
+set_location_assignment PIN_AB3 -to hreset_n
+set_location_assignment PIN_T18 -to sr_adsc_n
+set_location_assignment PIN_Y19 -to sr_bw_n
+set_location_assignment PIN_AB10 -to sr_bwa_n
+set_location_assignment PIN_AB11 -to sr_bwb_n
+set_location_assignment PIN_T17 -to sr_cs1_n
+set_location_assignment PIN_W20 -to sr_oe_n
+set_location_assignment PIN_AB9 -to vme_gap
+set_location_assignment PIN_AB4 -to vme_ga[0]
+set_location_assignment PIN_AB5 -to vme_ga[1]
+set_location_assignment PIN_AB6 -to vme_ga[2]
+set_location_assignment PIN_AB7 -to vme_ga[3]
+set_location_assignment PIN_AB8 -to vme_ga[4]
+
+
+set_instance_assignment -name IO_STANDARD HCSL -to refclk
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx[0]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx[0]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx[1]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx[1]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx[2]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx[2]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_tx[3]
+set_instance_assignment -name IO_STANDARD "1.5-V PCML" -to pcie_rx[3]
+set_instance_assignment -name INPUT_TERMINATION OFF -to refclk
+set_global_assignment -name SMART_RECOMPILE OFF
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to *z091_01_top*hip*core_clk_out
+
+
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to gpio
+
+set_global_assignment -name ENABLE_INIT_DONE_OUTPUT ON
+set_global_assignment -name ENABLE_SIGNALTAP OFF
+set_global_assignment -name USE_SIGNALTAP_FILE stp1.stp
+set_global_assignment -name ALLOW_POWER_UP_DONT_CARE ON
+
+
+set_global_assignment -name EDA_DESIGN_ENTRY_SYNTHESIS_TOOL "<None>"
+set_global_assignment -name EDA_INPUT_DATA_FORMAT EDIF -section_id eda_design_synthesis
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE AREA
+
+set_global_assignment -name VERILOG_FILE "../16z091-01_src/Source/x1/ip_compiler_for_pci_express-library/pciexp_dcram.v"
+set_global_assignment -name VERILOG_FILE "../16z091-01_src/Source/x1/ip_compiler_for_pci_express-library/altpcie_rs_serdes.v"
+set_global_assignment -name VERILOG_FILE "../16z091-01_src/Source/x1/ip_compiler_for_pci_express-library/altpcie_hip_pipen1b.v"
+set_global_assignment -name SDC_FILE "../16z091-01_src/Synthesis/z91_01_tmg_con.sdc"
+
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x1/Hard_IP_x1_serdes.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x1/Hard_IP_x1_core.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x1/Hard_IP_x1.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_slave.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_master.vhd"
+#set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_adr_dec.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_put_data.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_module.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_header_fifo.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_data_fifo.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_ctrl.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_compl_timeout.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/src_utils_pkg.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/rx_module.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/rx_len_cntr.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/rx_get_data.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/rx_fifo.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/rx_ctrl.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/pcie_msi.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/ip_16z091_01_top.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/ip_16z091_01.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/interrupt_wb.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/interrupt_core.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/init.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/error.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/err_fifo.vhd"
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/alt_reconf.vhd"
+
+set_global_assignment -name QIP_FILE ../Source/pll_pcie.qip
+set_global_assignment -name SDC_FILE A25_top.sdc
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_sys_arbiter.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_pkg.vhd"
+set_global_assignment -name VHDL_FILE "../16z000-00_src/Source/fpga_pkg_2.vhd"
+set_global_assignment -name VHDL_FILE ../Source/wb_pkg.vhd
+set_global_assignment -name VHDL_FILE ../Source/wb_bus.vhd
+set_global_assignment -name VHDL_FILE ../Source/z091_01_wb_adr_dec.vhd
+set_global_assignment -name VHDL_FILE ../Source/sram.vhd
+set_global_assignment -name VHDL_FILE ../Source/pll_pcie.vhd
+
+set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wbmon.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wb2pasmi.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wb_pkg.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wb_if_arbiter.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_top.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_pkg.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_indi_if_ctrl_regs.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_fifo_d1.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_clk_trans_wb2wb.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_switch_fab_2.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl.vhd"
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_pasmi/z126_01_pasmi_m25p32.vhd"
+#For CYCLONE V
+#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl_cyc5.vhd"
+#For CYCLONE V AND EPCS16
+#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p32/synthesis/z126_01_ru_cyclonev_m25p32.qip"
+#For CYCLONE V AND EPCS64
+#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p64/synthesis/z126_01_ru_cyclonev_m25p64.qip"
+#For CYCLONE V AND EPCS128
+#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p128/synthesis/z126_01_ru_cyclonev_m25p128.qip"
+
+#For CYCLONE IV
+set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cycloneiv.vhd"
+
+#For CYCLONE III
+#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl_cyc.vhd"
+#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cycloneiii.vhd"
+
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/wbmon.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_4.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_3.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_2.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_1.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/fifo_d1.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/clk_trans_wb2wb.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_wb.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_dp_wb.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_dp_2clk.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_dp_1clk.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_cyc4.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_cyc3.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_cyc2.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_av.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_arriagx.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_acex.vhd"
+set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/wbb2vme_top.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_wbs.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_wbm.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_slave.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_requester.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_master.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_mailbox.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_locmon.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_du.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma_slv.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma_mstr.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma_fifo.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma_du.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma_au.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma_arbiter.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_dma.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_ctrl.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_bustimer.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_au.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_arbiter.vhd"
+set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/fifo_256x32bit.vhd"
+set_global_assignment -name VHDL_FILE ../Source/A25_top.vhd
+#set_global_assignment -name QIP_FILE reconfig_cyc4.qip
+set_global_assignment -name DEVICE_MIGRATION_LIST "EP4CGX30CF23I7,EP4CGX150CF23I7,EP4CGX75CF23I7,EP4CGX50CF23I7"
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to vme_*
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to sr_*
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_green_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_red_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to vme_v2p_rstn
+
+
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+set_global_assignment -name CONFIGURATION_VCCIO_LEVEL 3.3V
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+set_location_assignment PIN_A6 -to vme_berr_o
+set_location_assignment PIN_B6 -to vme_dtack_o
+set_location_assignment PIN_T19 -to vme_a_oe_n
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

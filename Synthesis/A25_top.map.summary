@@ -1,0 +1,18 @@
+Analysis & Synthesis Status : Successful - Thu Feb 16 15:31:43 2017
+Quartus Prime Version : 15.1.0 Build 185 10/21/2015 SJ Standard Edition
+Revision Name : A25_top
+Top-level Entity Name : A25_top
+Family : Cyclone IV GX
+Total logic elements : 8,170
+    Total combinational functions : 6,322
+    Dedicated logic registers : 4,805
+Total registers : 4805
+Total pins : 201
+Total virtual pins : 0
+Total memory bits : 225,300
+Embedded Multiplier 9-bit elements : 0
+Total GXB Receiver Channel PCS : 1
+Total GXB Receiver Channel PMA : 1
+Total GXB Transmitter Channel PCS : 1
+Total GXB Transmitter Channel PMA : 1
+Total PLLs : 2

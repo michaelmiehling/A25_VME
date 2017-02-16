@@ -1,0 +1,15 @@
+	component z126_01_ru_cyclonev_m25p64 is
+		port (
+			read_param  : in  std_logic                     := 'X';             -- read_param
+			param       : in  std_logic_vector(2 downto 0)  := (others => 'X'); -- param
+			reconfig    : in  std_logic                     := 'X';             -- reconfig
+			reset_timer : in  std_logic                     := 'X';             -- reset_timer
+			clock       : in  std_logic                     := 'X';             -- clk
+			reset       : in  std_logic                     := 'X';             -- reset
+			busy        : out std_logic;                                        -- busy
+			data_out    : out std_logic_vector(23 downto 0);                    -- data_out
+			write_param : in  std_logic                     := 'X';             -- write_param
+			data_in     : in  std_logic_vector(23 downto 0) := (others => 'X')  -- data_in
+		);
+	end component z126_01_ru_cyclonev_m25p64;
+

@@ -1,0 +1,107 @@
+A25 Debug Tests
+
+
+Testsystem:
+A25: master + linux booten
+A21: slave im UBOOT
+
+SRAM Test (1MByte)
+A25: $ memtester -p e2000000 1024K 1
+
+
+VME A24 Test A25->A21(1MByte):
+A21 A24 Slave Window auf Adresse 0x400000 aktivieren: cb f0800014 14
+A25 Test mit D16: $ memtester -p 91400000 1024K 1
+A25 Test mit D32: $ memtester -p 90400000 1024K 1
+
+
+VME A32 Test A25->A21(1MByte):
+A21 A32 Slave Window auf Adresse 0x01000000 aktivieren: cb f0800034 10
+                                                        cb f0800035 10
+A25 Test mit D32: $ memtester -p a1000000 1024K 1
+
+
+Chameleon Tabelle dumpen:           fpga_load 1a88 4d45 d5 0 -t
+Update des fallback-FPGAs auf A25:  fpga_load 1a88 4d45 d5 0 -z -f -w 16A025-00_xx_xx.rbf 0 -v
+Update des user-FPGAs auf A25:      fpga_load 1a88 4d45 d5 0 -z -f -w 16A025-00_xx_xx.bin 200000 -v
+
+
+VME A24 Test A21->A25(1MByte):
+A25 A24 Slave Window auf Adresse 0x800000 aktivieren: cb 92110014 18
+A21 Test mit D16: mt f4800000 f48fffff
+A21 Test mit D32: mt f5800000 f58fffff
+
+VME A32 Test A21->A25(1MByte):
+A25 A32 Slave Window auf Adresse 0x02000000 aktivieren: cb 92110034 10
+                                                        cb 92110035 20
+A21 Test mit D32: mt 82000000 820fffff
+
+
+Change Requester Level:
+A25: cb 92110054 x
+
+
+
+
+
+scp men@192.1.1.142:~/16A025-00_01_06.bin .
+fpga_load 1a88 4d45 d5 0 -z -f -w 16A025-00_02_00.bin 200000 -v
+
+Arbitration Test 1:
+A25_slot1$ vme4l_slvwin 12 200000 100000 rw
+A25_slot2$ vme4l_slvwin 12 300000 100000 rw
+A25_slot3$ vme4l_slvwin 12 400000 100000 rw
+
+A25_slot1$ vme4l_mtest -s=6 -t=L 300000 400000 -n=1000 -q=1
+A25_slot2$ vme4l_mtest -s=6 -t=L 400000 500000 -n=1000 -q=1
+A25_slot3$ vme4l_mtest -s=6 -t=L 200000 300000 -n=1000 -q=1
+
+
+Arbitration Test 2:
+A25_slot1$ vme4l_slvwin 12 200000 100000 rw
+A25_slot3$ vme4l_slvwin 12 400000 100000 rw
+A21_slot2=> cb f0800014 13
+
+
+A25_slot1$ vme4l_mtest -s=4 -t=L 300000 400000 -n=1000 -q=1
+A25_slot3$ vme4l_mtest -s=4 -t=L 200000 300000 -n=1000 -q=1
+A21_slot2=> mtest f4400000 f44fffff
+
+
+Linux Driver Spaces:
+Space Type        mtest
+1     a16d16_blt  
+2     a16d32
+3     a16d32_blt  
+4     a24d16      bwlBWL
+5     a24d16_blt
+6     a24d32      bwlBWL
+7     a24d32_blt  vV
+8     a32d32
+9     a32d32_blt  vV
+10    a32d64_blt  vV
+11    slave0
+12    slave1
+13    slave2
+14    slave3
+15    slave4
+16    slave5
+17    slave6
+18    slave7
+19    master0
+20    master1
+21    master2
+22    master3
+23    master4
+24    master5
+25    master6
+26    master7
+27    a64d32
+28    a64_2evme
+29    a64_2esst
+                      
+                   
+                      
+DMA                                 
+A21_slot2$ cb f0800014 13
+A25_slot1$ vme4l_mtest -s=7 -t=V 300000 300100 -n=1 -q=1                      

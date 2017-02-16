@@ -1,0 +1,30 @@
+PLL_Name	ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_core:wrapper|altpcie_hip_pipen1b:altpcie_hip_pipen1b_inst|cyclone_iii.cycloneiv_hssi_pcie_hip
+PLLJITTER	NA
+PLLSPEmax	NA
+PLLSPEmin	NA
+
+PLL_Name	ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|altpll:pll0|altpll_um81:auto_generated|pll1
+PLLJITTER	31
+PLLSPEmax	84
+PLLSPEmin	-53
+
+PLL_Name	ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|receive_pma0
+PLLJITTER	NA
+PLLSPEmax	NA
+PLLSPEmin	NA
+
+PLL_Name	ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|transmit_pcs0
+PLLJITTER	NA
+PLLSPEmax	NA
+PLLSPEmin	NA
+
+PLL_Name	ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|transmit_pma0
+PLLJITTER	NA
+PLLSPEmax	NA
+PLLSPEmin	NA
+
+PLL_Name	pll_pcie:pll|altpll:altpll_component|pll_pcie_altpll:auto_generated|pll1
+PLLJITTER	NA
+PLLSPEmax	84
+PLLSPEmin	-53
+

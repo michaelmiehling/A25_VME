@@ -1,0 +1,10 @@
+# files to be included
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/wb_pkg.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_1.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_2.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_3.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_4.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/wbmon.vhd"
+set_global_assignment -name VHDL_FILE "../Source/wb_bus.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/fifo_d1.vhd"
+set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/clk_trans_wb2wb.vhd"
