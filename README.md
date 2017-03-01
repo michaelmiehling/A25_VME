@@ -59,13 +59,15 @@ Synthesis:     Altera Quartus synthesis files
 
 How to generate a new programming file:
 
-1) Edit chameleon_V2.xls in order to set new revision (Page "Content", minor revision in C8, major revision in C7) and close xls
+1) Copy Synthesis/quartus.ini file in Quartus installation folder /quartus/bin64/ in order to support EPCS32 serial flash devices
 
-2) call cham2.bat for hex file generation
+2) Edit chameleon_V2.xls in order to set new revision (Page "Content", minor revision in C8, major revision in C7) and close xls
 
-3) Edit Synthesis/gen_programming_files.tcl and change programming file name to new revision in variable PROJECT_RELEASE_NAM "16A025-00_MM_mm"
+3) call cham2.bat for hex file generation
 
-4) open A25_top.qpf in Quartus 15.1 
+4) Edit Synthesis/gen_programming_files.tcl and change programming file name to new revision in variable PROJECT_RELEASE_NAM "16A025-00_MM_mm"
 
-5) Run synthesis: if successful, new files with name 16A025-00_MM_mm will be generated in Synthesis/fpga_files
+5) open A25_top.qpf in Quartus 15.1 
+
+6) Run synthesis: if successful, new files with name 16A025-00_MM_mm will be generated in Synthesis/fpga_files
 
