@@ -3,27 +3,27 @@ TimeQuest Timing Analyzer Summary
 ------------------------------------------------------------
 
 Type  : Slow 1200mV 100C Model Setup 'sys_clk'
-Slack : 0.056
+Slack : 0.076
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Setup 'pcie_sys_clk'
-Slack : 0.873
+Slack : 0.518
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Setup 'clk_33'
-Slack : 5.796
+Slack : 6.256
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Setup 'clk_125'
-Slack : 6.934
+Slack : 6.935
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Setup 'sr_clk_ext'
-Slack : 7.721
+Slack : 7.502
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Setup 'clk_50'
-Slack : 12.966
+Slack : 12.145
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Setup 'clk_16mhz'
@@ -31,15 +31,15 @@ Slack : 61.550
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Hold 'clk_33'
-Slack : 0.341
+Slack : 0.333
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Hold 'sys_clk'
-Slack : 0.386
+Slack : 0.341
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Hold 'pcie_sys_clk'
-Slack : 0.387
+Slack : 0.366
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Hold 'clk_50'
@@ -55,31 +55,31 @@ Slack : 0.423
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Hold 'sr_clk_ext'
-Slack : 1.088
+Slack : 1.138
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Recovery 'pcie_sys_clk'
-Slack : 5.686
+Slack : 5.615
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Recovery 'sys_clk'
-Slack : 9.959
+Slack : 8.247
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Recovery 'clk_33'
-Slack : 11.056
+Slack : 11.293
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Removal 'pcie_sys_clk'
-Slack : 1.011
+Slack : 1.008
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Removal 'sys_clk'
-Slack : 1.012
+Slack : 1.174
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Removal 'clk_33'
-Slack : 3.138
+Slack : 2.998
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Minimum Pulse Width 'clk_50'
@@ -91,11 +91,11 @@ Slack : 3.593
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Minimum Pulse Width 'clk_125'
-Slack : 3.643
+Slack : 3.644
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Minimum Pulse Width 'clk_33'
-Slack : 4.545
+Slack : 4.567
 TNS   : 0.000
 
 Type  : Slow 1200mV 100C Model Minimum Pulse Width 'refclk'
@@ -114,48 +114,48 @@ Type  : Slow 1200mV 100C Model Minimum Pulse Width 'clk_16mhz'
 Slack : 31.019
 TNS   : 0.000
 
-Type  : Slow 1200mV 0C Model Setup 'sys_clk'
-Slack : 0.853
+Type  : Slow 1200mV 0C Model Setup 'pcie_sys_clk'
+Slack : 0.702
 TNS   : 0.000
 
-Type  : Slow 1200mV 0C Model Setup 'pcie_sys_clk'
-Slack : 1.027
+Type  : Slow 1200mV 0C Model Setup 'sys_clk'
+Slack : 0.859
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Setup 'clk_33'
-Slack : 6.358
+Slack : 6.806
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Setup 'clk_125'
-Slack : 7.038
+Slack : 7.037
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Setup 'sr_clk_ext'
-Slack : 8.057
+Slack : 7.889
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Setup 'clk_50'
-Slack : 13.502
+Slack : 12.862
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Setup 'clk_16mhz'
 Slack : 61.649
 TNS   : 0.000
 
-Type  : Slow 1200mV 0C Model Hold 'sys_clk'
-Slack : 0.335
+Type  : Slow 1200mV 0C Model Hold 'pcie_sys_clk'
+Slack : 0.321
 TNS   : 0.000
 
-Type  : Slow 1200mV 0C Model Hold 'pcie_sys_clk'
-Slack : 0.336
+Type  : Slow 1200mV 0C Model Hold 'sys_clk'
+Slack : 0.334
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Hold 'clk_33'
-Slack : 0.343
+Slack : 0.339
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Hold 'clk_50'
-Slack : 0.351
+Slack : 0.349
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Hold 'clk_125'
@@ -167,31 +167,31 @@ Slack : 0.387
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Hold 'sr_clk_ext'
-Slack : 0.913
+Slack : 0.962
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Recovery 'pcie_sys_clk'
-Slack : 5.897
+Slack : 5.838
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Recovery 'sys_clk'
-Slack : 10.456
+Slack : 8.904
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Recovery 'clk_33'
-Slack : 11.456
-TNS   : 0.000
-
-Type  : Slow 1200mV 0C Model Removal 'sys_clk'
-Slack : 0.913
+Slack : 11.686
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Removal 'pcie_sys_clk'
-Slack : 0.916
+Slack : 0.911
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Removal 'sys_clk'
+Slack : 1.059
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Removal 'clk_33'
-Slack : 2.765
+Slack : 2.641
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'clk_50'
@@ -199,15 +199,15 @@ Slack : 0.000
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'pcie_sys_clk'
-Slack : 3.534
+Slack : 3.536
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'clk_125'
-Slack : 3.646
+Slack : 3.649
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'clk_33'
-Slack : 4.766
+Slack : 4.753
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'refclk'
@@ -215,7 +215,7 @@ Slack : 6.000
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'sys_clk'
-Slack : 7.129
+Slack : 7.127
 TNS   : 0.000
 
 Type  : Slow 1200mV 0C Model Minimum Pulse Width 'sr_clk_ext'
@@ -231,23 +231,23 @@ Slack : 1.309
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Setup 'pcie_sys_clk'
-Slack : 2.534
+Slack : 2.313
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Setup 'clk_125'
-Slack : 7.494
+Slack : 7.495
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Setup 'sr_clk_ext'
-Slack : 9.747
+Slack : 9.610
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Setup 'clk_33'
-Slack : 10.641
+Slack : 10.908
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Setup 'clk_50'
-Slack : 16.547
+Slack : 16.124
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Setup 'clk_16mhz'
@@ -255,55 +255,55 @@ Slack : 61.999
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Hold 'clk_33'
-Slack : 0.143
-TNS   : 0.000
-
-Type  : Fast 1200mV 0C Model Hold 'pcie_sys_clk'
-Slack : 0.172
+Slack : 0.141
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Hold 'sys_clk'
-Slack : 0.172
+Slack : 0.142
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'pcie_sys_clk'
+Slack : 0.161
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Hold 'clk_50'
-Slack : 0.180
-TNS   : 0.000
-
-Type  : Fast 1200mV 0C Model Hold 'clk_125'
-Slack : 0.186
+Slack : 0.179
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Hold 'clk_16mhz'
 Slack : 0.186
 TNS   : 0.000
 
+Type  : Fast 1200mV 0C Model Hold 'clk_125'
+Slack : 0.188
+TNS   : 0.000
+
 Type  : Fast 1200mV 0C Model Hold 'sr_clk_ext'
-Slack : 0.381
+Slack : 0.413
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Recovery 'pcie_sys_clk'
-Slack : 6.811
+Slack : 6.734
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Recovery 'sys_clk'
-Slack : 12.353
+Slack : 11.325
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Recovery 'clk_33'
-Slack : 12.985
+Slack : 13.093
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Removal 'pcie_sys_clk'
-Slack : 0.479
+Slack : 0.478
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Removal 'sys_clk'
-Slack : 0.479
+Slack : 0.547
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Removal 'clk_33'
-Slack : 1.664
+Slack : 1.588
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'clk_50'
@@ -311,15 +311,15 @@ Slack : 0.000
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'pcie_sys_clk'
-Slack : 3.676
+Slack : 3.683
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'clk_125'
-Slack : 3.744
+Slack : 3.743
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'clk_33'
-Slack : 4.733
+Slack : 4.766
 TNS   : 0.000
 
 Type  : Fast 1200mV 0C Model Minimum Pulse Width 'refclk'

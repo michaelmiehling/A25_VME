@@ -29,6 +29,7 @@
 -- 0x3A HHHLHL A24 non privileged program access	            direct access via VME A24D16 or VME A24D32 windows, configured in register MSTR: A24_MODE
 -- 0x39 HHHLLH A24 non privileged data access	               direct access via VME A24D16 or VME A24D32 windows, configured in register MSTR: A24_MODE
 -- 0x2D HLHHLH A16 supervisory access	                        direct access via VME A24D16 or VME A24D32 window, configured in register MSTR: A16_MODE
+-- 0x2F HLHHHH A24 CR/CSR access                               direct access via VME A24D16 or VME A24D32 window, configured in register MSTR: CR_CSR_MODE
 -- 0x29 HLHLLH A16 non-privileged access	                     direct access via VME A24D16 or VME A24D32 window, configured in register MSTR: A16_MODE
 -- 0x0F LLHHHH A32 supervisory block transfer (BLT)	         DMA access, configured in buffer descriptor, bits DMA_VME_AM
 -- 0x0E LLHHHL A32 supervisory program access	               direct access via VME A32 window, configured in register MSTR: A32_MODE

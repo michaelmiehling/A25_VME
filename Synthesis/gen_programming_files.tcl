@@ -33,7 +33,7 @@ variable PROJECT_SYNTHESIS          "./"
 #Name of the quartus project
 variable PROJECT_FILE_NAME          "A25_top"
 #Name of the programming files which are generated
-variable PROJECT_RELEASE_NAME       "16A025-00_02_00"
+variable PROJECT_RELEASE_NAME       "16A025-00_02_02"
 #Folder of the programming files which are generated
 variable PROJECT_RELEASE_FOLDER     "./fpga_files/"
 #Folder of the Quartus automatically generated programming files relative to the PROJECT_SYNTHESIS
@@ -52,7 +52,7 @@ variable COF_FILE_NAME              "A25_top.cof"
 # project configurations
 variable HWARE_BOARD_NAME        "16A025-00"
 variable DEVICE                  "EP4CGX30"
-variable FLASH                   "EPCS64"
+variable FLASH                   "EPCS32"
 variable FPGA_IMAGE_OFFSET       200000
 #8MByte Flash
 variable FLASH_SIZE_IN_BYTE_HEX  800000

@@ -207,19 +207,19 @@ ENTITY vme_au IS
       vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring (registered with en_vme_adr_in)
       
       -- vme_du
-      mstr_reg             : IN std_logic_vector(13 DOWNTO 0);             -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
+      mstr_reg             : IN std_logic_vector(14 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE, CR_CSR_MODE)
       longadd              : IN std_logic_vector(7 DOWNTO 0);     -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
-      slv16_reg            : IN std_logic_vector(4 DOWNTO 0);              -- slave A16 base address register
-      slv24_reg            : IN std_logic_vector(15 DOWNTO 0);             -- slave A24 base address register
-      slv32_reg            : IN std_logic_vector(23 DOWNTO 0);             -- slave A32 base address register
-      slv24_pci_q          : IN std_logic_vector(15 DOWNTO 0);             -- slave A24 base address register for PCI
-      slv32_pci_q          : IN std_logic_vector(23 DOWNTO 0);             -- slave A32 base address register for PCI
-      intr_reg             : IN std_logic_vector(3 DOWNTO 0);              -- interrupt request register
-      sysc_reg             : IN std_logic_vector(2 DOWNTO 0);              -- system control register (ato, sysr, sysc)
-      pci_offset_q         : IN std_logic_vector(31 DOWNTO 2);             -- pci offset address for vme to pci access
+      slv16_reg            : IN std_logic_vector(4 DOWNTO 0);     -- slave A16 base address register
+      slv24_reg            : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
+      slv32_reg            : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register
+      slv24_pci_q          : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register for PCI
+      slv32_pci_q          : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register for PCI
+      intr_reg             : IN std_logic_vector(3 DOWNTO 0);     -- interrupt request register
+      sysc_reg             : IN std_logic_vector(2 DOWNTO 0);     -- system control register (ato, sysr, sysc)
+      pci_offset_q         : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access
       
-      int_be               : OUT std_logic_vector(3 DOWNTO 0);             -- internal byte enables
-      int_adr              : OUT std_logic_vector(18 DOWNTO 0)             -- internal adress
+      int_be               : OUT std_logic_vector(3 DOWNTO 0);    -- internal byte enables
+      int_adr              : OUT std_logic_vector(18 DOWNTO 0)    -- internal adress
    );
 END vme_au;
 
@@ -775,12 +775,16 @@ BEGIN
                         END IF;
             
             WHEN "00000" => 
-                      CASE mstr_reg(11 DOWNTO 10) IS               -- A24_MODE
-                         WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
-                         WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
-                         WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
-                         WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
-                      END CASE;
+                      IF mstr_reg(14) = '1' THEN                     -- A24_MODE
+                        vam_out <= "101111";                         -- x2F   A24 CR/CSR access
+                      ELSE
+                         CASE mstr_reg(11 DOWNTO 10) IS
+                            WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
+                            WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
+                            WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
+                            WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
+                         END CASE;
+                      END IF;
                       iackn_out <= '1';
                       ma_d64 <= '0';
                         lwordn_mstr_int   <= '1';
@@ -809,12 +813,16 @@ BEGIN
                         END IF;
                         
             WHEN "00100" => 
-                      CASE mstr_reg(11 DOWNTO 10) IS               -- A24_MODE
-                         WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
-                         WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
-                         WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
-                         WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
-                      END CASE;
+                      IF mstr_reg(14) = '1' THEN                     -- A24_MODE
+                        vam_out <= "101111";                         -- x2F   A24 CR/CSR access
+                      ELSE
+                         CASE mstr_reg(11 DOWNTO 10) IS               
+                            WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D32 non-privileged data access
+                            WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D32 non-privileged program access
+                            WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D32 supervisory data access    
+                            WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D32 supervisory program access 
+                         END CASE;
+                      END IF;
                       iackn_out <= '1';
                       ma_d64 <= '0';
                       IF wbs_sel_i = "1111" THEN

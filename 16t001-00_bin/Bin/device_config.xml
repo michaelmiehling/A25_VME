@@ -23,11 +23,21 @@
       <grp>88</grp>
       <grp>43</grp>
    </device>
-   <device name="43" singlecycle="1" desc="SDRAM" />
-   <device name="66" desc="SDRAM">
+   <device name="66" desc="MModul">
+      <grp>66</grp>
+      <grp>66</grp>
    </device>
+   <device name="2" desc="VME">
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+   </device>
+   <device name="43" singlecycle="1" desc="SDRAM" />
       
-   
    <device name="25" multichannel="4" size="40" desc="UART"/>
    <device name="125" multichannel="4" size="40" desc="UART"/>
    <device name="61" multichannel="16" size="100" desc="PWM"/>

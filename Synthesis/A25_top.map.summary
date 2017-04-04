@@ -1,12 +1,12 @@
-Analysis & Synthesis Status : Successful - Thu Feb 16 15:31:43 2017
+Analysis & Synthesis Status : Successful - Tue Apr 04 10:23:49 2017
 Quartus Prime Version : 15.1.0 Build 185 10/21/2015 SJ Standard Edition
 Revision Name : A25_top
 Top-level Entity Name : A25_top
 Family : Cyclone IV GX
-Total logic elements : 8,170
-    Total combinational functions : 6,322
-    Dedicated logic registers : 4,805
-Total registers : 4805
+Total logic elements : 8,174
+    Total combinational functions : 6,325
+    Dedicated logic registers : 4,806
+Total registers : 4806
 Total pins : 201
 Total virtual pins : 0
 Total memory bits : 225,300

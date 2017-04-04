@@ -1,14 +1,14 @@
-Fitter Status : Successful - Thu Feb 16 15:33:25 2017
+Fitter Status : Successful - Tue Apr 04 10:26:17 2017
 Quartus Prime Version : 15.1.0 Build 185 10/21/2015 SJ Standard Edition
 Revision Name : A25_top
 Top-level Entity Name : A25_top
 Family : Cyclone IV GX
 Device : EP4CGX30CF23I7
 Timing Models : Final
-Total logic elements : 7,777 / 29,440 ( 26 % )
-    Total combinational functions : 6,383 / 29,440 ( 22 % )
-    Dedicated logic registers : 4,805 / 29,440 ( 16 % )
-Total registers : 4805
+Total logic elements : 7,793 / 29,440 ( 26 % )
+    Total combinational functions : 6,386 / 29,440 ( 22 % )
+    Dedicated logic registers : 4,806 / 29,440 ( 16 % )
+Total registers : 4806
 Total pins : 204 / 287 ( 71 % )
 Total virtual pins : 0
 Total memory bits : 225,300 / 1,105,920 ( 20 % )
