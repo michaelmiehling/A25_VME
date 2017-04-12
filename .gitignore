@@ -34,6 +34,22 @@ Synthesis/db/
 Synthesis/greybox_tmp/
 Synthesis/incremental_db/
 
+# ignore quartus reports and binaries
+Synthesis/fpga_files
+Synthesis/*.rpt
+Synthesis/*.bin
+Synthesis/*.dedi
+Synthesis/*.done
+Synthesis/*.summary
+Synthesis/A25_top.hex
+Synthesis/*.jam
+Synthesis/*.jdi
+Synthesis/*.jic
+Synthesis/*.pin
+Synthesis/*.qsf
+Synthesis/*.qws
+Synthesis/*.rbf
+Synthesis/*.sof
 
 # +---------------------------------------------------------------------------+
 # | project specific ignore setup                                             |
