@@ -310,7 +310,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       
       -- register out
       longadd                : OUT std_logic_vector(7 DOWNTO 0);      -- upper 3 address bits for A32 mode
-      mstr_reg               : OUT std_logic_vector(14 DOWNTO 0);      -- master register
+      mstr_reg               : OUT std_logic_vector(13 DOWNTO 0);      -- master register
       sysc_reg             : OUT std_logic_vector(2 DOWNTO 0);      -- system control register (ato, sysr, sysc)
       slv16_reg            : OUT std_logic_vector(4 DOWNTO 0);      -- slave A16 base address register
       slv24_reg            : OUT std_logic_vector(15 DOWNTO 0);   -- slave A24 base address register
@@ -540,7 +540,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring (registered with en_vme_adr_in)
       
       -- vme_du
-      mstr_reg             : IN std_logic_vector(14 DOWNTO 0);      -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE, CR_CSR_MODE)
+      mstr_reg             : IN std_logic_vector(13 DOWNTO 0);      -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
       sysc_reg             : IN std_logic_vector(2 DOWNTO 0);      -- system control register (ato, sysr, sysc)
       longadd              : IN std_logic_vector(7 DOWNTO 0);      -- upper 3 address bits for A32 mode
       slv16_reg            : IN std_logic_vector(4 DOWNTO 0);      -- slave A16 base address register
@@ -833,7 +833,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    -- vme_du                           
    SIGNAL clr_locmon                   : std_logic_vector(1 DOWNTO 0);   -- clear address combination bits when clear status bit
    SIGNAL vme_adr_out                  : std_logic_vector(31 DOWNTO 0);
-   SIGNAL mstr_reg                     : std_logic_vector(14 DOWNTO 0);
+   SIGNAL mstr_reg                     : std_logic_vector(13 DOWNTO 0);
    SIGNAL sysc_reg                     : std_logic_vector(2 DOWNTO 0);
    SIGNAL longadd                      : std_logic_vector(7 DOWNTO 0);
    SIGNAL slv16_reg                    : std_logic_vector(4 DOWNTO 0);

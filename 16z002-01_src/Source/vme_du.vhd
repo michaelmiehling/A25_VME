@@ -179,7 +179,7 @@ PORT (
 
    -- register out
    longadd                 : OUT std_logic_vector(7 DOWNTO 0);     -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
-   mstr_reg                : OUT std_logic_vector(14 DOWNTO 0);      -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE, CR_CSR_MODE)
+   mstr_reg                : OUT std_logic_vector(13 DOWNTO 0);      -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
    sysc_reg                : OUT std_logic_vector(2 DOWNTO 0);      -- system control register (ato, sysr, sysc)
    slv16_reg               : OUT std_logic_vector(4 DOWNTO 0);      -- slave A16 base address register
    slv24_reg               : OUT std_logic_vector(15 DOWNTO 0);   -- slave A24 base address register
@@ -237,7 +237,7 @@ ARCHITECTURE vme_du_arch OF vme_du IS
    SIGNAL va_in_reg              : std_logic_vector(31 DOWNTO 0);
    SIGNAL va_out_reg             : std_logic_vector(31 DOWNTO 0);
    SIGNAL wbs_dat_o_reg          : std_logic_vector(31 DOWNTO 0);
-   SIGNAL mstr_int               : std_logic_vector(14 DOWNTO 0);
+   SIGNAL mstr_int               : std_logic_vector(13 DOWNTO 0);
    SIGNAL longadd_int            : std_logic_vector(7 DOWNTO 0);
    SIGNAL intr_int               : std_logic_vector(3 DOWNTO 0);
    SIGNAL intid_int              : std_logic_vector(7 DOWNTO 0);
@@ -481,7 +481,7 @@ BEGIN
          WHEN "00001" => reg_data_out <= x"000000" & intid_int;                                                         -- 0x004
          WHEN "00010" => reg_data_out <= x"000000" & istat;                                                             -- 0x008
          WHEN "00011" => reg_data_out <= x"000000" & imask;                                                             -- 0x00c
-         WHEN "00100" => reg_data_out <= x"0000" & '0' & mstr_int;                                                     -- 0x010
+         WHEN "00100" => reg_data_out <= x"0000" & "00" & mstr_int;                                                     -- 0x010
          WHEN "00101" => reg_data_out <= x"0000" & slv24_reg_int(15 DOWNTO 8) & "000" & slv24_reg_int(4 DOWNTO 0);      -- 0x014
          WHEN "00110" => reg_data_out <= x"000000" & "00000" & sysc_reg_int;                                            -- 0x018
          WHEN "00111" => reg_data_out <= x"000000" & longadd_int;                                                       -- 0x01c
@@ -845,18 +845,6 @@ a32 : PROCESS (clk, rst)
       END IF;
     END IF;
   END PROCESS a32;   
-  
-  -- CR_CSR_MODE-bit:
-crcsr : PROCESS (clk, rst)
-  BEGIN
-    IF rst = '1' THEN
-      mstr_int(14) <= '0';  -- default = normal access (not CR/CSR)
-    ELSIF (clk'event AND clk = '1') THEN
-      IF write_flag = '1' AND int_adr(6 DOWNTO 2) = "00100" AND int_be(1) = '1' THEN
-          mstr_int(14)   <= reg_data_in(14);
-      END IF;
-    END IF;
-  END PROCESS crcsr;   
   
    mstr_reg <= mstr_int;
       

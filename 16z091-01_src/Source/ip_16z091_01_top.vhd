@@ -561,6 +561,181 @@ component hard_ip_x1
       signal txelecidle0_ext : OUT STD_LOGIC
    );
 end component;
+
+COMPONENT Hard_IP_x4 is 
+    generic(
+      VENDOR_ID           : natural := 16#1A88#;
+      DEVICE_ID           : natural := 16#4D45#;
+      REVISION_ID         : natural := 16#0#;
+      CLASS_CODE          : natural := 16#068000#;
+      SUBSYSTEM_VENDOR_ID : natural := 16#9B#;
+      SUBSYSTEM_DEVICE_ID : natural := 16#5A91#;
+
+      IO_SPACE_BAR_0  : string  := "false";
+      PREFETCH_BAR_0  : string  := "true";
+      SIZE_MASK_BAR_0 : natural := 28;
+      
+      IO_SPACE_BAR_1  : string  := "false";
+      PREFETCH_BAR_1  : string  := "true";
+      SIZE_MASK_BAR_1 : natural := 18;
+      
+      IO_SPACE_BAR_2  : string  := "false";
+      PREFETCH_BAR_2  : string  := "false";
+      SIZE_MASK_BAR_2 : natural := 19;
+      
+      IO_SPACE_BAR_3  : string  := "false";
+      PREFETCH_BAR_3  : string  := "false";
+      SIZE_MASK_BAR_3 : natural := 7;
+      
+      IO_SPACE_BAR_4  : string  := "true";
+      PREFETCH_BAR_4  : string  := "false";
+      SIZE_MASK_BAR_4 : natural := 5;
+      
+      IO_SPACE_BAR_5  : string  := "true";
+      PREFETCH_BAR_5  : string  := "false";
+      SIZE_MASK_BAR_5 : natural := 6      
+   );
+        port (
+              -- inputs:
+                 signal app_int_sts : IN STD_LOGIC;
+                 signal app_msi_num : IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+                 signal app_msi_req : IN STD_LOGIC;
+                 signal app_msi_tc : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+                 signal busy_altgxb_reconfig : IN STD_LOGIC;
+                 signal cal_blk_clk : IN STD_LOGIC;
+                 signal cpl_err : IN STD_LOGIC_VECTOR (6 DOWNTO 0);
+                 signal cpl_pending : IN STD_LOGIC;
+                 signal crst : IN STD_LOGIC;
+                 signal fixedclk_serdes : IN STD_LOGIC;
+                 signal gxb_powerdown : IN STD_LOGIC;
+                 signal hpg_ctrler : IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+                 signal lmi_addr : IN STD_LOGIC_VECTOR (11 DOWNTO 0);
+                 signal lmi_din : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
+                 signal lmi_rden : IN STD_LOGIC;
+                 signal lmi_wren : IN STD_LOGIC;
+                 signal npor : IN STD_LOGIC;
+                 signal pclk_in : IN STD_LOGIC;
+                 signal pex_msi_num : IN STD_LOGIC_VECTOR (4 DOWNTO 0);
+                 signal phystatus_ext : IN STD_LOGIC;
+                 signal pipe_mode : IN STD_LOGIC;
+                 signal pld_clk : IN STD_LOGIC;
+                 signal pll_powerdown : IN STD_LOGIC;
+                 signal pm_auxpwr : IN STD_LOGIC;
+                 signal pm_data : IN STD_LOGIC_VECTOR (9 DOWNTO 0);
+                 signal pm_event : IN STD_LOGIC;
+                 signal pme_to_cr : IN STD_LOGIC;
+                 signal reconfig_clk : IN STD_LOGIC;
+                 signal reconfig_togxb : IN STD_LOGIC_VECTOR (3 DOWNTO 0);
+                 signal refclk : IN STD_LOGIC;
+                 signal rx_in0 : IN STD_LOGIC;
+                 signal rx_in1 : IN STD_LOGIC;
+                 signal rx_in2 : IN STD_LOGIC;
+                 signal rx_in3 : IN STD_LOGIC;
+                 signal rx_st_mask0 : IN STD_LOGIC;
+                 signal rx_st_ready0 : IN STD_LOGIC;
+                 signal rxdata0_ext : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal rxdata1_ext : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal rxdata2_ext : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal rxdata3_ext : IN STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal rxdatak0_ext : IN STD_LOGIC;
+                 signal rxdatak1_ext : IN STD_LOGIC;
+                 signal rxdatak2_ext : IN STD_LOGIC;
+                 signal rxdatak3_ext : IN STD_LOGIC;
+                 signal rxelecidle0_ext : IN STD_LOGIC;
+                 signal rxelecidle1_ext : IN STD_LOGIC;
+                 signal rxelecidle2_ext : IN STD_LOGIC;
+                 signal rxelecidle3_ext : IN STD_LOGIC;
+                 signal rxstatus0_ext : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+                 signal rxstatus1_ext : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+                 signal rxstatus2_ext : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+                 signal rxstatus3_ext : IN STD_LOGIC_VECTOR (2 DOWNTO 0);
+                 signal rxvalid0_ext : IN STD_LOGIC;
+                 signal rxvalid1_ext : IN STD_LOGIC;
+                 signal rxvalid2_ext : IN STD_LOGIC;
+                 signal rxvalid3_ext : IN STD_LOGIC;
+                 signal srst : IN STD_LOGIC;
+                 signal test_in : IN STD_LOGIC_VECTOR (39 DOWNTO 0);
+                 signal tx_st_data0 : IN STD_LOGIC_VECTOR (63 DOWNTO 0);
+                 signal tx_st_eop0 : IN STD_LOGIC;
+                 signal tx_st_err0 : IN STD_LOGIC;
+                 signal tx_st_sop0 : IN STD_LOGIC;
+                 signal tx_st_valid0 : IN STD_LOGIC;
+
+              -- outputs:
+                 signal app_int_ack : OUT STD_LOGIC;
+                 signal app_msi_ack : OUT STD_LOGIC;
+                 signal clk250_out : OUT STD_LOGIC;
+                 signal clk500_out : OUT STD_LOGIC;
+                 signal core_clk_out : OUT STD_LOGIC;
+                 signal derr_cor_ext_rcv0 : OUT STD_LOGIC;
+                 signal derr_cor_ext_rpl : OUT STD_LOGIC;
+                 signal derr_rpl : OUT STD_LOGIC;
+                 signal dlup_exit : OUT STD_LOGIC;
+                 signal hotrst_exit : OUT STD_LOGIC;
+                 signal ko_cpl_spc_vc0 : OUT STD_LOGIC_VECTOR (19 DOWNTO 0);
+                 signal l2_exit : OUT STD_LOGIC;
+                 signal lane_act : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+                 signal lmi_ack : OUT STD_LOGIC;
+                 signal lmi_dout : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+                 signal ltssm : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
+                 signal pme_to_sr : OUT STD_LOGIC;
+                 signal powerdown_ext : OUT STD_LOGIC_VECTOR (1 DOWNTO 0);
+                 signal r2c_err0 : OUT STD_LOGIC;
+                 signal rate_ext : OUT STD_LOGIC;
+                 signal rc_pll_locked : OUT STD_LOGIC;
+                 signal rc_rx_digitalreset : OUT STD_LOGIC;
+                 signal reconfig_fromgxb : OUT STD_LOGIC_VECTOR (4 DOWNTO 0);
+                 signal reset_status : OUT STD_LOGIC;
+                 signal rx_fifo_empty0 : OUT STD_LOGIC;
+                 signal rx_fifo_full0 : OUT STD_LOGIC;
+                 signal rx_st_bardec0 : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal rx_st_be0 : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal rx_st_data0 : OUT STD_LOGIC_VECTOR (63 DOWNTO 0);
+                 signal rx_st_eop0 : OUT STD_LOGIC;
+                 signal rx_st_err0 : OUT STD_LOGIC;
+                 signal rx_st_sop0 : OUT STD_LOGIC;
+                 signal rx_st_valid0 : OUT STD_LOGIC;
+                 signal rxpolarity0_ext : OUT STD_LOGIC;
+                 signal rxpolarity1_ext : OUT STD_LOGIC;
+                 signal rxpolarity2_ext : OUT STD_LOGIC;
+                 signal rxpolarity3_ext : OUT STD_LOGIC;
+                 signal suc_spd_neg : OUT STD_LOGIC;
+                 signal test_out : OUT STD_LOGIC_VECTOR (8 DOWNTO 0);
+                 signal tl_cfg_add : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+                 signal tl_cfg_ctl : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
+                 signal tl_cfg_ctl_wr : OUT STD_LOGIC;
+                 signal tl_cfg_sts : OUT STD_LOGIC_VECTOR (52 DOWNTO 0);
+                 signal tl_cfg_sts_wr : OUT STD_LOGIC;
+                 signal tx_cred0 : OUT STD_LOGIC_VECTOR (35 DOWNTO 0);
+                 signal tx_fifo_empty0 : OUT STD_LOGIC;
+                 signal tx_fifo_full0 : OUT STD_LOGIC;
+                 signal tx_fifo_rdptr0 : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+                 signal tx_fifo_wrptr0 : OUT STD_LOGIC_VECTOR (3 DOWNTO 0);
+                 signal tx_out0 : OUT STD_LOGIC;
+                 signal tx_out1 : OUT STD_LOGIC;
+                 signal tx_out2 : OUT STD_LOGIC;
+                 signal tx_out3 : OUT STD_LOGIC;
+                 signal tx_st_ready0 : OUT STD_LOGIC;
+                 signal txcompl0_ext : OUT STD_LOGIC;
+                 signal txcompl1_ext : OUT STD_LOGIC;
+                 signal txcompl2_ext : OUT STD_LOGIC;
+                 signal txcompl3_ext : OUT STD_LOGIC;
+                 signal txdata0_ext : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal txdata1_ext : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal txdata2_ext : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal txdata3_ext : OUT STD_LOGIC_VECTOR (7 DOWNTO 0);
+                 signal txdatak0_ext : OUT STD_LOGIC;
+                 signal txdatak1_ext : OUT STD_LOGIC;
+                 signal txdatak2_ext : OUT STD_LOGIC;
+                 signal txdatak3_ext : OUT STD_LOGIC;
+                 signal txdetectrx_ext : OUT STD_LOGIC;
+                 signal txelecidle0_ext : OUT STD_LOGIC;
+                 signal txelecidle1_ext : OUT STD_LOGIC;
+                 signal txelecidle2_ext : OUT STD_LOGIC;
+                 signal txelecidle3_ext : OUT STD_LOGIC
+              );
+end COMPONENT Hard_IP_x4;
+
 --component z091_01_wb_adr_dec
 --   generic(
 --      NR_OF_WB_SLAVES : integer range 63 downto 1 := 1
@@ -608,7 +783,6 @@ end component;
 begin
    -- coverage off
    assert not no_valid_device(supported_devices => SUPPORTED_DEVICES, device => FPGA_FAMILY) report "16z091-01: no valid FPGA device selected" severity failure;
-   assert (USE_LANES = "001") report "Z91-01: no valid USE_LANES setting" severity failure; 
    -- coverage on
 
    --wbm_cyc_o         <= wbm_cyc_o_int;     
@@ -750,178 +924,180 @@ begin
       );
 
    
---   gen_x4: if USE_LANES = "100" generate
---    Hard_IP_x4_comp : entity work.Hard_IP_x4
---      generic map(
---         VENDOR_ID           => VENDOR_ID,
---         DEVICE_ID           => DEVICE_ID,
---         REVISION_ID         => REVISION_ID,
---         CLASS_CODE          => CLASS_CODE,
---         SUBSYSTEM_VENDOR_ID => SUBSYSTEM_VENDOR_ID,
---         SUBSYSTEM_DEVICE_ID => SUBSYSTEM_DEVICE_ID,
---
---         IO_SPACE_BAR_0  => IO_SPACE_0,      -- IO_SPACE_BAR_0,
---         PREFETCH_BAR_0  => PREFETCH_0,      -- PREFETCH_BAR_0,
---         SIZE_MASK_BAR_0 => SIZE_MASK_0,     -- SIZE_MASK_BAR_0,
---         
---         IO_SPACE_BAR_1  => IO_SPACE_1,      -- IO_SPACE_BAR_1,
---         PREFETCH_BAR_1  => PREFETCH_1,      -- PREFETCH_BAR_1,
---         SIZE_MASK_BAR_1 => SIZE_MASK_1,     -- SIZE_MASK_BAR_1,
---         
---         IO_SPACE_BAR_2  => IO_SPACE_2,      -- IO_SPACE_BAR_2,
---         PREFETCH_BAR_2  => PREFETCH_2,      -- PREFETCH_BAR_2,
---         SIZE_MASK_BAR_2 => SIZE_MASK_2,     -- SIZE_MASK_BAR_2,
---         
---         IO_SPACE_BAR_3  => IO_SPACE_3,      -- IO_SPACE_BAR_3,
---         PREFETCH_BAR_3  => PREFETCH_3,      -- PREFETCH_BAR_3,
---         SIZE_MASK_BAR_3 => SIZE_MASK_3,     -- SIZE_MASK_BAR_3,
---         
---         IO_SPACE_BAR_4  => IO_SPACE_4,      -- IO_SPACE_BAR_4,
---         PREFETCH_BAR_4  => PREFETCH_4,      -- PREFETCH_BAR_4,
---         SIZE_MASK_BAR_4 => SIZE_MASK_4,     -- SIZE_MASK_BAR_4,
---         
---         IO_SPACE_BAR_5  => IO_SPACE_5,      -- IO_SPACE_BAR_5,
---         PREFETCH_BAR_5  => PREFETCH_5,      -- PREFETCH_BAR_5, 
---         SIZE_MASK_BAR_5 => SIZE_MASK_5      -- SIZE_MASK_BAR_5 
---      )
---
---      port map(
---         -- inputs:
---         app_int_sts     => app_int_sts_int,
---         app_msi_num     => app_msi_num_int,
---         app_msi_req     => app_msi_req_int,
---         app_msi_tc      => app_msi_tc_int,
---         cal_blk_clk     => clk_50,
---         cpl_err         => cpl_err_int,
---         cpl_pending     => cpl_pending_int,
---         crst            => crst_int,
---         gxb_powerdown   => '0',
---         hpg_ctrler      => (others => '0'),
---         lmi_addr        => (others => '0'),
---         lmi_din         => (others => '0'),
---         lmi_rden        => '0',
---         lmi_wren        => '0',
---         npor            => '1', --ext_rst_n, --'0',
---         pclk_in         => core_clk_int,
---         pex_msi_num     => pex_msi_num_int,
---         phystatus_ext   => '0',
---         pipe_mode       => '0',
---         pld_clk         => core_clk_int,
---         pll_powerdown   => '0',
---         pm_auxpwr       => '0',
---         pm_data         => (others => '0'),
---         pm_event        => '0',
---         pme_to_cr       => pme_to_cr_int,
---         reconfig_clk    => clk_50,
---         reconfig_togxb  => reconfig_togxb_int,
---         refclk          => ref_clk,
---         rx_in0          => rx_0,
---         rx_in1          => rx_1,
---         rx_in2          => rx_2,
---         rx_in3          => rx_3,
---         rx_st_mask0     => rx_st_mask0_int,
---         rx_st_ready0    => rx_st_ready0_int,
---         rxdata0_ext     => (others => '0'),
---         rxdata1_ext     => (others => '0'),
---         rxdata2_ext     => (others => '0'),
---         rxdata3_ext     => (others => '0'),
---         rxdatak0_ext    => '0',
---         rxdatak1_ext    => '0',
---         rxdatak2_ext    => '0',
---         rxdatak3_ext    => '0',
---         rxelecidle0_ext => '0',
---         rxelecidle1_ext => '0',
---         rxelecidle2_ext => '0',
---         rxelecidle3_ext => '0',
---         rxstatus0_ext   => (others => '0'),
---         rxstatus1_ext   => (others => '0'),
---         rxstatus2_ext   => (others => '0'),
---         rxstatus3_ext   => (others => '0'),
---         rxvalid0_ext    => '0',
---         rxvalid1_ext    => '0',
---         rxvalid2_ext    => '0',
---         rxvalid3_ext    => '0',
---         srst            => srst_int,
---         test_in         => (others => '0'),
---         tx_st_data0     => tx_st_data0_int,
---         tx_st_eop0      => tx_st_eop0_int,
---         tx_st_err0      => tx_st_err0_int,
---         tx_st_sop0      => tx_st_sop0_int,
---         tx_st_valid0    => tx_st_valid0_int,
---
---         -- outputs:
---         app_int_ack       => app_int_ack_int,
---         app_msi_ack       => app_msi_ack_int,
---         clk250_out        => open,
---         clk500_out        => open,
---         core_clk_out      => core_clk_int,
---         derr_cor_ext_rcv0 => derr_cor_ext_rcv_int(0),
---         derr_cor_ext_rpl  => derr_cor_ext_rpl_int,
---         derr_rpl          => derr_rpl_int,
---         dlup_exit         => open,
---         hotrst_exit       => open,
---         ko_cpl_spc_vc0    => open,
---         l2_exit           => open,
---         lane_act          => open,
---         lmi_ack           => open,
---         lmi_dout          => open,
---         ltssm             => open,
---         pme_to_sr         => pme_to_sr_int,
---         powerdown_ext     => open,
---         r2c_err0          => r2c_err0_int,
---         rate_ext          => open,
---         rc_pll_locked     => open,
---         reconfig_fromgxb  => reconfig_fromgxb_int,
---         reset_status      => open,
---         rx_fifo_empty0    => open,
---         rx_fifo_full0     => open,
---         rx_st_bardec0     => rx_st_bardec0_int,
---         rx_st_be0         => rx_st_be0_int,
---         rx_st_data0       => rx_st_data0_int,
---         rx_st_eop0        => rx_st_eop0_int,
---         rx_st_err0        => rx_st_err0_int,
---         rx_st_sop0        => rx_st_sop0_int,
---         rx_st_valid0      => rx_st_valid0_int,
---         rxpolarity0_ext   => open,
---         rxpolarity1_ext   => open,
---         rxpolarity2_ext   => open,
---         rxpolarity3_ext   => open,
---         suc_spd_neg       => open,
---         test_out          => open,
---         tl_cfg_add        => tl_cfg_add_int,
---         tl_cfg_ctl        => tl_cfg_ctl_int,
---         tl_cfg_ctl_wr     => tl_cfg_ctl_wr_int,
---         tl_cfg_sts        => tl_cfg_sts_int,
---         tl_cfg_sts_wr     => tl_cfg_sts_wr_int,
---         tx_cred0          => open,
---         tx_fifo_empty0    => tx_fifo_empty0_int,
---         tx_fifo_full0     => tx_fifo_full0_int,
---         tx_fifo_rdptr0    => tx_fifo_rdptr0_int,
---         tx_fifo_wrptr0    => tx_fifo_wrptr0_int,
---         tx_out0           => tx_0,
---         tx_out1           => tx_1,
---         tx_out2           => tx_2,
---         tx_out3           => tx_3,
---         tx_st_ready0      => tx_st_ready0_int,
---         txcompl0_ext      => open,
---         txcompl1_ext      => open,
---         txcompl2_ext      => open,
---         txcompl3_ext      => open,
---         txdata0_ext       => open,
---         txdata1_ext       => open,
---         txdata2_ext       => open,
---         txdata3_ext       => open,
---         txdatak0_ext      => open,
---         txdatak1_ext      => open,
---         txdatak2_ext      => open,
---         txdatak3_ext      => open,
---         txdetectrx_ext    => open,
---         txelecidle0_ext   => open,
---         txelecidle1_ext   => open,
---         txelecidle2_ext   => open,
---         txelecidle3_ext   => open
---      );
---   end generate gen_x4;
+   gen_x4: if USE_LANES = "100" generate
+    Hard_IP_x4_comp : entity work.Hard_IP_x4
+      generic map(
+         VENDOR_ID           => VENDOR_ID,
+         DEVICE_ID           => DEVICE_ID,
+         REVISION_ID         => REVISION_ID,
+         CLASS_CODE          => CLASS_CODE,
+         SUBSYSTEM_VENDOR_ID => SUBSYSTEM_VENDOR_ID,
+         SUBSYSTEM_DEVICE_ID => SUBSYSTEM_DEVICE_ID,
+
+         IO_SPACE_BAR_0  => IO_SPACE_0,      -- IO_SPACE_BAR_0,
+         PREFETCH_BAR_0  => PREFETCH_0,      -- PREFETCH_BAR_0,
+         SIZE_MASK_BAR_0 => SIZE_MASK_0,     -- SIZE_MASK_BAR_0,
+         
+         IO_SPACE_BAR_1  => IO_SPACE_1,      -- IO_SPACE_BAR_1,
+         PREFETCH_BAR_1  => PREFETCH_1,      -- PREFETCH_BAR_1,
+         SIZE_MASK_BAR_1 => SIZE_MASK_1,     -- SIZE_MASK_BAR_1,
+         
+         IO_SPACE_BAR_2  => IO_SPACE_2,      -- IO_SPACE_BAR_2,
+         PREFETCH_BAR_2  => PREFETCH_2,      -- PREFETCH_BAR_2,
+         SIZE_MASK_BAR_2 => SIZE_MASK_2,     -- SIZE_MASK_BAR_2,
+         
+         IO_SPACE_BAR_3  => IO_SPACE_3,      -- IO_SPACE_BAR_3,
+         PREFETCH_BAR_3  => PREFETCH_3,      -- PREFETCH_BAR_3,
+         SIZE_MASK_BAR_3 => SIZE_MASK_3,     -- SIZE_MASK_BAR_3,
+         
+         IO_SPACE_BAR_4  => IO_SPACE_4,      -- IO_SPACE_BAR_4,
+         PREFETCH_BAR_4  => PREFETCH_4,      -- PREFETCH_BAR_4,
+         SIZE_MASK_BAR_4 => SIZE_MASK_4,     -- SIZE_MASK_BAR_4,
+         
+         IO_SPACE_BAR_5  => IO_SPACE_5,      -- IO_SPACE_BAR_5,
+         PREFETCH_BAR_5  => PREFETCH_5,      -- PREFETCH_BAR_5, 
+         SIZE_MASK_BAR_5 => SIZE_MASK_5      -- SIZE_MASK_BAR_5 
+      )
+
+      port map(
+         -- inputs:
+         app_int_sts     => app_int_sts_int,
+         app_msi_num     => app_msi_num_int,
+         app_msi_req     => app_msi_req_int,
+         app_msi_tc      => app_msi_tc_int,
+         busy_altgxb_reconfig => reconf_busy,
+         cal_blk_clk     => clk_50,
+         cpl_err         => cpl_err_int,
+         cpl_pending     => cpl_pending_int,
+         crst            => crst_int,
+         fixedclk_serdes => clk_125,
+         gxb_powerdown   => '0',
+         hpg_ctrler      => (others => '0'),
+         lmi_addr        => (others => '0'),
+         lmi_din         => (others => '0'),
+         lmi_rden        => '0',
+         lmi_wren        => '0',
+         npor            => '1', --ext_rst_n, --'0',
+         pclk_in         => core_clk_int,
+         pex_msi_num     => pex_msi_num_int,
+         phystatus_ext   => '0',
+         pipe_mode       => '0',
+         pld_clk         => core_clk_int,
+         pll_powerdown   => '0',
+         pm_auxpwr       => '0',
+         pm_data         => (others => '0'),
+         pm_event        => '0',
+         pme_to_cr       => pme_to_cr_int,
+         reconfig_clk    => clk_50,
+         reconfig_togxb  => reconfig_togxb_int,
+         refclk          => ref_clk,
+         rx_in0          => rx_0,
+         rx_in1          => rx_1,
+         rx_in2          => rx_2,
+         rx_in3          => rx_3,
+         rx_st_mask0     => rx_st_mask0_int,
+         rx_st_ready0    => rx_st_ready0_int,
+         rxdata0_ext     => (others => '0'),
+         rxdata1_ext     => (others => '0'),
+         rxdata2_ext     => (others => '0'),
+         rxdata3_ext     => (others => '0'),
+         rxdatak0_ext    => '0',
+         rxdatak1_ext    => '0',
+         rxdatak2_ext    => '0',
+         rxdatak3_ext    => '0',
+         rxelecidle0_ext => '0',
+         rxelecidle1_ext => '0',
+         rxelecidle2_ext => '0',
+         rxelecidle3_ext => '0',
+         rxstatus0_ext   => (others => '0'),
+         rxstatus1_ext   => (others => '0'),
+         rxstatus2_ext   => (others => '0'),
+         rxstatus3_ext   => (others => '0'),
+         rxvalid0_ext    => '0',
+         rxvalid1_ext    => '0',
+         rxvalid2_ext    => '0',
+         rxvalid3_ext    => '0',
+         srst            => srst_int,
+         test_in         => (others => '0'),
+         tx_st_data0     => tx_st_data0_int,
+         tx_st_eop0      => tx_st_eop0_int,
+         tx_st_err0      => tx_st_err0_int,
+         tx_st_sop0      => tx_st_sop0_int,
+         tx_st_valid0    => tx_st_valid0_int,
+
+         -- outputs:
+         app_int_ack       => app_int_ack_int,
+         app_msi_ack       => app_msi_ack_int,
+         clk250_out        => open,
+         clk500_out        => open,
+         core_clk_out      => core_clk_int,
+         derr_cor_ext_rcv0 => derr_cor_ext_rcv_int(0),
+         derr_cor_ext_rpl  => derr_cor_ext_rpl_int,
+         derr_rpl          => derr_rpl_int,
+         dlup_exit         => open,
+         hotrst_exit       => open,
+         ko_cpl_spc_vc0    => open,
+         l2_exit           => open,
+         lane_act          => open,
+         lmi_ack           => open,
+         lmi_dout          => open,
+         ltssm             => open,
+         pme_to_sr         => pme_to_sr_int,
+         powerdown_ext     => open,
+         r2c_err0          => r2c_err0_int,
+         rate_ext          => open,
+         rc_pll_locked     => open,
+         reconfig_fromgxb  => reconfig_fromgxb_int,
+         reset_status      => open,
+         rx_fifo_empty0    => open,
+         rx_fifo_full0     => open,
+         rx_st_bardec0     => rx_st_bardec0_int,
+         rx_st_be0         => rx_st_be0_int,
+         rx_st_data0       => rx_st_data0_int,
+         rx_st_eop0        => rx_st_eop0_int,
+         rx_st_err0        => rx_st_err0_int,
+         rx_st_sop0        => rx_st_sop0_int,
+         rx_st_valid0      => rx_st_valid0_int,
+         rxpolarity0_ext   => open,
+         rxpolarity1_ext   => open,
+         rxpolarity2_ext   => open,
+         rxpolarity3_ext   => open,
+         suc_spd_neg       => open,
+         test_out          => open,
+         tl_cfg_add        => tl_cfg_add_int,
+         tl_cfg_ctl        => tl_cfg_ctl_int,
+         tl_cfg_ctl_wr     => tl_cfg_ctl_wr_int,
+         tl_cfg_sts        => tl_cfg_sts_int,
+         tl_cfg_sts_wr     => tl_cfg_sts_wr_int,
+         tx_cred0          => open,
+         tx_fifo_empty0    => tx_fifo_empty0_int,
+         tx_fifo_full0     => tx_fifo_full0_int,
+         tx_fifo_rdptr0    => tx_fifo_rdptr0_int,
+         tx_fifo_wrptr0    => tx_fifo_wrptr0_int,
+         tx_out0           => tx_0,
+         tx_out1           => tx_1,
+         tx_out2           => tx_2,
+         tx_out3           => tx_3,
+         tx_st_ready0      => tx_st_ready0_int,
+         txcompl0_ext      => open,
+         txcompl1_ext      => open,
+         txcompl2_ext      => open,
+         txcompl3_ext      => open,
+         txdata0_ext       => open,
+         txdata1_ext       => open,
+         txdata2_ext       => open,
+         txdata3_ext       => open,
+         txdatak0_ext      => open,
+         txdatak1_ext      => open,
+         txdatak2_ext      => open,
+         txdatak3_ext      => open,
+         txdetectrx_ext    => open,
+         txelecidle0_ext   => open,
+         txelecidle1_ext   => open,
+         txelecidle2_ext   => open,
+         txelecidle3_ext   => open
+      );
+   end generate gen_x4;
       
 --   gen_x2: if USE_LANES = "010" generate
 --    Hard_IP_x2_comp : entity work.Hard_IP_x2
@@ -1834,7 +2010,7 @@ begin
    -- coverage off
    assert not no_valid_device(supported_device => SUPPORTED_DEVICES, device => FPGA_FAMILY) report "16z091-01: no valid FPGA device selected" severity failure;
    --assert (USE_LANES = "001") report "16z91-01: no valid USE_LANES setting" severity failure; 
-   assert (USE_LANES = "001" or USE_LANES = "010") report "16z91-01: no valid USE_LANES setting" severity failure; 
+   assert (USE_LANES = "001" or USE_LANES = "100") report "16z91-01: no valid USE_LANES setting" severity failure; 
    -- coverage on
 
    gp_debug_port <= (others => '0');

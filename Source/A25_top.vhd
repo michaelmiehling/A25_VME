@@ -67,8 +67,8 @@ PORT (
 
    -- pcie
    refclk            : IN std_logic;                        -- 100 MHz pcie clock
-   pcie_rx           : IN    std_logic_vector(0 DOWNTO 0);                     -- PCIe receive line
-   pcie_tx           : OUT   std_logic_vector(0 DOWNTO 0);                     -- PCIe transmit line
+   pcie_rx           : IN    std_logic_vector(3 DOWNTO 0);                     -- PCIe receive line
+   pcie_tx           : OUT   std_logic_vector(3 DOWNTO 0);                     -- PCIe transmit line
 
    -- sram
    sr_clk            : OUT std_logic;
@@ -132,7 +132,7 @@ END A25_top;
 
 
 ARCHITECTURE A25_top_arch OF A25_top IS 
-   CONSTANT NR_OF_WB_SLAVES      : natural range 63 DOWNTO 1     := 9;
+   CONSTANT NR_OF_WB_SLAVES      : natural range 63 DOWNTO 1     := 10;
    
 COMPONENT ip_16z091_01_top 
    GENERIC(
@@ -519,7 +519,7 @@ END COMPONENT;
    SIGNAL wbmo_0       : wbo_type;
    SIGNAL wbmi_0       : wbi_type;
    SIGNAL wbmo_0_cyc   : std_logic_vector(3 DOWNTO 0);
-   SIGNAL wbmo_0_cyc_int   : std_logic_vector(8 DOWNTO 0);
+   SIGNAL wbmo_0_cyc_int   : std_logic_vector(9 DOWNTO 0);
    SIGNAL wbmo_1       : wbo_type;
    SIGNAL wbmi_1       : wbi_type;
    SIGNAL wbmo_1_cyc   : std_logic_vector(1 DOWNTO 0);
@@ -705,6 +705,7 @@ pll: pll_pcie
       "0100" WHEN wbmo_0_cyc_int(6) = '1' ELSE        -- |16z002-01 VME A24D16      |  6  |        0 |  1000000 |   2 |
       "0100" WHEN wbmo_0_cyc_int(7) = '1' ELSE        -- |16z002-01 VME A24D32      |  7  |  1000000 |  1000000 |   2 |
       "0100" WHEN wbmo_0_cyc_int(8) = '1' ELSE        -- |   16z002-01 VME A32      |  8  |        0 | 20000000 |   3 | 
+      "0100" WHEN wbmo_0_cyc_int(9) = '1' ELSE        -- |16z002-01 VME CR/CSR      |  9  |        0 | 01000000 |   4 | 
       "0000";                                         -- +--------------------------+-----+----------+----------+-----+ 
 
    wbmo_1.tga <= (OTHERS => '0');
@@ -720,6 +721,7 @@ pll: pll_pcie
       CONST_VME_REGS    WHEN wbmo_0_cyc_int(2) = '1' ELSE      -- |16z002-01 VME REGS        |  2  |    10000 |    10000 |   0 |
       CONST_VME_A32D32  WHEN wbmo_0_cyc_int(8) = '1' ELSE      -- |16z002-01 VME A32         |  8  |        0 | 20000000 |   3 |
       CONST_VME_A24D32  WHEN wbmo_0_cyc_int(7) = '1' ELSE      -- |16z002-01 VME A24D32      |  7  |  1000000 |  1000000 |   2 |
+      CONST_VME_CRCSR   WHEN wbmo_0_cyc_int(9) = '1' ELSE      -- |16z002-01 VME CRCSR       |  9  |        0 |  1000000 |   4 |
       (OTHERS => '0');                                         -- +--------------------------+-----+----------+----------+-----+
                                                                                                                                
 pcie: ip_16z091_01_top 
@@ -727,9 +729,10 @@ pcie: ip_16z091_01_top
       SIMULATION           => '1',
       FPGA_FAMILY          => CYCLONE4,
       IRQ_WIDTH            => 13,
-      USE_LANES            => "001",
+--      USE_LANES            => "001",			-- x1 for simulation
+      USE_LANES            => "100",		-- x4 for synthesis
       NR_OF_WB_SLAVES      => NR_OF_WB_SLAVES,
-      NR_OF_BARS_USED      => 4,
+      NR_OF_BARS_USED      => 5,
       VENDOR_ID            => 16#1A88#,
       DEVICE_ID            => 16#4D45#,
       REVISION_ID          => 16#1#,
@@ -740,7 +743,7 @@ pcie: ip_16z091_01_top
       BAR_MASK_1           => x"FFF00000",   -- 1M
       BAR_MASK_2           => x"FE000000",   -- 32M
       BAR_MASK_3           => x"E0000000",   -- 512M
-      BAR_MASK_4           => x"FFFFF000",
+      BAR_MASK_4           => x"FF000000",	 -- 16M
       BAR_MASK_5           => x"FFFFF000",
       PCIE_REQUEST_LENGTH  => "0000100000",    -- 32DW = 128Byte
       RX_LPM_WIDTHU        => 10,
@@ -756,14 +759,14 @@ pcie: ip_16z091_01_top
       ext_rst_n          => hreset_n,
 
       rx_0               => pcie_rx(0),
-      rx_1               => '0',--pcie_rx(1),
-      rx_2               => '0',--pcie_rx(2),
-      rx_3               => '0',--pcie_rx(3),
+      rx_1               => pcie_rx(1),
+      rx_2               => pcie_rx(2),
+      rx_3               => pcie_rx(3),
 
       tx_0               => pcie_tx(0),
-      tx_1               => open,--pcie_tx(1),
-      tx_2               => open,--pcie_tx(2),
-      tx_3               => open,--pcie_tx(3),
+      tx_1               => pcie_tx(1),
+      tx_2               => pcie_tx(2),
+      tx_3               => pcie_tx(3),
 
       wb_clk             => sys_clk,
       wb_rst             => sys_rst,
@@ -823,7 +826,8 @@ pcie: ip_16z091_01_top
       FPGA_FAMILY    => FPGA_FAMILY,
       read_only      => 1,
       USEDW_WIDTH    => 9, -- 0x200 = 512
-      LOCATION       => "../Source/chameleon.hex"
+      --LOCATION       => "../Source/chameleon.hex"
+      LOCATION       => "../../16a025-00_src/Source/chameleon.hex"
    )
    PORT MAP (
       clk            => sys_clk,
@@ -919,7 +923,7 @@ sflash: z126_01_top
 
 vme: wbb2vme_top 
 GENERIC MAP(
-   A16_REG_MAPPING   => TRUE,
+   A16_REG_MAPPING   => true,
    LONGADD_SIZE      => 3,
    USE_LONGADD       => TRUE                        
    )

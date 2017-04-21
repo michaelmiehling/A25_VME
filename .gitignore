@@ -50,6 +50,8 @@ Synthesis/*.qsf
 Synthesis/*.qws
 Synthesis/*.rbf
 Synthesis/*.sof
+Synthesis/*.old
+Synthesis/*.stp
 
 # +---------------------------------------------------------------------------+
 # | project specific ignore setup                                             |

@@ -60,6 +60,7 @@ PACKAGE vme_pkg IS
    CONSTANT CONST_VME_A16D32     : std_logic_vector(6 DOWNTO 0):="0100110";
    CONSTANT CONST_VME_A24D16     : std_logic_vector(6 DOWNTO 0):="0100000";
    CONSTANT CONST_VME_A24D32     : std_logic_vector(6 DOWNTO 0):="0100100";
+   CONSTANT CONST_VME_CRCSR      : std_logic_vector(6 DOWNTO 0):="0101100";
    CONSTANT CONST_VME_A32D32     : std_logic_vector(6 DOWNTO 0):="0100101";
    CONSTANT CONST_VME_A16D16S    : std_logic_vector(6 DOWNTO 0):="0000010";
    CONSTANT CONST_VME_A16D32S    : std_logic_vector(6 DOWNTO 0):="0000110";

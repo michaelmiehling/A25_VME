@@ -6,7 +6,7 @@ A25: master + linux booten
 A21: slave im UBOOT
 
 SRAM Test (1MByte)
-A25: $ memtester -p e2000000 1024K 1
+A25: $ memtester -p e3000000 1024K 1
 
 
 VME A24 Test A25->A21(1MByte):
@@ -24,7 +24,10 @@ A25 Test mit D32: $ memtester -p a1000000 1024K 1
 Chameleon Tabelle dumpen:           fpga_load 1a88 4d45 d5 0 -t
 Update des fallback-FPGAs auf A25:  fpga_load 1a88 4d45 d5 0 -z -f -w 16A025-00_xx_xx.rbf 0 -v
 Update des user-FPGAs auf A25:      fpga_load 1a88 4d45 d5 0 -z -f -w 16A025-00_xx_xx.bin 200000 -v
+                                    fpga_load 1a88 4d45 d5 0 -b 0 -o 200 -z -f -w 16A025-00_xx_xx.bin 200000 -v
 
+fpga_load 1a88 4d45 d5 0 -b 0 -o 200 -z -f -w 16A025-00_02_02.rbf 0 -v
+fpga_load 1a88 4d45 d5 0 -b 0 -o 200 -z -f -w 16A025-00_02_02.bin 200000 -v
 
 VME A24 Test A21->A25(1MByte):
 A25 A24 Slave Window auf Adresse 0x800000 aktivieren: cb 92110014 18
@@ -42,7 +45,8 @@ A25: cb 92110054 x
 
 
 
-
+# wenn MEM bit nicht im PCI Header gesetzt ist:
+setpci -s 03:00.0 4.w=0142
 
 scp men@192.1.1.142:~/16A025-00_01_06.bin .
 fpga_load 1a88 4d45 d5 0 -z -f -w 16A025-00_02_00.bin 200000 -v
@@ -104,4 +108,7 @@ Space Type        mtest
                       
 DMA                                 
 A21_slot2$ cb f0800014 13
+A25_slot1$ modprobe men_pldz002_cham
 A25_slot1$ vme4l_mtest -s=7 -t=V 300000 300100 -n=1 -q=1                      
+
+A25_slot1$ vme4l_rwex 7 300000 100 4 r

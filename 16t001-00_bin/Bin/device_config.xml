@@ -35,6 +35,7 @@
       <grp>2</grp>
       <grp>2</grp>
       <grp>2</grp>
+      <grp>2</grp>
    </device>
    <device name="43" singlecycle="1" desc="SDRAM" />
       

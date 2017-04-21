@@ -7,7 +7,7 @@
 -- Author        : Chameleon_V2.exe
 -- Email         : michael.ernst@men.de
 -- Organization  : MEN Mikroelektronik Nuernberg GmbH
--- Created       : 2017/4/4  -  10:21:49
+-- Created       : 2017/4/21  -  14:9:19
 ---------------------------------------------------------------
 -- Simulator     : 
 -- Synthesis     : 
@@ -27,6 +27,7 @@
 -- |          16z002-01 VME A24D16 |   6 |        0 |  1000000 |   2 |
 -- |          16z002-01 VME A24D32 |   7 |  1000000 |  1000000 |   2 |
 -- |             16z002-01 VME A32 |   8 |        0 | 20000000 |   3 |
+-- |          16z002-01 VME CR/CSR |   9 |        0 |  1000000 |   4 |
 -- +-------------------------------+-----+----------+----------+-----+
 --
 --
@@ -55,20 +56,20 @@ USE ieee.std_logic_arith.all;
 
 ENTITY wb_adr_dec IS
 PORT (
-   pci_cyc_i      : IN std_logic_vector(3 DOWNTO 0);
+   pci_cyc_i      : IN std_logic_vector(4 DOWNTO 0);
    wbm_adr_o_q    : IN std_logic_vector(31 DOWNTO 2);
 
-   wbm_cyc_o      : OUT std_logic_vector(8 DOWNTO 0)
+   wbm_cyc_o      : OUT std_logic_vector(9 DOWNTO 0)
 
    );
 END wb_adr_dec;
 
 ARCHITECTURE wb_adr_dec_arch OF wb_adr_dec IS 
-SIGNAL zero : std_logic_vector(3 DOWNTO 0);
+SIGNAL zero : std_logic_vector(4 DOWNTO 0);
 BEGIN
    zero <= (OTHERS => '0');
    PROCESS(wbm_adr_o_q, pci_cyc_i)
-      VARIABLE wbm_cyc_o_int : std_logic_vector(8 DOWNTO 0);
+      VARIABLE wbm_cyc_o_int : std_logic_vector(9 DOWNTO 0);
       BEGIN
          wbm_cyc_o_int := (OTHERS => '0');
 
@@ -144,7 +145,15 @@ BEGIN
             wbm_cyc_o_int(8) := '0';
          END IF;
 
-         IF pci_cyc_i /= zero AND wbm_cyc_o_int = "000000000" THEN
+
+         -- 16z002-01 VME CR/CSR - cycle 9 - offset 0 - size 1000000 --
+         IF pci_cyc_i(4) = '1' THEN
+            wbm_cyc_o_int(9) := '1';
+         ELSE
+            wbm_cyc_o_int(9) := '0';
+         END IF;
+
+         IF pci_cyc_i /= zero AND wbm_cyc_o_int = "0000000000" THEN
             wbm_cyc_o_int(0) := '1';
          END IF;
 

@@ -7,7 +7,7 @@
 	<width>1</width>
 	<mode>7</mode>
 	<hex_block>
-		<hex_filename>A25_top.hex</hex_filename>
+		<hex_filename>D:/work_a25/16a025-00_src/Synthesis/A25_top.hex</hex_filename>
 		<hex_addressing>relative</hex_addressing>
 		<hex_offset>2097152</hex_offset>
 	</hex_block>
@@ -16,7 +16,7 @@
 		<user_name>Page_0</user_name>
 		<page_flags>1</page_flags>
 		<bit0>
-			<sof_filename>A25_top.sof<compress_bitstream>1</compress_bitstream></sof_filename> 
+			<sof_filename>D:/work_a25/16a025-00_src/Synthesis/A25_top.sof<compress_bitstream>1</compress_bitstream></sof_filename> 
 		</bit0>
 	</sof_data>
 	<version>9</version>

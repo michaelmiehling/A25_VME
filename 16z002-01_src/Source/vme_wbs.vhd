@@ -28,6 +28,7 @@
 -- |16z002-01 VME A24D16         | m 1 0 0 x 00 00 | x 0 0 0 0 00 00 |  1000000 |
 -- |16z002-01 VME A24D32         | m 1 0 0 x 01 00 | x 0 0 0 0 01 00 |  1000000 |
 -- |16z002-01 VME A32D32         | m 1 0 0 x 01 01 | x 0 0 0 0 01 01 | 20000000 |
+-- |16z002-01 VME CR/CSR         |                 | x 0 0 0 0 11 00 |  1000000 |
 -- |16z002-01 VME A32D64         | m 1 0 0 x 10 01 |                 |          |
 -- |16z002-01 VME A16D16 swapped |                 | x 0 0 1 0 00 10 |    10000 |
 -- |16z002-01 VME A16D32 swapped |                 | x 0 0 1 0 01 10 |    10000 |
@@ -40,8 +41,8 @@
 -- R - Register Access
 -- S - Swapped Access
 -- B - Burst Access
--- D - Data Width (00=D16, 01=D32, 10=D64)
--- A - Address Width (10=A16, 00=A24, 01=A32)
+-- D - Data Width (00=D16, 01=D32, 10=D64, 11=CR/CSR)
+-- A - Address Width (10=A16, 00=A24, 01=A32, 11=IACK)
 -- M - Address Space (0=non-privileged 1=supervisory data)
 
 --------------------------------------------------------------------------------
@@ -249,7 +250,7 @@ mensb_fsm : PROCESS (clk, rst)
                sel_loc_data_out(1) <= '0';
                run_mstr <= '0';
                loc_write_flag <= '0';
-               IF mstr_busy = '1' AND vme_acc_type_l(3) = '1' AND wbs_we_i = '1' THEN
+               IF mstr_busy = '1' AND vme_acc_type_l(3 DOWNTO 2) = "10" AND wbs_we_i = '1' THEN
                   mensb_state <= mensb_vme;
                   wbs_ack_o_int <= '1';               -- acknoledge low d64 write
                   wbs_err_o <= '0';
@@ -271,7 +272,7 @@ mensb_fsm : PROCESS (clk, rst)
                   mensb_state <= mensb_vme_end;
                   wbs_ack_o_int <= '1';                -- also ack for termination of wbb access
                   wbs_err_o <= '1';                     -- error
-               ELSIF mstr_ack = '1' AND vme_acc_type_l(3) = '1' AND wbs_we_i = '0' THEN
+               ELSIF mstr_ack = '1' AND vme_acc_type_l(3 DOWNTO 2) = "10" AND wbs_we_i = '0' THEN
                   mensb_state <= mensb_vme_d64;
                   wbs_ack_o_int <= '1';
                   wbs_err_o <= '0';

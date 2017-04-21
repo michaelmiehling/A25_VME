@@ -64,7 +64,7 @@ architecture a25_arch of z091_01_wb_adr_dec is
 begin
    
    PROCESS(wbm_adr_o_q, pci_cyc_i)
-      VARIABLE wbm_cyc_o_int : std_logic_vector(8 DOWNTO 0);
+      VARIABLE wbm_cyc_o_int : std_logic_vector(NR_OF_WB_SLAVES -1 DOWNTO 0);
       CONSTANT zero : std_logic_vector(NR_OF_WB_SLAVES -1 downto 0):=(OTHERS => '0');
       BEGIN
          wbm_cyc_o_int := (OTHERS => '0');
@@ -142,6 +142,17 @@ begin
          END IF;
 
          IF pci_cyc_i /= zero AND wbm_cyc_o_int = "000000000" THEN
+            wbm_cyc_o_int(0) := '1';
+         END IF;
+
+         -- 16z002-01 VME CRCSR - cycle 9 - offset 0 - size 1000000 --
+         IF pci_cyc_i(4) = '1' THEN
+            wbm_cyc_o_int(9) := '1';
+         ELSE
+            wbm_cyc_o_int(9) := '0';
+         END IF;
+
+         IF pci_cyc_i /= zero AND wbm_cyc_o_int = "0000000000" THEN
             wbm_cyc_o_int(0) := '1';
          END IF;
 

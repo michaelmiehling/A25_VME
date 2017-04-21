@@ -33,7 +33,7 @@ variable PROJECT_SYNTHESIS          "./"
 #Name of the quartus project
 variable PROJECT_FILE_NAME          "A25_top"
 #Name of the programming files which are generated
-variable PROJECT_RELEASE_NAME       "16A025-00_02_02"
+variable PROJECT_RELEASE_NAME       "16A025-00_02_04"
 #Folder of the programming files which are generated
 variable PROJECT_RELEASE_FOLDER     "./fpga_files/"
 #Folder of the Quartus automatically generated programming files relative to the PROJECT_SYNTHESIS

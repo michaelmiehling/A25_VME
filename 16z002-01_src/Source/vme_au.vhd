@@ -207,7 +207,7 @@ ENTITY vme_au IS
       vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring (registered with en_vme_adr_in)
       
       -- vme_du
-      mstr_reg             : IN std_logic_vector(14 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE, CR_CSR_MODE)
+      mstr_reg             : IN std_logic_vector(13 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
       longadd              : IN std_logic_vector(7 DOWNTO 0);     -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
       slv16_reg            : IN std_logic_vector(4 DOWNTO 0);     -- slave A16 base address register
       slv24_reg            : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
@@ -519,25 +519,26 @@ BEGIN
             int_be <= wbm_sel_o_reg;
          END IF;
          
+         -- select VME address based on address mode, LONGADD register and generics
          IF ma_en_vme_data_out_reg = '1' THEN
-            CASE vme_acc_type(1 DOWNTO 0) IS         -- for defined unused address lines
-               WHEN "00"   => vme_adr_out(28 DOWNTO 2) <= "00000" & wbs_adr_i(23 DOWNTO 2);            -- A24
-               WHEN "01"   => vme_adr_out(28 DOWNTO 2) <= wbs_adr_i(28 DOWNTO 2);                      -- A32
-               WHEN OTHERS => vme_adr_out(28 DOWNTO 2) <= "0000000000000" & wbs_adr_i(15 DOWNTO 2);    -- A16
-            END CASE;
-            IF wbs_tga_i(7) = '0' THEN   -- no dma?
-              IF USE_LONGADD = TRUE THEN 
-                vme_adr_out(31 DOWNTO (32-LONGADD_SIZE)) <= longadd(7 DOWNTO (8-LONGADD_SIZE));    -- supports flexible size of longadd parameter => not compatible to A21!
-              ELSE  
-                vme_adr_out(31 DOWNTO 29) <= longadd(7 DOWNTO 5);       -- supports 3 bits for longadd in order to be compatible to A21
-              END IF;
-            ELSE
-               IF vme_acc_type(1 DOWNTO 0) = "01" THEN
-                  vme_adr_out(31 DOWNTO 29) <= wbs_adr_i(31 DOWNTO 29);
-               ELSE
-                  vme_adr_out(31 DOWNTO 29) <= "000";
-               END IF;
-            END IF;
+         		if vme_acc_type(1 DOWNTO 0) = "00" then         													-- A24
+            	vme_adr_out(31 DOWNTO 2) <= "00000000" & wbs_adr_i(23 DOWNTO 2);
+            		
+            elsif vme_acc_type(1 downto 0) = "01" then         												-- A32
+	            IF wbs_tga_i(7) = '0' THEN   																								-- single access from PCI / no dma?
+	              IF USE_LONGADD = TRUE THEN 																								-- flexible size of longadd parameter => not compatible to A21!
+	                vme_adr_out(31 DOWNTO 2) <= longadd(7 DOWNTO (8-LONGADD_SIZE)) & wbs_adr_i((31-LONGADD_SIZE) DOWNTO 2);    
+	              ELSE  																																		-- compatibility mode: uses 3 bits of longadd (compatible to A21/A15)
+	                vme_adr_out(31 DOWNTO 2) <= longadd(2 DOWNTO 0) & wbs_adr_i(28 DOWNTO 2);       
+	              END IF;
+	            ELSE 																																				-- dma access uses complete address (no LONGADD usage)
+								vme_adr_out(31 DOWNTO 2) <= wbs_adr_i(31 DOWNTO 2);
+	            END IF;
+
+           	else																																			-- A16
+           		vme_adr_out(31 DOWNTO 2) <= "0000000000000000" & wbs_adr_i(15 DOWNTO 2);
+            END if;
+            	
          END IF;
          
          IF en_vme_adr_in = '1' THEN                         -- samples adress and am at falling edge asn 
@@ -696,15 +697,16 @@ BEGIN
    END PROCESS lg_dec;
    
    -- vme_acc_type:
-   --                  M  S B D  A
+   --                  M S B D  A
    -- A16/D16          m 0 0 00 10
    -- A16/D32          m 0 0 01 10
    -- A24/D16          m 0 0 00 00
    -- A24/D32          m 0 0 01 00
+   -- CR/CSR           x 0 0 11 00
    -- A32/D32          m 0 0 01 01
    -- IACK             m 0 0 00 11
    -- A32/D32/BLT      m 0 1 01 01
-   -- A32/D64/BLT      m 0 1 11 01
+   -- A32/D64/BLT      m 0 1 10 01
    -- A24/D16/BLT      m 0 1 00 00
    -- A24/D32/BLT      m 0 1 01 00
    --  " swapped       m 1 x xx xx
@@ -775,16 +777,12 @@ BEGIN
                         END IF;
             
             WHEN "00000" => 
-                      IF mstr_reg(14) = '1' THEN                     -- A24_MODE
-                        vam_out <= "101111";                         -- x2F   A24 CR/CSR access
-                      ELSE
-                         CASE mstr_reg(11 DOWNTO 10) IS
-                            WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
-                            WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
-                            WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
-                            WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
-                         END CASE;
-                      END IF;
+                       CASE mstr_reg(11 DOWNTO 10) IS
+                          WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
+                          WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
+                          WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
+                          WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
+                       END CASE;
                       iackn_out <= '1';
                       ma_d64 <= '0';
                         lwordn_mstr_int   <= '1';
@@ -812,17 +810,43 @@ BEGIN
                            vme_a1 <= '1';
                         END IF;
                         
+            WHEN "01100" => 
+                      	vam_out <= "101111";   -- x2f   CR/CSR access
+                      	iackn_out <= '1';
+                      	ma_d64 <= '0';
+                        mstr_cycle_int   <= '0';
+								IF wbs_sel_i = "1111" THEN          -- D32 access
+							      IF vme_acc_type(5) = '1' THEN
+								      ma_byte_routing <= '0';
+								   ELSE
+								      ma_byte_routing <= '1';
+								   END IF;
+								   dsan_out_int <= '0';
+								   dsbn_out_int <= '0';
+								   vme_a1 <= '0';
+									lwordn_mstr_int   <= '0';
+								ELSE                                -- D16 access
+								   lwordn_mstr_int   <= '1';
+							      IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+							         vme_a1 <= '0';         -- only low word will be transmitted
+							         dsan_out_int   <= NOT wbs_sel_i(1);
+							         dsbn_out_int   <= NOT wbs_sel_i(0);
+							         ma_byte_routing <= '1';
+							      ELSE
+							         vme_a1 <= '1';         -- only high word will be transmitted
+							         dsan_out_int   <= NOT wbs_sel_i(3);
+							         dsbn_out_int   <= NOT wbs_sel_i(2);
+							         ma_byte_routing <= '0';
+							      END IF;
+								END IF;
+
             WHEN "00100" => 
-                      IF mstr_reg(14) = '1' THEN                     -- A24_MODE
-                        vam_out <= "101111";                         -- x2F   A24 CR/CSR access
-                      ELSE
-                         CASE mstr_reg(11 DOWNTO 10) IS               
-                            WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D32 non-privileged data access
-                            WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D32 non-privileged program access
-                            WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D32 supervisory data access    
-                            WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D32 supervisory program access 
-                         END CASE;
-                      END IF;
+                       CASE mstr_reg(11 DOWNTO 10) IS               
+                          WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D32 non-privileged data access
+                          WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D32 non-privileged program access
+                          WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D32 supervisory data access    
+                          WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D32 supervisory program access 
+                       END CASE;
                       iackn_out <= '1';
                       ma_d64 <= '0';
                       IF wbs_sel_i = "1111" THEN
