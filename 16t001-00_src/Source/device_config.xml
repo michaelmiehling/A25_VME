@@ -1,0 +1,48 @@
+<devices version="0.1">
+
+   <device name="53" desc="IDE-NAND">
+      <grp>53</grp>
+      <grp>68</grp>
+      <grp>63</grp>
+      <grp>43</grp>
+   </device>
+   <device name="79" desc="Anybus">
+      <grp>79</grp>
+      <grp>24</grp>
+      <grp>25</grp>
+   </device>
+   <device name="44" desc="Display">
+      <grp>44</grp>
+      <grp>43</grp>
+   </device>
+   <device name="89" desc="HSSL">
+      <grp>89</grp>
+      <grp>89</grp>
+   </device>
+   <device name="88" desc="Pattern">
+      <grp>88</grp>
+      <grp>43</grp>
+   </device>
+   <device name="66" desc="MModul">
+      <grp>66</grp>
+      <grp>66</grp>
+   </device>
+   <device name="2" desc="VME">
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+      <grp>2</grp>
+   </device>
+   <device name="43" singlecycle="1" desc="SDRAM" />
+      
+   <device name="25" multichannel="4" size="40" desc="UART"/>
+   <device name="125" multichannel="4" size="40" desc="UART"/>
+   <device name="61" multichannel="16" size="100" desc="PWM"/>
+   <device name="75" multichannel="16" size="100" desc="SPEED"/>
+   
+</devices>
+
