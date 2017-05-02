@@ -826,8 +826,7 @@ pcie: ip_16z091_01_top
       FPGA_FAMILY    => FPGA_FAMILY,
       read_only      => 1,
       USEDW_WIDTH    => 9, -- 0x200 = 512
-      --LOCATION       => "../Source/chameleon.hex"
-      LOCATION       => "../../16a025-00_src/Source/chameleon.hex"
+      LOCATION       => "../Source/chameleon.hex"
    )
    PORT MAP (
       clk            => sys_clk,
