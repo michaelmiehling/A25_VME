@@ -531,38 +531,6 @@ component hard_ip_x1
 end component;
 
 COMPONENT Hard_IP_x4 is 
-    generic(
-      VENDOR_ID           : natural := 16#1A88#;
-      DEVICE_ID           : natural := 16#4D45#;
-      REVISION_ID         : natural := 16#0#;
-      CLASS_CODE          : natural := 16#068000#;
-      SUBSYSTEM_VENDOR_ID : natural := 16#9B#;
-      SUBSYSTEM_DEVICE_ID : natural := 16#5A91#;
-
-      IO_SPACE_BAR_0  : string  := "false";
-      PREFETCH_BAR_0  : string  := "true";
-      SIZE_MASK_BAR_0 : natural := 28;
-      
-      IO_SPACE_BAR_1  : string  := "false";
-      PREFETCH_BAR_1  : string  := "true";
-      SIZE_MASK_BAR_1 : natural := 18;
-      
-      IO_SPACE_BAR_2  : string  := "false";
-      PREFETCH_BAR_2  : string  := "false";
-      SIZE_MASK_BAR_2 : natural := 19;
-      
-      IO_SPACE_BAR_3  : string  := "false";
-      PREFETCH_BAR_3  : string  := "false";
-      SIZE_MASK_BAR_3 : natural := 7;
-      
-      IO_SPACE_BAR_4  : string  := "true";
-      PREFETCH_BAR_4  : string  := "false";
-      SIZE_MASK_BAR_4 : natural := 5;
-      
-      IO_SPACE_BAR_5  : string  := "true";
-      PREFETCH_BAR_5  : string  := "false";
-      SIZE_MASK_BAR_5 : natural := 6      
-   );
         port (
               -- inputs:
                  signal app_int_sts : IN STD_LOGIC;
@@ -894,39 +862,6 @@ begin
    
    gen_x4: if USE_LANES = "100" generate
     Hard_IP_x4_comp : entity work.Hard_IP_x4
-      generic map(
-         VENDOR_ID           => VENDOR_ID,
-         DEVICE_ID           => DEVICE_ID,
-         REVISION_ID         => REVISION_ID,
-         CLASS_CODE          => CLASS_CODE,
-         SUBSYSTEM_VENDOR_ID => SUBSYSTEM_VENDOR_ID,
-         SUBSYSTEM_DEVICE_ID => SUBSYSTEM_DEVICE_ID,
-
-         IO_SPACE_BAR_0  => IO_SPACE_0,      -- IO_SPACE_BAR_0,
-         PREFETCH_BAR_0  => PREFETCH_0,      -- PREFETCH_BAR_0,
-         SIZE_MASK_BAR_0 => SIZE_MASK_0,     -- SIZE_MASK_BAR_0,
-         
-         IO_SPACE_BAR_1  => IO_SPACE_1,      -- IO_SPACE_BAR_1,
-         PREFETCH_BAR_1  => PREFETCH_1,      -- PREFETCH_BAR_1,
-         SIZE_MASK_BAR_1 => SIZE_MASK_1,     -- SIZE_MASK_BAR_1,
-         
-         IO_SPACE_BAR_2  => IO_SPACE_2,      -- IO_SPACE_BAR_2,
-         PREFETCH_BAR_2  => PREFETCH_2,      -- PREFETCH_BAR_2,
-         SIZE_MASK_BAR_2 => SIZE_MASK_2,     -- SIZE_MASK_BAR_2,
-         
-         IO_SPACE_BAR_3  => IO_SPACE_3,      -- IO_SPACE_BAR_3,
-         PREFETCH_BAR_3  => PREFETCH_3,      -- PREFETCH_BAR_3,
-         SIZE_MASK_BAR_3 => SIZE_MASK_3,     -- SIZE_MASK_BAR_3,
-         
-         IO_SPACE_BAR_4  => IO_SPACE_4,      -- IO_SPACE_BAR_4,
-         PREFETCH_BAR_4  => PREFETCH_4,      -- PREFETCH_BAR_4,
-         SIZE_MASK_BAR_4 => SIZE_MASK_4,     -- SIZE_MASK_BAR_4,
-         
-         IO_SPACE_BAR_5  => IO_SPACE_5,      -- IO_SPACE_BAR_5,
-         PREFETCH_BAR_5  => PREFETCH_5,      -- PREFETCH_BAR_5, 
-         SIZE_MASK_BAR_5 => SIZE_MASK_5      -- SIZE_MASK_BAR_5 
-      )
-
       port map(
          -- inputs:
          app_int_sts     => app_int_sts_int,

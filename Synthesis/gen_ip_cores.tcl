@@ -75,7 +75,7 @@ if {[is_project_open]} {
     project_open -force $project_name
 }
 
-source ../16z091-01_src/Source/x1/x1.tcl
+source ../16z091-01_src/Source/x4/x4.tcl
 
 # Commit assignments
 export_assignments
