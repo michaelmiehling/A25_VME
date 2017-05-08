@@ -1,0 +1,1 @@
+qmegawiz { pll_pcie }
