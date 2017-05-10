@@ -68,6 +68,9 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 
+library altera_mf;
+use altera_mf.altera_mf_components.all;
+
 ENTITY vme_dma_fifo IS
 PORT (
    rst               : IN std_logic;
@@ -85,18 +88,6 @@ PORT (
 END vme_dma_fifo;
 
 ARCHITECTURE vme_dma_fifo_arch OF vme_dma_fifo IS 
-COMPONENT fifo_256x32bit 
-   PORT
-   (
-      data      : IN STD_LOGIC_VECTOR (31 DOWNTO 0);
-      wrreq      : IN STD_LOGIC ;
-      rdreq      : IN STD_LOGIC ;
-      clock      : IN STD_LOGIC ;
-      aclr      : IN STD_LOGIC ;
-      q         : OUT STD_LOGIC_VECTOR (31 DOWNTO 0);
-      usedw      : OUT STD_LOGIC_VECTOR (7 DOWNTO 0)
-   );
-END COMPONENT;
    SIGNAL fifo_usedw    : std_logic_vector(7 DOWNTO 0);
    SIGNAL low_level     : std_logic:='0';
    SIGNAL dat_o         : std_logic_vector(31 DOWNTO 0);
@@ -136,19 +127,25 @@ PROCESS(clk, rst)
      END IF;
   END PROCESS;
 
-
-fifo : fifo_256x32bit -- 64x32bit
-   PORT MAP 
-   (
-      data        => fifo_dat_i,
-      wrreq       => fifo_wr,
-      rdreq       => fifo_rd,
-      clock       => clk,
-      aclr        => fifo_clr,
-      q           => dat_o,
-      usedw       => fifo_usedw
-   );
-
-
+	fifo: scfifo --256x32bit
+	GENERIC MAP (
+		add_ram_output_register => "ON",
+		intended_device_family => "Cyclone IV GX",
+		lpm_numwords => 256,
+		lpm_showahead => "ON",
+		lpm_type => "scfifo",
+		lpm_width => 32,
+		lpm_widthu => 8,
+		overflow_checking => "ON",
+		underflow_checking => "ON",
+		use_eab => "ON")
+	PORT MAP (
+		aclr  => fifo_clr,
+		clock => clk,
+		data  => fifo_dat_i,
+		rdreq => fifo_rd,
+		wrreq => fifo_wr,
+		usedw => fifo_usedw,
+		q     => dat_o);
 
 END vme_dma_fifo_arch;
