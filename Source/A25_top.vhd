@@ -648,9 +648,9 @@ BEGIN
    porst <= NOT porst_n;
 
   -- synchronize reset to 33 MHz clock
-   PROCESS(clk_33, hreset_n, pll_locked)
+   PROCESS(clk_33, pll_locked)
    BEGIN
-      IF hreset_n = '0' OR pll_locked = '0' THEN
+      IF pll_locked = '0' THEN
          rst_33 <= '1';
       ELSIF clk_33'EVENT AND clk_33 = '1' THEN
          rst_33 <= '0';
