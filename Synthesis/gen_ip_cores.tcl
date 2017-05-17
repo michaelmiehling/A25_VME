@@ -77,6 +77,7 @@ if {[is_project_open]} {
 
 source ../16z091-01_src/Source/x4/x4.tcl
 source ../Source/pll_pcie/gen_pll_pcie.tcl
+source ../16z126-01_src/Source/z126_01_pasmi/gen_m25p32.tcl
 
 # Commit assignments
 export_assignments
