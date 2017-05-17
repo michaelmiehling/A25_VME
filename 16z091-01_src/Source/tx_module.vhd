@@ -293,45 +293,28 @@ component tx_compl_timeout
    );
 end component;
 
-component tx_header_fifo
-   generic(
-      DEVICE_FAMILY        : string  := "unused";
-      TX_HEADER_FIFO_DEPTH : natural := 32;
-      TX_HEADER_LPM_WIDTHU : natural := 5
-   );
-   port (
-      aclr    : in  std_logic  := '0';
-      data    : in  std_logic_vector (31 downto 0);
-      rdclk   : in  std_logic ;
-      rdreq   : in  std_logic ;
-      wrclk   : in  std_logic ;
-      wrreq   : in  std_logic ;
-      q       : out std_logic_vector (63 downto 0);
-      rdempty : out std_logic ;
-      wrfull  : out std_logic ;
-      wrusedw : out std_logic_vector(4 downto 0)
-   );
+component generic_dcfifo_mixedw
+  generic (
+    g_device_family : string  := "Cyclone IV GX";
+    g_fifo_depth    : natural := 32;
+    g_data_width    : natural := 32;
+    g_data_widthu   : natural := 5;
+    g_q_width       : natural := 64;
+    g_q_widthu      : natural := 4;
+    g_showahead     : string  := "OFF");
+  port (
+    aclr    : in  std_logic := '0';
+    data    : in  std_logic_vector (g_data_width-1 downto 0);
+    rdclk   : in  std_logic ;
+    rdreq   : in  std_logic ;
+    wrclk   : in  std_logic ;
+    wrreq   : in  std_logic ;
+    q       : out std_logic_vector (g_q_width-1 downto 0);
+    rdempty : out std_logic ;
+    wrfull  : out std_logic ;
+    wrusedw : out std_logic_vector (g_data_widthu-1 downto 0));
 end component;
 
-component tx_data_fifo
-   generic(
-      DEVICE_FAMILY      : string  := "unused";
-      TX_DATA_FIFO_DEPTH : natural := 1024;
-      TX_DATA_LPM_WIDTHU : natural := 10
-   );
-   port(
-      aclr    : in  std_logic  := '0';
-      data    : in  std_logic_vector (31 downto 0);
-      rdclk   : in  std_logic ;
-      rdreq   : in  std_logic ;
-      wrclk   : in  std_logic ;
-      wrreq   : in  std_logic ;
-      q       : out std_logic_vector (63 downto 0);
-      rdempty : out std_logic ;
-      wrfull  : out std_logic ;
-      wrusedw : out std_logic_vector (TX_DATA_LPM_WIDTHU-1 downto 0)
-   );
-end component;
 -------------------------------------------------------------------------------
 
 begin
@@ -457,81 +440,91 @@ begin
          timeout     => tx_timeout
       );
 
-   tx_c_header_fifo : tx_header_fifo
-      generic map(
-         DEVICE_FAMILY        => DEVICE_FAMILY,
-         TX_HEADER_FIFO_DEPTH => TX_HEADER_FIFO_DEPTH,       -- 32 
-         TX_HEADER_LPM_WIDTHU => TX_HEADER_LPM_WIDTHU
-      )
-      port map(
-         aclr    => tx_fifo_c_head_clr,
-         data    => tx_fifo_c_head_in,
-         rdclk   => clk,
-         rdreq   => tx_fifo_c_head_enable_int,
-         wrclk   => wb_clk,
-         wrreq   => tx_fifo_c_head_enable,
-         q       => tx_fifo_c_head_out_int,
-         rdempty => tx_fifo_c_head_empty_int,
-         wrfull  => tx_fifo_c_head_full,
-         wrusedw => open
-      );
+   ------------------------------------------------
+   tx_c_header_fifo : generic_dcfifo_mixedw
+    generic map (
+      g_device_family => DEVICE_FAMILY,
+      g_fifo_depth    => TX_HEADER_FIFO_DEPTH,
+      g_data_width    => 32,
+      g_data_widthu   => TX_HEADER_LPM_WIDTHU,
+      g_q_width       => 64,
+      g_q_widthu      => TX_HEADER_LPM_WIDTHU-1,
+      g_showahead     => "OFF")
+    port map (
+      aclr    => tx_fifo_c_head_clr,
+      data    => tx_fifo_c_head_in,
+      rdclk   => clk,
+      rdreq   => tx_fifo_c_head_enable_int,
+      wrclk   => wb_clk,
+      wrreq   => tx_fifo_c_head_enable,
+      q       => tx_fifo_c_head_out_int,
+      rdempty => tx_fifo_c_head_empty_int,
+      wrfull  => tx_fifo_c_head_full,
+      wrusedw => open);
 
-   tx_wr_header_fifo : tx_header_fifo
-      generic map(
-         DEVICE_FAMILY        => DEVICE_FAMILY,
-         TX_HEADER_FIFO_DEPTH => TX_HEADER_FIFO_DEPTH,       -- 32
-         TX_HEADER_LPM_WIDTHU => TX_HEADER_LPM_WIDTHU
-      )
-      port map(
-         aclr    => tx_fifo_wr_head_clr,
-         data    => tx_fifo_wr_head_in,
-         rdclk   => clk,
-         rdreq   => tx_fifo_wr_head_enable_int,
-         wrclk   => wb_clk,
-         wrreq   => tx_fifo_wr_head_enable,
-         q       => tx_fifo_wr_head_out_int,
-         rdempty => tx_fifo_wr_head_empty_int,
-         wrfull  => tx_fifo_wr_head_full,
-         wrusedw => tx_fifo_wr_head_usedw
-      );
+   tx_wr_header_fifo : generic_dcfifo_mixedw
+    generic map (
+      g_device_family => DEVICE_FAMILY,
+      g_fifo_depth    => TX_HEADER_FIFO_DEPTH,
+      g_data_width    => 32,
+      g_data_widthu   => TX_HEADER_LPM_WIDTHU,
+      g_q_width       => 64,
+      g_q_widthu      => TX_HEADER_LPM_WIDTHU-1,
+      g_showahead     => "OFF")
+    port map (
+      aclr    => tx_fifo_wr_head_clr,
+      data    => tx_fifo_wr_head_in,
+      rdclk   => clk,
+      rdreq   => tx_fifo_wr_head_enable_int,
+      wrclk   => wb_clk,
+      wrreq   => tx_fifo_wr_head_enable,
+      q       => tx_fifo_wr_head_out_int,
+      rdempty => tx_fifo_wr_head_empty_int,
+      wrfull  => tx_fifo_wr_head_full,
+      wrusedw => tx_fifo_wr_head_usedw);
 
-   tx_c_data_fifo : tx_data_fifo
-      generic map(
-         DEVICE_FAMILY      => DEVICE_FAMILY,
-         TX_DATA_FIFO_DEPTH => TX_DATA_FIFO_DEPTH,           -- 1024
-         TX_DATA_LPM_WIDTHU => TX_DATA_LPM_WIDTHU
-      )
-      port map(
-         aclr    => tx_fifo_c_data_clr,
-         data    => tx_fifo_c_data_in,
-         rdclk   => clk,
-         rdreq   => tx_fifo_c_data_enable_int,
-         wrclk   => wb_clk,
-         wrreq   => tx_fifo_c_data_enable,
-         q       => tx_fifo_c_data_out_int,
-         rdempty => tx_fifo_c_data_empty_int,
-         wrfull  => tx_fifo_c_data_full,
-         wrusedw => tx_wrusedw_c                            -- tx_fifo_c_data_usedw
-      );
+   ------------------------------------------------
+   tx_c_data_fifo : generic_dcfifo_mixedw
+    generic map (
+      g_device_family => DEVICE_FAMILY,
+      g_fifo_depth    => TX_DATA_FIFO_DEPTH,
+      g_data_width    => 32,
+      g_data_widthu   => TX_DATA_LPM_WIDTHU,
+      g_q_width       => 64,
+      g_q_widthu      => TX_DATA_LPM_WIDTHU-1,
+      g_showahead     => "OFF")
+    port map (
+      aclr    => tx_fifo_c_data_clr,
+      data    => tx_fifo_c_data_in,
+      rdclk   => clk,
+      rdreq   => tx_fifo_c_data_enable_int,
+      wrclk   => wb_clk,
+      wrreq   => tx_fifo_c_data_enable,
+      q       => tx_fifo_c_data_out_int,
+      rdempty => tx_fifo_c_data_empty_int,
+      wrfull  => tx_fifo_c_data_full,
+      wrusedw => tx_wrusedw_c);
    
-   tx_w_data_fifo : tx_data_fifo
-      generic map(
-         DEVICE_FAMILY      => DEVICE_FAMILY,
-         TX_DATA_FIFO_DEPTH => TX_DATA_FIFO_DEPTH,           -- 1024
-         TX_DATA_LPM_WIDTHU => TX_DATA_LPM_WIDTHU
-      )
-      port map(
-         aclr    => tx_fifo_w_data_clr,
-         data    => tx_fifo_w_data_in,
-         rdclk   => clk,
-         rdreq   => tx_fifo_w_data_enable_int,
-         wrclk   => wb_clk,
-         wrreq   => tx_fifo_w_data_enable,
-         q       => tx_fifo_w_data_out_int,
-         rdempty => tx_fifo_w_data_empty_int,
-         wrfull  => tx_fifo_w_data_full,
-         wrusedw => tx_wrusedw_w                            -- tx_fifo_w_data_usedw
-      );
+   tx_w_data_fifo : generic_dcfifo_mixedw
+    generic map (
+      g_device_family => DEVICE_FAMILY,
+      g_fifo_depth    => TX_DATA_FIFO_DEPTH,
+      g_data_width    => 32,
+      g_data_widthu   => TX_DATA_LPM_WIDTHU,
+      g_q_width       => 64,
+      g_q_widthu      => TX_DATA_LPM_WIDTHU-1,
+      g_showahead     => "OFF")
+    port map (
+      aclr    => tx_fifo_w_data_clr,
+      data    => tx_fifo_w_data_in,
+      rdclk   => clk,
+      rdreq   => tx_fifo_w_data_enable_int,
+      wrclk   => wb_clk,
+      wrreq   => tx_fifo_w_data_enable,
+      q       => tx_fifo_w_data_out_int,
+      rdempty => tx_fifo_w_data_empty_int,
+      wrfull  => tx_fifo_w_data_full,
+      wrusedw => tx_wrusedw_w);
 -------------------------------------------------------------------------------
    tx_wrusedw_c_out <= conv_std_logic_vector(conv_integer(tx_wrusedw_c),10);
    tx_wrusedw_w_out <= conv_std_logic_vector(conv_integer(tx_wrusedw_w),10);

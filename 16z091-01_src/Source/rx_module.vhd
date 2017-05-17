@@ -176,25 +176,26 @@ component rx_get_data
    );
 end component;
 
-component rx_fifo
-   generic(
-      DEVICE_FAMILY : string  := "Cyclone IV GX";
-      RX_FIFO_DEPTH : natural := 1024;
-      RX_LPM_WIDTHU : natural := 10;
-      RX_SHOWAHEAD  : string  := "OFF"
-   );
-   port (
-      aclr          : in  std_logic  := '0';
-      data          : in  std_logic_vector (63 downto 0);
-      rdclk         : in  std_logic ;
-      rdreq         : in  std_logic ;
-      wrclk         : in  std_logic ;
-      wrreq         : in  std_logic ;
-      q             : out std_logic_vector (31 downto 0);
-      rdempty       : out std_logic ;
-      wrfull        : out std_logic ;
-      wrusedw       : out std_logic_vector (RX_LPM_WIDTHU-1 downto 0)
-   );
+component generic_dcfifo_mixedw
+  generic (
+    g_device_family : string  := "Cyclone IV GX";
+    g_fifo_depth    : natural := 32;
+    g_data_width    : natural := 32;
+    g_data_widthu   : natural := 5;
+    g_q_width       : natural := 64;
+    g_q_widthu      : natural := 4;
+    g_showahead     : string  := "OFF");
+  port (
+    aclr    : in  std_logic := '0';
+    data    : in  std_logic_vector (g_data_width-1 downto 0);
+    rdclk   : in  std_logic ;
+    rdreq   : in  std_logic ;
+    wrclk   : in  std_logic ;
+    wrreq   : in  std_logic ;
+    q       : out std_logic_vector (g_q_width-1 downto 0);
+    rdempty : out std_logic ;
+    wrfull  : out std_logic ;
+    wrusedw : out std_logic_vector (g_data_widthu-1 downto 0));
 end component;
 
 -- +----------------------------------------------------------------------------
@@ -379,45 +380,47 @@ begin
  
       );
       
-   c_fifo_comp : rx_fifo
-      generic map(
-         DEVICE_FAMILY => DEVICE_FAMILY,
-         RX_FIFO_DEPTH => RX_FIFO_DEPTH,
-         RX_LPM_WIDTHU => RX_LPM_WIDTHU,
-         RX_SHOWAHEAD  => "ON"
-      )
-      port map(
-         aclr          => rst,
-         data          => int_rx_fifo_data,
-         rdclk         => wb_clk,
-         rdreq         => rx_fifo_c_rd_enable,
-         wrclk         => clk,
-         wrreq         => int_c_wr_enable,
-         q             => rx_fifo_c_out,
-         rdempty       => rx_fifo_c_empty,
-         wrfull        => int_c_wr_full,
-         wrusedw       => int_rx_wrusedw_c 
-      );
-   
-   wr_fifo_comp : rx_fifo
-      generic map(
-         DEVICE_FAMILY => DEVICE_FAMILY,
-         RX_FIFO_DEPTH => RX_FIFO_DEPTH,
-         RX_LPM_WIDTHU => RX_LPM_WIDTHU,
-         RX_SHOWAHEAD  => "OFF"
-      )
-      port map(
-         aclr          => rst,
-         data          => int_rx_fifo_data,
-         rdclk         => wb_clk,
-         rdreq         => rx_fifo_wr_rd_enable,
-         wrclk         => clk,
-         wrreq         => int_wr_wr_enable,
-         q             => rx_fifo_wr_out,
-         rdempty       => rx_fifo_wr_empty,
-         wrfull        => int_wr_wr_full,
-         wrusedw       => int_rx_wrusedw_wr
-      );
+   c_fifo_comp : generic_dcfifo_mixedw
+    generic map (
+      g_device_family => DEVICE_FAMILY,
+      g_fifo_depth    => RX_FIFO_DEPTH,
+      g_data_width    => 64,
+      g_data_widthu   => RX_LPM_WIDTHU,
+      g_q_width       => 32,
+      g_q_widthu      => RX_LPM_WIDTHU+1,
+      g_showahead     => "ON")
+    port map (
+      aclr    => rst,
+      data    => int_rx_fifo_data,
+      rdclk   => wb_clk,
+      rdreq   => rx_fifo_c_rd_enable,
+      wrclk   => clk,
+      wrreq   => int_c_wr_enable,
+      q       => rx_fifo_c_out,
+      rdempty => rx_fifo_c_empty,
+      wrfull  => int_c_wr_full,
+      wrusedw => int_rx_wrusedw_c);
+
+   wr_fifo_comp : generic_dcfifo_mixedw
+    generic map (
+      g_device_family => DEVICE_FAMILY,
+      g_fifo_depth    => RX_FIFO_DEPTH,
+      g_data_width    => 64,
+      g_data_widthu   => RX_LPM_WIDTHU,
+      g_q_width       => 32,
+      g_q_widthu      => RX_LPM_WIDTHU+1,
+      g_showahead     => "OFF")
+    port map (
+      aclr    => rst,
+      data    => int_rx_fifo_data,
+      rdclk   => wb_clk,
+      rdreq   => rx_fifo_wr_rd_enable,
+      wrclk   => clk,
+      wrreq   => int_wr_wr_enable,
+      q       => rx_fifo_wr_out,
+      rdempty => rx_fifo_wr_empty,
+      wrfull  => int_wr_wr_full,
+      wrusedw => int_rx_wrusedw_wr);
    
    -------------------------
    -- manage debug signals
