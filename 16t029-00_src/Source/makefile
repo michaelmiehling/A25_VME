@@ -8,6 +8,7 @@ OBJ = bin2ihex.o
 
 bin2ihex: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) 
+	mv $@ ../Bin
 	
 clean:
 	rm -f *.o

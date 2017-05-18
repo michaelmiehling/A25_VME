@@ -59,16 +59,16 @@ variable FLASH_SIZE_IN_BYTE_HEX  800000
 
 
 # program paths for Windows synthesis
-# variable BIN2IHEX                "../16t029-00_bin/Bin/release/bin2ihex.exe"
-# variable GENDEDIPROG             "../16t032-00_bin/Bin/release/genDediprog.exe"
+# variable BIN2IHEX                "../16t029-00_src/Bin/bin2ihex.exe"
+# variable GENDEDIPROG             "../16t032-00_src/Bin/genDediprog.exe"
 #variable ALTERA_QUARTUS_CPF      "$::env(QUARTUS_ROOTDIR)bin64/quartus_cpf.exe"
 #variable FPGA_ADDHEADER          "../16t036-00_src/Bin/fpga_addheader.exe"
 
 # program paths for Linux synthesis
-variable BIN2IHEX                "../16t029-00_src/Source/bin2ihex"
-variable GENDEDIPROG             "../16t032-00_src/Source/genDediProg"
+variable BIN2IHEX                "../16t029-00_src/Bin/bin2ihex"
+variable GENDEDIPROG             "../16t032-00_src/Bin/genDediProg"
 variable ALTERA_QUARTUS_CPF      "$::env(QUARTUS_ROOTDIR)bin/quartus_cpf"
-variable FPGA_ADDHEADER          "../16t036-00_src/Source/fpga_addheader"
+variable FPGA_ADDHEADER          "../16t036-00_src/Bin/fpga_addheader"
 
 if [string match "quartus_asm" $module] {
  
