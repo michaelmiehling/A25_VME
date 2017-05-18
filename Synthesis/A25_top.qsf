@@ -297,20 +297,53 @@ set_global_assignment -name EDA_DESIGN_ENTRY_SYNTHESIS_TOOL "<None>"
 set_global_assignment -name EDA_INPUT_DATA_FORMAT EDIF -section_id eda_design_synthesis
 set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE AREA
 
-set_global_assignment -name VERILOG_FILE "../16z091-01_src/Source/x1/ip_compiler_for_pci_express-library/pciexp_dcram.v"
-set_global_assignment -name VERILOG_FILE "../16z091-01_src/Source/x1/ip_compiler_for_pci_express-library/altpcie_rs_serdes.v"
-set_global_assignment -name VERILOG_FILE "../16z091-01_src/Source/x1/ip_compiler_for_pci_express-library/altpcie_hip_pipen1b.v"
-set_global_assignment -name SDC_FILE "../16z091-01_src/Synthesis/z91_01_tmg_con.sdc"
 
-set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x1/Hard_IP_x1_serdes.vhd"
-set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x1/Hard_IP_x1_core.vhd"
-set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x1/Hard_IP_x1.vhd"
-set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x4/Hard_IP_x4_serdes.vhd"
-set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x4/Hard_IP_x4_core.vhd"
-set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/x4/Hard_IP_x4.vhd"
+#set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_adr_dec.vhd"
+
+
+set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION "USE AS REGULAR IO"
+set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION "USE AS REGULAR IO"
+#For CYCLONE V
+#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl_cyc5.vhd"
+#For CYCLONE V AND EPCS16
+#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p32/synthesis/z126_01_ru_cyclonev_m25p32.qip"
+#For CYCLONE V AND EPCS64
+#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p64/synthesis/z126_01_ru_cyclonev_m25p64.qip"
+#For CYCLONE V AND EPCS128
+#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p128/synthesis/z126_01_ru_cyclonev_m25p128.qip"
+
+#For CYCLONE IV
+
+#For CYCLONE III
+#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl_cyc.vhd"
+#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cycloneiii.vhd"
+
+#set_global_assignment -name QIP_FILE reconfig_cyc4.qip
+set_global_assignment -name DEVICE_MIGRATION_LIST "EP4CGX30CF23I7,EP4CGX150CF23I7,EP4CGX75CF23I7,EP4CGX50CF23I7"
+set_global_assignment -name ENABLE_OCT_DONE OFF
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to vme_*
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to sr_*
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_green_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_red_n
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to vme_v2p_rstn
+
+
+set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
+set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
+set_global_assignment -name CONFIGURATION_VCCIO_LEVEL 3.3V
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+set_location_assignment PIN_A6 -to vme_berr_o
+set_location_assignment PIN_B6 -to vme_dtack_o
+set_location_assignment PIN_T19 -to vme_a_oe_n
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+
+
+set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/generic_dcfifo_mixedw.vhd"
+set_global_assignment -name SDC_FILE "../16z091-01_src/Synthesis/z91_01_tmg_con.sdc"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_slave.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_master.vhd"
-#set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/z091_01_wb_adr_dec.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_put_data.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_module.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/tx_header_fifo.vhd"
@@ -332,8 +365,6 @@ set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/init.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/error.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/err_fifo.vhd"
 set_global_assignment -name VHDL_FILE "../16z091-01_src/Source/alt_reconf.vhd"
-
-set_global_assignment -name QIP_FILE ../Source/pll_pcie.qip
 set_global_assignment -name SDC_FILE A25_top.sdc
 set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_sys_arbiter.vhd"
 set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_pkg.vhd"
@@ -342,12 +373,6 @@ set_global_assignment -name VHDL_FILE ../Source/wb_pkg.vhd
 set_global_assignment -name VHDL_FILE ../Source/wb_bus.vhd
 set_global_assignment -name VHDL_FILE ../Source/z091_01_wb_adr_dec.vhd
 set_global_assignment -name VHDL_FILE ../Source/sram.vhd
-set_global_assignment -name VHDL_FILE ../Source/pll_pcie.vhd
-
-set_global_assignment -name RESERVE_DATA0_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_global_assignment -name RESERVE_DATA1_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_global_assignment -name RESERVE_FLASH_NCE_AFTER_CONFIGURATION "USE AS REGULAR IO"
-set_global_assignment -name RESERVE_DCLK_AFTER_CONFIGURATION "USE AS REGULAR IO"
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wbmon.vhd"
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wb2pasmi.vhd"
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_wb_pkg.vhd"
@@ -360,22 +385,7 @@ set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_clk_trans
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_switch_fab_2.vhd"
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl.vhd"
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_pasmi/z126_01_pasmi_m25p32.vhd"
-#For CYCLONE V
-#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl_cyc5.vhd"
-#For CYCLONE V AND EPCS16
-#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p32/synthesis/z126_01_ru_cyclonev_m25p32.qip"
-#For CYCLONE V AND EPCS64
-#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p64/synthesis/z126_01_ru_cyclonev_m25p64.qip"
-#For CYCLONE V AND EPCS128
-#set_global_assignment -name QIP_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cyclonev_m25p128/synthesis/z126_01_ru_cyclonev_m25p128.qip"
-
-#For CYCLONE IV
 set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cycloneiv.vhd"
-
-#For CYCLONE III
-#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru_ctrl_cyc.vhd"
-#set_global_assignment -name VHDL_FILE "../16z126-01_src/Source/z126_01_ru/z126_01_ru_cycloneiii.vhd"
-
 set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/wbmon.vhd"
 set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_4.vhd"
 set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/switch_fab_3.vhd"
@@ -385,14 +395,7 @@ set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/fifo_d1.vhd"
 set_global_assignment -name VHDL_FILE "../16z100-00_src/Source/clk_trans_wb2wb.vhd"
 set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_wb.vhd"
 set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_dp_wb.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_dp_2clk.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_dp_1clk.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_cyc4.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_cyc3.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_cyc2.vhd"
 set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_av.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_arriagx.vhd"
-set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram_acex.vhd"
 set_global_assignment -name VHDL_FILE "../16z024-01_src/Source/iram.vhd"
 set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/wbb2vme_top.vhd"
 set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_wbs.vhd"
@@ -416,25 +419,5 @@ set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_au.vhd"
 set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/vme_arbiter.vhd"
 set_global_assignment -name VHDL_FILE "../16z002-01_src/Source/fifo_256x32bit.vhd"
 set_global_assignment -name VHDL_FILE ../Source/A25_top.vhd
-#set_global_assignment -name QIP_FILE reconfig_cyc4.qip
-set_global_assignment -name DEVICE_MIGRATION_LIST "EP4CGX30CF23I7,EP4CGX150CF23I7,EP4CGX75CF23I7,EP4CGX50CF23I7"
-set_global_assignment -name ENABLE_OCT_DONE OFF
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to vme_*
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to sr_*
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_green_n
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led_red_n
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to vme_v2p_rstn
-
-
-set_global_assignment -name ENABLE_CONFIGURATION_PINS OFF
-set_global_assignment -name ENABLE_BOOT_SEL_PIN OFF
-set_global_assignment -name CONFIGURATION_VCCIO_LEVEL 3.3V
 set_global_assignment -name SIGNALTAP_FILE stp1.stp
-set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
-set_location_assignment PIN_A6 -to vme_berr_o
-set_location_assignment PIN_B6 -to vme_dtack_o
-set_location_assignment PIN_T19 -to vme_a_oe_n
 set_global_assignment -name SIGNALTAP_FILE stp2.stp
-set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
-
-set_global_assignment -name QIP_FILE "../16z091-01_src/Source/x1/Hard_IP_x1.qip"
