@@ -57,16 +57,17 @@ variable FPGA_IMAGE_OFFSET       200000
 #8MByte Flash
 variable FLASH_SIZE_IN_BYTE_HEX  800000
 
-# program paths
-variable BIN2IHEX                "../16t029-00_bin/Bin/release/bin2ihex.exe"
-variable GENDEDIPROG             "../16t032-00_bin/Bin/release/genDediprog.exe"
 
 # program paths for Windows synthesis
+# variable BIN2IHEX                "../16t029-00_bin/Bin/release/bin2ihex.exe"
+# variable GENDEDIPROG             "../16t032-00_bin/Bin/release/genDediprog.exe"
 #variable ALTERA_QUARTUS_CPF      "$::env(QUARTUS_ROOTDIR)bin64/quartus_cpf.exe"
 #variable FPGA_ADDHEADER          "../16t036-00_src/Bin/fpga_addheader.exe"
 
 # program paths for Linux synthesis
-variable ALTERA_QUARTUS_CPF      "$::env(QUARTUS_ROOTDIR)bin64/quartus_cpf"
+variable BIN2IHEX                "../16t029-00_src/Source/bin2ihex"
+variable GENDEDIPROG             "../16t032-00_src/Source/genDediProg"
+variable ALTERA_QUARTUS_CPF      "$::env(QUARTUS_ROOTDIR)bin/quartus_cpf"
 variable FPGA_ADDHEADER          "../16t036-00_src/Source/fpga_addheader"
 
 if [string match "quartus_asm" $module] {
@@ -137,47 +138,47 @@ if [string match "quartus_asm" $module] {
    
    # hex file generation
    #----------------------------------------------------------
-#   post_message "Generate *.hex: "
-#   post_message "----------------"
-#   
-#   if { [catch {exec ${BIN2IHEX} -s -b ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.bin ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.hex} input] } {
-#      return -code error $input
-#   } else {
-#      post_message $input
-#   }
-#   
-#   # Dediprog file generation
-#   #----------------------------------------------------------
-#   post_message "Generate *.dedi: "
-#   post_message "-----------------"
-#   
-#   if { [catch {exec ${GENDEDIPROG} -s -x=0xFF -o=0x${FPGA_IMAGE_OFFSET} -f=0x${FLASH_SIZE_IN_BYTE_HEX} ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.rbf ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.bin ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.dedi} input] } {
-#      return -code error $input
-#   } else {
-#      post_message $input
-#   }
-#   
-#   # jic file generation
-#   #----------------------------------------------------------
-#   post_message "Generate *.jic: "
-#   post_message "----------------"
-#   
-#   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_SYNTHESIS}${COF_FILE_NAME}} input] } {
-#      return -code error $input
-#   } else {
-#      post_message $input
-#   }
-#   
-#   # jam file generation
-#   #----------------------------------------------------------
-#   post_message "Generate *.jam: "
-#   post_message "----------------"
-#   
-#   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam} input] } {
-#      return -code error $input
-#   } else {
-#      post_message $input
-#   }
+   post_message "Generate *.hex: "
+   post_message "----------------"
+   
+   if { [catch {exec ${BIN2IHEX} -s -b ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.bin ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.hex} input] } {
+      return -code error $input
+   } else {
+      post_message $input
+   }
+   
+   # Dediprog file generation
+   #----------------------------------------------------------
+   post_message "Generate *.dedi: "
+   post_message "-----------------"
+   
+   if { [catch {exec ${GENDEDIPROG} -s -x=0xFF -o=0x${FPGA_IMAGE_OFFSET} -f=0x${FLASH_SIZE_IN_BYTE_HEX} ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.rbf ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.bin ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.dedi} input] } {
+      return -code error $input
+   } else {
+      post_message $input
+   }
+   
+   # jic file generation
+   #----------------------------------------------------------
+   post_message "Generate *.jic: "
+   post_message "----------------"
+   
+   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_SYNTHESIS}${COF_FILE_NAME}} input] } {
+      return -code error $input
+   } else {
+      post_message $input
+   }
+   
+   # jam file generation
+   #----------------------------------------------------------
+   post_message "Generate *.jam: "
+   post_message "----------------"
+   
+   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam} input] } {
+      return -code error $input
+   } else {
+      post_message $input
+   }
    
    # rbf file generation
    #----------------------------------------------------------
@@ -188,10 +189,10 @@ if [string match "quartus_asm" $module] {
    post_message "-----------------------------------------------"
    file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.rbf  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.rbf
    file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.bin  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.bin
-#   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.dedi ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.dedi
-#   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.hex  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.hex
+   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.dedi ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.dedi
+   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.hex  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.hex
    file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.sof  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.sof
-#   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jic
-#   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jam
+   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jic
+   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jam
    
 }
