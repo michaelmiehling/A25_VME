@@ -158,27 +158,32 @@ if [string match "quartus_asm" $module] {
       post_message $input
    }
    
+################################################################################
+   # Please generate *.jic and *.jam manually. TCL script fails in Ubuntu Linux
+   # sue to libboost_system version incompatibility
+################################################################################
+
    # jic file generation
    #----------------------------------------------------------
-   post_message "Generate *.jic: "
-   post_message "----------------"
-   
-   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_SYNTHESIS}${COF_FILE_NAME}} input] } {
-      return -code error $input
-   } else {
-      post_message $input
-   }
-   
-   # jam file generation
-   #----------------------------------------------------------
-   post_message "Generate *.jam: "
-   post_message "----------------"
-   
-   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam} input] } {
-      return -code error $input
-   } else {
-      post_message $input
-   }
+#   post_message "Generate *.jic: "
+#   post_message "----------------"
+#   
+#   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_SYNTHESIS}${COF_FILE_NAME}} input] } {
+#      return -code error $input
+#   } else {
+#      post_message $input
+#   }
+#   
+#   # jam file generation
+#   #----------------------------------------------------------
+#   post_message "Generate *.jam: "
+#   post_message "----------------"
+#   
+#   if { [catch {exec ${ALTERA_QUARTUS_CPF} -c ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam} input] } {
+#      return -code error $input
+#   } else {
+#      post_message $input
+#   }
    
    # rbf file generation
    #----------------------------------------------------------
@@ -192,7 +197,7 @@ if [string match "quartus_asm" $module] {
    file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.dedi ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.dedi
    file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.hex  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.hex
    file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.sof  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.sof
-   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jic
-   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jam
+#   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jic  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jic
+#   file copy -force ${PROJECT_QUARTUS_PROG_DIR}${PROJECT_FILE_NAME}.jam  ${PROJECT_RELEASE_FOLDER}${PROJECT_RELEASE_NAME}.jam
    
 }
