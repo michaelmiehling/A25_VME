@@ -8,6 +8,7 @@ OBJ = genDediProg.o
 
 genDediProg: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) 
+	mv $@ ../Bin
 	
 clean:
 	rm -f *.o

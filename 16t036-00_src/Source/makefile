@@ -8,6 +8,7 @@ OBJ = tstopt.o fpga_addheader.o
 
 fpga_addheader: $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) 
+	mv $@ ../Bin/.
 	
 clean:
 	rm -f *.o
