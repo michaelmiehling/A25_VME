@@ -54,6 +54,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+library altera_mf;
+use altera_mf.altera_mf_components.all;
+
 entity error is
    port(
       clk               : in  std_logic;
@@ -114,37 +117,36 @@ signal ip_error_in   : std_logic_vector(14 downto 0);
 signal ip_error_last : std_logic_vector(14 downto 0) := (others => '0');
 -------------------------------------------------------------------------------
 
--- components -----------------------------------------------------------------
-component err_fifo
-   port(
-      aclr    : in  std_logic;
-      data    : in  std_logic_vector (15 downto 0);
-      rdclk   : in  std_logic;
-      rdreq   : in  std_logic;
-      wrclk   : in  std_logic;
-      wrreq   : in  std_logic;
-      q       : out std_logic_vector (15 downto 0);
-      rdempty : out std_logic;
-      wrfull  : out std_logic 
-   );
-end component;
--------------------------------------------------------------------------------
-
 begin
 -- instanciate components -----------------------------------------------------
-   err_fifo_comp : err_fifo
-      port map(
-         aclr    => err_fifo_clr,
-         data    => err_fifo_in,
-         rdclk   => wb_clk,
-         rdreq   => err_fifo_rd_enable,
-         wrclk   => clk,
-         wrreq   => err_fifo_wr_enable,
-         q       => err_fifo_out,
-         rdempty => err_fifo_empty,
-         -- change next line when increasing FIFO depth
-         wrfull  => open                                                         -- err_fifo_full
-      );
+	err_fifo_comp : dcfifo
+	  generic map (
+	  	intended_device_family => "Cyclone IV GX",
+	  	lpm_numwords  => 4,
+	  	lpm_showahead => "OFF",
+	  	lpm_type      => "dcfifo",
+	  	lpm_width     => 16,
+	  	lpm_widthu    => 2,
+	  	overflow_checking  => "ON",
+	  	rdsync_delaypipe   => 4,
+	  	underflow_checking => "ON",
+	  	use_eab => "ON",
+	  	write_aclr_synch => "OFF",
+	  	wrsync_delaypipe => 4)
+	  port map (
+	  	aclr    => err_fifo_clr,
+
+	  	wrclk   => clk,
+	  	wrreq   => err_fifo_wr_enable,
+	  	data    => err_fifo_in,
+      wrempty => open,
+	  	wrfull  => open,
+
+	  	rdclk   => wb_clk,
+	  	rdreq   => err_fifo_rd_enable,
+	  	q       => err_fifo_out,
+	  	rdempty => err_fifo_empty,
+      rdfull  => open);
 
 -------------------------------------------------------------------------------
    
