@@ -158,6 +158,7 @@ ARCHITECTURE z126_01_top_arch OF z126_01_top IS
          rden           : IN std_logic ;
          read_rdid      : IN std_logic ;
          read_status    : IN std_logic ;
+		     reset		      : IN STD_LOGIC ;
          sector_erase   : IN std_logic ;
          sector_protect : IN std_logic ;
          shift_bytes    : IN std_logic ;
@@ -890,6 +891,7 @@ BEGIN
       z126_01_pasmi_m25p32_i0 : z126_01_pasmi_m25p32
       PORT MAP (
          clkin          => clk_40mhz,
+         reset          => rst_clk_40mhz,
          
          addr           => wb_pasmi_m_o.addr,
          bulk_erase     => wb_pasmi_m_o.bulk_erase,
