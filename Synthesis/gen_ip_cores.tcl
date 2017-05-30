@@ -41,7 +41,7 @@ proc qmegawiz {files} {
       file delete "$dir/$i.qip"
       file copy -force "$dir/$i.txt" "$dir/$i.vhd"
 
-      set sf [open "| qmegawiz -silent \"-defaultfamily:$family\" \"-defaultdevice:$device\" \"$dir/$i.vhd\" 2>@stderr" r]
+      set sf [open "| qmegawiz -silent \"-defaultfamily:$family\" \"-defaultdevice:$device\" OPTIONAL_FILES=SIM_NETLIST \"$dir/$i.vhd\" 2>@stderr" r]
       while {[gets $sf line] >= 0} { post_message -type info "$line" }
       if {[catch {close $sf} err]} {
 	post_message -type error "Executing qmegawiz: $err"
