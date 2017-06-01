@@ -85,20 +85,8 @@ derive_clock_uncertainty
 # Set Input Delay
 #**************************************************************
 
-set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  10.000 [get_ports {gpio*}]
-set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {gpio*}]
 set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  10.000 [get_ports {fpga_test*}]
 set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {fpga_test*}]
-set_input_delay -add_delay -max -clock [get_clocks {clk_33}]  25.000 [get_ports {mm_dreq_n*}]
-set_input_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_dreq_n*}]
-set_input_delay -add_delay -max -clock [get_clocks {clk_33}]  25.000 [get_ports {mm_dtack_n*}]
-set_input_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_dtack_n*}]
-set_input_delay -add_delay -max -clock [get_clocks {clk_33}]  25.000 [get_ports {mm_irq_n*}]
-set_input_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_irq_n*}]
-set_input_delay -add_delay -max -clock [get_clocks {clk_33}]  25.000 [get_ports {mm_trig*}]
-set_input_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_trig*}]
-set_input_delay -add_delay -max -clock sr_clk_ext  8.500 [get_ports {sr_a[*}]
-set_input_delay -add_delay -min -clock sr_clk_ext  3.100 [get_ports {sr_a[*}]
 set_input_delay -add_delay -max -clock sr_clk_ext  8.500 [get_ports {sr_d[*}]
 set_input_delay -add_delay -min -clock sr_clk_ext  3.100 [get_ports {sr_d[*}]
 set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  12.000 [get_ports {vme_a[*}]
@@ -147,30 +135,8 @@ set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports 
 
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  1.000 [get_ports {fpga_test*}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {fpga_test*}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  1.000 [get_ports {gpio*}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {gpio*}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  2.000 [get_ports {led*}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {led*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_a[*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_a[*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_as_n}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_as_n}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_clk*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_clk*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_cs_n*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_cs_n*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_dack_n*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_dack_n*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_ds_n*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_ds_n*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_iack_n*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_iack_n*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_reset_n}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_reset_n}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_trig*}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_trig*}]
-set_output_delay -add_delay -max -clock [get_clocks {clk_33}]  5.000 [get_ports {mm_write_n}]
-set_output_delay -add_delay -min -clock [get_clocks {clk_33}]  0.000 [get_ports {mm_write_n}]
 set_output_delay -add_delay -max -clock sr_clk_ext  2.700 [get_ports {sr_a[*}]
 set_output_delay -add_delay -min -clock sr_clk_ext  -0.200 [get_ports {sr_a[*}]
 set_output_delay -add_delay -max -clock sr_clk_ext  2.700 [get_ports {sr_adsc_n}]
@@ -190,8 +156,8 @@ set_output_delay -add_delay -min -clock sr_clk_ext  -0.200 [get_ports {sr_oe_n}]
 
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  5.000 [get_ports {v2p_rstn}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {v2p_rstn}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_br_o_n*}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_br_o_n*}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_br_o*}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_br_o*}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_am[*}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_am[*}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_a[*}]
@@ -206,14 +172,14 @@ set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_am_oe_n}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_as_o_n}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_as_o_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_as_oe_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_as_oe_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_bbsy_o_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_bbsy_o_n}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_as_oe}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_as_oe}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_bbsy_o}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_bbsy_o}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_bclr_o_n}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_bclr_o_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_berr_o_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_berr_o_n}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_berr_o}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_berr_o}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_bg_o_n*}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_bg_o_n*}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_d[*}]
@@ -224,28 +190,28 @@ set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_d_oe_n}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_ds_o_n*}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_ds_o_n*}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_ds_oe_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_ds_oe_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_dtack_o_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_dtack_o_n}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_ds_oe}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_ds_oe}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_dtack_o}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_dtack_o}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_iack_n}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_iack_n}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_iack_o_n}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_iack_o_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_irq_o_n*}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_irq_o_n*}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_irq_o*}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_irq_o*}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_retry_o_n}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_retry_o_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_retry_oe_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_retry_oe_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_scon_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_scon_n}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_retry_oe}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_retry_oe}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_scon}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_scon}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_sysclk}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_sysclk}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_sysfail_o_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_sysfail_o_n}]
-set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_sysres_o_n}]
-set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_sysres_o_n}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_sysfail_o}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_sysfail_o}]
+set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_sysres_o}]
+set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_sysres_o}]
 set_output_delay -add_delay -max -clock [get_clocks {sys_clk}]  4.000 [get_ports {vme_write_n}]
 set_output_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_write_n}]
 
@@ -268,25 +234,20 @@ set_clock_groups -exclusive -group {refclk} \
                             -group {clk_125} \
                             -group {clk_50} \
                             -group {sys_clk} \
-                            -group {pcie_icdrclk} \
-                            -group {pcie_clk[0]} \
-                            -group {pcie_clk[1]} \
-                            -group {pcie_clk[2]} \
                             -group {clk_33} \
 
 #**************************************************************
 # Set False Path
 #**************************************************************
-set_false_path -from [get_clocks {clk_16mhz}] -to [get_ports {mm_clk*}]
 set_false_path -from [get_clocks {pcie_sys_clk}] -to [get_clocks {clk_125}]
 set_false_path -from [get_clocks {clk_125}] -to [get_clocks {pcie_sys_clk}]
-set_false_path  -from  [get_clocks {clk_16mhz}]  -to  [get_clocks {altera_reserved_tck}]
+#set_false_path  -from  [get_clocks {clk_16mhz}]  -to  [get_clocks {altera_reserved_tck}]
 set_false_path  -from  [get_clocks {clk_16mhz}]  -to  [get_clocks {refclk}]
 set_false_path  -from  [get_clocks {clk_16mhz}]  -to  [get_clocks {pcie_sys_clk}]
 set_false_path  -from  [get_clocks {sys_clk}]  -to  [get_clocks {pcie_sys_clk}]
 set_false_path  -from  [get_clocks {pcie_sys_clk}]  -to  [get_clocks {sys_clk}]
-set_false_path -from [get_keepers {*rdptr_g*}] -to [get_keepers {*ws_dgrp|dffpipe_re9:dffpipe18|dffe19a*}]
-set_false_path -from [get_keepers {*delayed_wrptr_g*}] -to [get_keepers {*rs_dgwp|dffpipe_qe9:dffpipe14|dffe15a*}]
+#set_false_path -from [get_keepers {*rdptr_g*}] -to [get_keepers {*ws_dgrp|dffpipe_re9:dffpipe18|dffe19a*}]
+#set_false_path -from [get_keepers {*delayed_wrptr_g*}] -to [get_keepers {*rs_dgwp|dffpipe_qe9:dffpipe14|dffe15a*}]
 set_false_path -to [get_keepers {*fifo_ram*}]
 set_false_path -to [get_keepers {*~OBSERVABLEDPRIODISABLE*}]
 set_false_path -to [get_keepers {*~OBSERVABLEDPRIOLOAD*}]
@@ -312,28 +273,28 @@ set_false_path -from [get_keepers {porst_n}]
 # Set Maximum Delay
 #**************************************************************
 
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|transmit_pcs0~OBSERVABLE_DIGITAL_RESET }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|transmit_pcs0~OBSERVABLEQUADRESET }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|receive_pcs0~OBSERVABLE_DIGITAL_RESET }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|receive_pcs0~OBSERVABLEQUADRESET }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLEDPRIODISABLE }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLERXDIGITALRESET }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLETXDIGITALRESET }] 20.000
-set_max_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLEDPRIOLOAD }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|transmit_pcs0~OBSERVABLE_DIGITAL_RESET }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|transmit_pcs0~OBSERVABLEQUADRESET }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|receive_pcs0~OBSERVABLE_DIGITAL_RESET }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|receive_pcs0~OBSERVABLEQUADRESET }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLEDPRIODISABLE }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLERXDIGITALRESET }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLETXDIGITALRESET }] 20.000
+set_max_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLEDPRIOLOAD }] 20.000
 
 
 #**************************************************************
 # Set Minimum Delay
 #**************************************************************
 
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|transmit_pcs0~OBSERVABLE_DIGITAL_RESET }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|transmit_pcs0~OBSERVABLEQUADRESET }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|receive_pcs0~OBSERVABLE_DIGITAL_RESET }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|receive_pcs0~OBSERVABLEQUADRESET }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLEDPRIODISABLE }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLERXDIGITALRESET }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLETXDIGITALRESET }] 0.000
-set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_x1_comp|hard_ip_x1_serdes:serdes|hard_ip_x1_serdes_alt_c3gxb_idf8:hard_ip_x1_serdes_alt_c3gxb_idf8_component|cent_unit0~OBSERVABLEDPRIOLOAD }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|transmit_pcs0~OBSERVABLE_DIGITAL_RESET }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|transmit_pcs0~OBSERVABLEQUADRESET }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|receive_pcs0~OBSERVABLE_DIGITAL_RESET }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|receive_pcs0~OBSERVABLEQUADRESET }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLEDPRIODISABLE }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLERXDIGITALRESET }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLETXDIGITALRESET }] 0.000
+set_min_delay -to [get_ports { ip_16z091_01_top:pcie|Hard_IP_x4:\gen_x4:Hard_IP_x4_comp|Hard_IP_x4_serdes:serdes|Hard_IP_x4_serdes_alt_c3gxb_41f8:Hard_IP_x4_serdes_alt_c3gxb_41f8_component|cent_unit0~OBSERVABLEDPRIOLOAD }] 0.000
 
 
 #**************************************************************
@@ -347,12 +308,4 @@ set_min_delay -to [get_ports { ip_16z091_01_top:pcie|hard_ip_x1:\gen_x1:Hard_IP_
 #*******************************************************************************************************************************************
 set_false_path -from *                    -to [get_registers sld*]
 set_false_path -from [get_registers sld*] -to * 
-
-#*******************************************************************************************************************************************
-# Altera - JTAG Debug Module Constraints
-#*******************************************************************************************************************************************
-set_false_path -from altera_reserved_tdi -to *
-set_false_path -from altera_reserved_tms -to *
-set_false_path -from * -to altera_reserved_tdo
-
 
