@@ -567,7 +567,6 @@ END COMPONENT;
    SIGNAL pll_locked    : std_logic;
 
    SIGNAL sr_d_oe       : std_logic;
-   SIGNAL board_status  : std_logic_vector(1 DOWNTO 0);
    SIGNAL sr_d_out      : std_logic_vector(15 DOWNTO 0);
    SIGNAL sr_d_in       : std_logic_vector(15 DOWNTO 0);
    
@@ -579,13 +578,11 @@ END COMPONENT;
    SIGNAL mailbox_irq_i    : std_logic;
    SIGNAL dma_irq          : std_logic;
    SIGNAL slot01n          : std_logic;      
-   SIGNAL test_vec         : test_vec_type;
    SIGNAL pll_locked_inv   : std_logic;
    SIGNAL startup_rst      : std_logic:='1';
    SIGNAL porst            : std_logic;
    SIGNAL porst_n_q        : std_logic:='0';
    SIGNAL porst_n          : std_logic:='0';
-   SIGNAL link_train_active   : std_logic;
    SIGNAL vme_berr         : std_logic;     
    SIGNAL vme_mstr_busy    : std_logic; 
    SIGNAL led_cnt          : std_logic_vector(17 DOWNTO 0);    -- 2^18 = 3.9 ms
@@ -835,7 +832,7 @@ pcie: ip_16z091_01_top
       error_r2c0         => open,
       error_msi_num      => open,
 
-      link_train_active  => link_train_active
+      link_train_active  => open
    );
       
  
@@ -916,7 +913,7 @@ sflash: z126_01_top
       rst_dir                 => sys_rst,      
       clk_indi                => sys_clk, 
       rst_indi                => sys_rst, 
-      board_status            => board_status,
+      board_status            => open,
       wbs_stb_dir             => '0',            
       wbs_ack_dir             => OPEN,           
       wbs_we_dir              => '0',            
@@ -956,8 +953,8 @@ PORT MAP (
    locmon_irq        => locmon_irq ,
    mailbox_irq       => mailbox_irq,
    dma_irq           => dma_irq ,
-	prevent_sysrst    => '0',
-   test_vec          => test_vec,
+   prevent_sysrst    => '0',
+   test_vec          => open,
 
    -- vmectrl slave
    wbs_stb_i         => wbsi_2.stb,
