@@ -1631,41 +1631,7 @@ component ip_16z091_01
 end component;
 
 component PCIeHardIPCycV
-   generic(
-      VENDOR_ID           : natural  := 16#1A88#;
-      DEVICE_ID           : natural  := 16#4D45#;
-      REVISION_ID         : natural  := 16#0#;
-      CLASS_CODE          : natural  := 16#068000#;
-      SUBSYSTEM_VENDOR_ID : natural  := 16#9B#;
-      SUBSYSTEM_DEVICE_ID : natural  := 16#5A91#;
-      USE_LANE            : string   := "x1";
-      RECONFIG_INTERFACES : positive := 2;                                     -- number of lanes +1
-
-      ---------------------------
-      -- BAR settings for func0
-      ---------------------------
-      IO_SPACE_BAR_0  : string  := "Disabled";
-      PREFETCH_BAR_0  : string  := "Disabled";
-      SIZE_MASK_BAR_0 : natural := 28;
-      IO_SPACE_BAR_1  : string  := "Disabled";
-      PREFETCH_BAR_1  : string  := "Disabled";
-      SIZE_MASK_BAR_1 : natural := 18;
-      IO_SPACE_BAR_2  : string  := "Disabled";
-      PREFETCH_BAR_2  : string  := "Disabled";
-      SIZE_MASK_BAR_2 : natural := 19;
-      IO_SPACE_BAR_3  : string  := "Disabled";
-      PREFETCH_BAR_3  : string  := "Disabled";
-      SIZE_MASK_BAR_3 : natural := 7;
-      IO_SPACE_BAR_4  : string  := "Disabled";
-      PREFETCH_BAR_4  : string  := "Disabled";
-      SIZE_MASK_BAR_4 : natural := 5;
-      IO_SPACE_BAR_5  : string  := "Disabled";
-      PREFETCH_BAR_5  : string  := "Disabled";
-      SIZE_MASK_BAR_5 : natural := 6;     
-      ROM_SIZE_MASK   : natural := 12
-   );
    port (
-      busy_xcvr_reconfig : in  std_logic; -- added due to sim warnings
       npor               : in  std_logic                      := '0';             --               npor.npor
       pin_perst          : in  std_logic                      := '0';             --                   .pin_perst
       test_in            : in  std_logic_vector(31 downto 0)  := (others => '0'); --           hip_ctrl.test_in
@@ -1792,10 +1758,8 @@ component PCIeHardIPCycV
       pme_to_cr          : in  std_logic                      := '0';             --                   .pme_to_cr
       pm_event           : in  std_logic                      := '0';             --                   .pm_event
       pme_to_sr          : out std_logic;                                         --                   .pme_to_sr
-      --reconfig_to_xcvr   : in  std_logic_vector(139 downto 0) := (others => '0'); --   reconfig_to_xcvr.reconfig_to_xcvr
-      reconfig_to_xcvr   : in  std_logic_vector(RECONFIG_INTERFACES*70-1 downto 0) := (others => '0'); --   reconfig_to_xcvr.reconfig_to_xcvr
-      --reconfig_from_xcvr : out std_logic_vector(91 downto 0);                     -- reconfig_from_xcvr.reconfig_from_xcvr
-      reconfig_from_xcvr : out std_logic_vector(RECONFIG_INTERFACES*46-1 downto 0);                     -- reconfig_from_xcvr.reconfig_from_xcvr
+		  reconfig_to_xcvr   : in  std_logic_vector(349 downto 0) := (others => '0'); --   reconfig_to_xcvr.reconfig_to_xcvr
+		  reconfig_from_xcvr : out std_logic_vector(229 downto 0);                    -- reconfig_from_xcvr.reconfig_from_xcvr
       app_msi_num        : in  std_logic_vector(4 downto 0)   := (others => '0'); --            int_msi.app_msi_num
       app_msi_req        : in  std_logic                      := '0';             --                   .app_msi_req
       app_msi_tc         : in  std_logic_vector(2 downto 0)   := (others => '0'); --                   .app_msi_tc
@@ -1853,9 +1817,6 @@ end component;
 -- Transceiver reconfiguration controller
 -------------------------------------------
 component CycVTransReconf
-   generic(
-      RECONFIG_INTERFACES : positive := 2                                     -- number of lanes +1
-   );
    port(
       reconfig_busy             : out std_logic;
       mgmt_clk_clk              : in  std_logic                      := '0';
@@ -1866,10 +1827,8 @@ component CycVTransReconf
       reconfig_mgmt_waitrequest : out std_logic;
       reconfig_mgmt_write       : in  std_logic                      := '0';
       reconfig_mgmt_writedata   : in  std_logic_vector(31 downto 0)  := (others => '0');
-      --reconfig_to_xcvr          : out std_logic_vector(349 downto 0);
-      --reconfig_from_xcvr        : in  std_logic_vector(229 downto 0)  := (others => '0')
-      reconfig_to_xcvr          : out std_logic_vector(RECONFIG_INTERFACES*70-1 downto 0);
-      reconfig_from_xcvr        : in  std_logic_vector(RECONFIG_INTERFACES*46-1 downto 0) := (others => '0')
+      reconfig_to_xcvr          : out std_logic_vector(349 downto 0);
+      reconfig_from_xcvr        : in  std_logic_vector(229 downto 0)  := (others => '0')
    );
 end component;
 -------------------------------------------------------------------------------
@@ -2092,42 +2051,8 @@ begin
 
    gen_cycv_x1: if USE_LANES = "001" generate
       PCIeHardIP_CycV_x1_comp : PCIeHardIPCycV
-      generic map(
-         VENDOR_ID           => VENDOR_ID,
-         DEVICE_ID           => DEVICE_ID,
-         REVISION_ID         => REVISION_ID,
-         CLASS_CODE          => CLASS_CODE,
-         SUBSYSTEM_VENDOR_ID => SUBSYSTEM_VENDOR_ID,
-         SUBSYSTEM_DEVICE_ID => SUBSYSTEM_DEVICE_ID,
-         USE_LANE            => "x1",
-         RECONFIG_INTERFACES => 2,                               -- number of lanes +1
-
-         ---------------------------
-         -- BAR settings for func0
-         ---------------------------
-         IO_SPACE_BAR_0  => IO_SPACE_0,
-         PREFETCH_BAR_0  => PREFETCH_0,
-         SIZE_MASK_BAR_0 => SIZE_MASK_0,
-         IO_SPACE_BAR_1  => IO_SPACE_1,
-         PREFETCH_BAR_1  => PREFETCH_1,
-         SIZE_MASK_BAR_1 => SIZE_MASK_1,
-         IO_SPACE_BAR_2  => IO_SPACE_2,
-         PREFETCH_BAR_2  => PREFETCH_2,
-         SIZE_MASK_BAR_2 => SIZE_MASK_2,
-         IO_SPACE_BAR_3  => IO_SPACE_3,
-         PREFETCH_BAR_3  => PREFETCH_3,
-         SIZE_MASK_BAR_3 => SIZE_MASK_3,
-         IO_SPACE_BAR_4  => IO_SPACE_4,
-         PREFETCH_BAR_4  => PREFETCH_4,
-         SIZE_MASK_BAR_4 => SIZE_MASK_4,
-         IO_SPACE_BAR_5  => IO_SPACE_5,
-         PREFETCH_BAR_5  => PREFETCH_5,
-         SIZE_MASK_BAR_5 => SIZE_MASK_5,
-         ROM_SIZE_MASK   => SIZE_MASK_ROM
-      )
       port map(
          -- inputs:
-         busy_xcvr_reconfig => reconfig_busy_int,
          app_int_sts_vec    => app_int_sts_int,
          app_msi_num        => app_msi_num_int,
          app_msi_req        => app_msi_req_int,
@@ -2312,9 +2237,6 @@ begin
       -- manage CycloneV transceiver
       --------------------------------
       cycv_trans_reconf_i0 : CycVTransReconf
-         generic map(
-            RECONFIG_INTERFACES => 2                             -- number of lanes +1
-         )
          port map(
             -- inputs
             mgmt_clk_clk              => ref_clk,                -- CycloneV: 75-100MHz
@@ -2337,42 +2259,8 @@ begin
 
    gen_cycv_x2: if USE_LANES = "010" generate
       PCIeHardIP_CycV_x1_comp : PCIeHardIPCycV
-      generic map(
-         VENDOR_ID           => VENDOR_ID,
-         DEVICE_ID           => DEVICE_ID,
-         REVISION_ID         => REVISION_ID,
-         CLASS_CODE          => CLASS_CODE,
-         SUBSYSTEM_VENDOR_ID => SUBSYSTEM_VENDOR_ID,
-         SUBSYSTEM_DEVICE_ID => SUBSYSTEM_DEVICE_ID,
-         USE_LANE            => "x2",
-         RECONFIG_INTERFACES => 3,                               -- number of lanes +1
-
-         ---------------------------
-         -- BAR settings for func0
-         ---------------------------
-         IO_SPACE_BAR_0  => IO_SPACE_0,
-         PREFETCH_BAR_0  => PREFETCH_0,
-         SIZE_MASK_BAR_0 => SIZE_MASK_0,
-         IO_SPACE_BAR_1  => IO_SPACE_1,
-         PREFETCH_BAR_1  => PREFETCH_1,
-         SIZE_MASK_BAR_1 => SIZE_MASK_1,
-         IO_SPACE_BAR_2  => IO_SPACE_2,
-         PREFETCH_BAR_2  => PREFETCH_2,
-         SIZE_MASK_BAR_2 => SIZE_MASK_2,
-         IO_SPACE_BAR_3  => IO_SPACE_3,
-         PREFETCH_BAR_3  => PREFETCH_3,
-         SIZE_MASK_BAR_3 => SIZE_MASK_3,
-         IO_SPACE_BAR_4  => IO_SPACE_4,
-         PREFETCH_BAR_4  => PREFETCH_4,
-         SIZE_MASK_BAR_4 => SIZE_MASK_4,
-         IO_SPACE_BAR_5  => IO_SPACE_5,
-         PREFETCH_BAR_5  => PREFETCH_5,
-         SIZE_MASK_BAR_5 => SIZE_MASK_5,
-         ROM_SIZE_MASK   => SIZE_MASK_ROM
-      )
       port map(
          -- inputs:
-         busy_xcvr_reconfig => reconfig_busy_int,
          app_int_sts_vec    => app_int_sts_int,
          app_msi_num        => app_msi_num_int,
          app_msi_req        => app_msi_req_int,
@@ -2557,9 +2445,6 @@ begin
       -- manage CycloneV transceiver
       --------------------------------
       cycv_trans_reconf_i0 : CycVTransReconf
-         generic map(
-            RECONFIG_INTERFACES => 3                             -- number of lanes +1
-         )
          port map(
             -- inputs
             mgmt_clk_clk              => ref_clk,                -- CycloneV: 75-100MHz
@@ -2582,42 +2467,8 @@ begin
 
    gen_cycv_x4: if USE_LANES = "100" generate
       PCIeHardIP_CycV_x1_comp : PCIeHardIPCycV
-      generic map(
-         VENDOR_ID           => VENDOR_ID,
-         DEVICE_ID           => DEVICE_ID,
-         REVISION_ID         => REVISION_ID,
-         CLASS_CODE          => CLASS_CODE,
-         SUBSYSTEM_VENDOR_ID => SUBSYSTEM_VENDOR_ID,
-         SUBSYSTEM_DEVICE_ID => SUBSYSTEM_DEVICE_ID,
-         USE_LANE            => "x4",
-         RECONFIG_INTERFACES => 5,                               -- number of lanes +1
-
-         ---------------------------
-         -- BAR settings for func0
-         ---------------------------
-         IO_SPACE_BAR_0  => IO_SPACE_0,
-         PREFETCH_BAR_0  => PREFETCH_0,
-         SIZE_MASK_BAR_0 => SIZE_MASK_0,
-         IO_SPACE_BAR_1  => IO_SPACE_1,
-         PREFETCH_BAR_1  => PREFETCH_1,
-         SIZE_MASK_BAR_1 => SIZE_MASK_1,
-         IO_SPACE_BAR_2  => IO_SPACE_2,
-         PREFETCH_BAR_2  => PREFETCH_2,
-         SIZE_MASK_BAR_2 => SIZE_MASK_2,
-         IO_SPACE_BAR_3  => IO_SPACE_3,
-         PREFETCH_BAR_3  => PREFETCH_3,
-         SIZE_MASK_BAR_3 => SIZE_MASK_3,
-         IO_SPACE_BAR_4  => IO_SPACE_4,
-         PREFETCH_BAR_4  => PREFETCH_4,
-         SIZE_MASK_BAR_4 => SIZE_MASK_4,
-         IO_SPACE_BAR_5  => IO_SPACE_5,
-         PREFETCH_BAR_5  => PREFETCH_5,
-         SIZE_MASK_BAR_5 => SIZE_MASK_5,
-         ROM_SIZE_MASK   => SIZE_MASK_ROM
-      )
       port map(
          -- inputs:
-         busy_xcvr_reconfig => reconfig_busy_int,
          app_int_sts_vec    => app_int_sts_int,
          app_msi_num        => app_msi_num_int,
          app_msi_req        => app_msi_req_int,
@@ -2795,9 +2646,6 @@ begin
       -- manage CycloneV transceiver
       --------------------------------
       cycv_trans_reconf_i0 : CycVTransReconf
-         generic map(
-            RECONFIG_INTERFACES => 5                             -- number of lanes +1
-         )
          port map(
             -- inputs
             mgmt_clk_clk              => ref_clk,                -- CycloneV: 75-100MHz
