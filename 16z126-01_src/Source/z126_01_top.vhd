@@ -158,6 +158,7 @@ ARCHITECTURE z126_01_top_arch OF z126_01_top IS
          rden           : IN std_logic ;
          read_rdid      : IN std_logic ;
          read_status    : IN std_logic ;
+		     reset		      : IN STD_LOGIC ;
          sector_erase   : IN std_logic ;
          sector_protect : IN std_logic ;
          shift_bytes    : IN std_logic ;
@@ -287,53 +288,53 @@ ARCHITECTURE z126_01_top_arch OF z126_01_top IS
       );
    END COMPONENT;
    
-   COMPONENT z126_01_ru_cyclonev_m25p32 IS
-      PORT
-      (
-         clock          : IN std_logic;
-         data_in        : IN std_logic_vector(23 DOWNTO 0);
-         param          : IN std_logic_vector(2 DOWNTO 0);
-         read_param     : IN std_logic;
-         reconfig       : IN std_logic;
-         reset          : IN std_logic;
-         reset_timer    : IN std_logic;
-         write_param    : IN std_logic;
-         busy           : OUT std_logic;
-         data_out       : OUT std_logic_vector(23 DOWNTO 0)
-      );
-   END COMPONENT;
-   
-   COMPONENT z126_01_ru_cyclonev_m25p64 IS
-      PORT
-      (
-         clock          : IN std_logic;
-         data_in        : IN std_logic_vector(23 DOWNTO 0);
-         param          : IN std_logic_vector(2 DOWNTO 0);
-         read_param     : IN std_logic;
-         reconfig       : IN std_logic;
-         reset          : IN std_logic;
-         reset_timer    : IN std_logic;
-         write_param    : IN std_logic;
-         busy           : OUT std_logic;
-         data_out       : OUT std_logic_vector(23 DOWNTO 0)
-      );
-   END COMPONENT;
-   
-   COMPONENT z126_01_ru_cyclonev_m25p128 IS
-      PORT
-      (
-         clock          : IN std_logic;
-         data_in        : IN std_logic_vector(23 DOWNTO 0);
-         param          : IN std_logic_vector(2 DOWNTO 0);
-         read_param     : IN std_logic;
-         reconfig       : IN std_logic;
-         reset          : IN std_logic;
-         reset_timer    : IN std_logic;
-         write_param    : IN std_logic;
-         busy           : OUT std_logic;
-         data_out       : OUT std_logic_vector(23 DOWNTO 0)
-      );
-   END COMPONENT;
+   --COMPONENT z126_01_ru_cyclonev_m25p32 IS
+   --   PORT
+   --   (
+   --      clock          : IN std_logic;
+   --      data_in        : IN std_logic_vector(23 DOWNTO 0);
+   --      param          : IN std_logic_vector(2 DOWNTO 0);
+   --      read_param     : IN std_logic;
+   --      reconfig       : IN std_logic;
+   --      reset          : IN std_logic;
+   --      reset_timer    : IN std_logic;
+   --      write_param    : IN std_logic;
+   --      busy           : OUT std_logic;
+   --      data_out       : OUT std_logic_vector(23 DOWNTO 0)
+   --   );
+   --END COMPONENT;
+   --
+   --COMPONENT z126_01_ru_cyclonev_m25p64 IS
+   --   PORT
+   --   (
+   --      clock          : IN std_logic;
+   --      data_in        : IN std_logic_vector(23 DOWNTO 0);
+   --      param          : IN std_logic_vector(2 DOWNTO 0);
+   --      read_param     : IN std_logic;
+   --      reconfig       : IN std_logic;
+   --      reset          : IN std_logic;
+   --      reset_timer    : IN std_logic;
+   --      write_param    : IN std_logic;
+   --      busy           : OUT std_logic;
+   --      data_out       : OUT std_logic_vector(23 DOWNTO 0)
+   --   );
+   --END COMPONENT;
+   --
+   --COMPONENT z126_01_ru_cyclonev_m25p128 IS
+   --   PORT
+   --   (
+   --      clock          : IN std_logic;
+   --      data_in        : IN std_logic_vector(23 DOWNTO 0);
+   --      param          : IN std_logic_vector(2 DOWNTO 0);
+   --      read_param     : IN std_logic;
+   --      reconfig       : IN std_logic;
+   --      reset          : IN std_logic;
+   --      reset_timer    : IN std_logic;
+   --      write_param    : IN std_logic;
+   --      busy           : OUT std_logic;
+   --      data_out       : OUT std_logic_vector(23 DOWNTO 0)
+   --   );
+   --END COMPONENT;
    
    COMPONENT z126_01_clk_trans_wb2wb IS
       GENERIC (
@@ -890,6 +891,7 @@ BEGIN
       z126_01_pasmi_m25p32_i0 : z126_01_pasmi_m25p32
       PORT MAP (
          clkin          => clk_40mhz,
+         reset          => rst_clk_40mhz,
          
          addr           => wb_pasmi_m_o.addr,
          bulk_erase     => wb_pasmi_m_o.bulk_erase,
@@ -1048,59 +1050,60 @@ BEGIN
       END GENERATE;
       
       -- remote update controller altera module for cyclone 5 device
-      z126_01_ru_cyclonev_gen: IF FPGA_FAMILY = CYCLONE5 GENERATE
-         z126_01_ru_cyclonev_m25p128_gen: IF FLASH_TYPE = M25P128 GENERATE
-            
-            z126_01_ru_cyclonev_i0 : z126_01_ru_cyclonev_m25p128
-            PORT MAP (
-               clock             => clk_40mhz,
-               reset             => ru_ctrl_reset,
-               
-               param             => ru_ctrl_param,
-               read_param        => ru_ctrl_read_param,
-               reconfig          => ru_ctrl_reconfig,
-               reset_timer       => ru_ctrl_reset_timer,
-               write_param       => ru_ctrl_write_param,
-               data_in           => ru_ctrl_data_in,
-               data_out          => ru_ctrl_data_out(23 DOWNTO 0),
-               busy              => ru_ctrl_busy
-            );
-         END GENERATE;
-         
-         z126_01_ru_cyclonev_m25p64_gen: IF FLASH_TYPE = M25P64 GENERATE
-            z126_01_ru_cyclonev_i0 : z126_01_ru_cyclonev_m25p64
-            PORT MAP (
-               clock             => clk_40mhz,
-               reset             => ru_ctrl_reset,
-               
-               param             => ru_ctrl_param,
-               read_param        => ru_ctrl_read_param,
-               reconfig          => ru_ctrl_reconfig,
-               reset_timer       => ru_ctrl_reset_timer,
-               write_param       => ru_ctrl_write_param,
-               data_in           => ru_ctrl_data_in,
-               data_out          => ru_ctrl_data_out(23 DOWNTO 0),
-               busy              => ru_ctrl_busy
-            );
-         END GENERATE;
-         
-         z126_01_ru_cyclonev_m25p32_gen: IF FLASH_TYPE = M25P32 GENERATE
-            z126_01_ru_cyclonev_i0 : z126_01_ru_cyclonev_m25p32
-            PORT MAP (
-               clock             => clk_40mhz,
-               reset             => ru_ctrl_reset,
-               
-               param             => ru_ctrl_param,
-               read_param        => ru_ctrl_read_param,
-               reconfig          => ru_ctrl_reconfig,
-               reset_timer       => ru_ctrl_reset_timer,
-               write_param       => ru_ctrl_write_param,
-               data_in           => ru_ctrl_data_in,
-               data_out          => ru_ctrl_data_out(23 DOWNTO 0),
-               busy              => ru_ctrl_busy
-            );
-         END GENERATE;
-      END GENERATE;
+      ASSERT NOT (FPGA_FAMILY = CYCLONE5) REPORT "Z126: for Cyclone V support, please first generate Altera Remote Update IP-core for your Flash" SEVERITY failure;
+      --z126_01_ru_cyclonev_gen: IF FPGA_FAMILY = CYCLONE5 GENERATE
+      --   z126_01_ru_cyclonev_m25p128_gen: IF FLASH_TYPE = M25P128 GENERATE
+      --      
+      --      z126_01_ru_cyclonev_i0 : z126_01_ru_cyclonev_m25p128
+      --      PORT MAP (
+      --         clock             => clk_40mhz,
+      --         reset             => ru_ctrl_reset,
+      --         
+      --         param             => ru_ctrl_param,
+      --         read_param        => ru_ctrl_read_param,
+      --         reconfig          => ru_ctrl_reconfig,
+      --         reset_timer       => ru_ctrl_reset_timer,
+      --         write_param       => ru_ctrl_write_param,
+      --         data_in           => ru_ctrl_data_in,
+      --         data_out          => ru_ctrl_data_out(23 DOWNTO 0),
+      --         busy              => ru_ctrl_busy
+      --      );
+      --   END GENERATE;
+      --   
+      --   z126_01_ru_cyclonev_m25p64_gen: IF FLASH_TYPE = M25P64 GENERATE
+      --      z126_01_ru_cyclonev_i0 : z126_01_ru_cyclonev_m25p64
+      --      PORT MAP (
+      --         clock             => clk_40mhz,
+      --         reset             => ru_ctrl_reset,
+      --         
+      --         param             => ru_ctrl_param,
+      --         read_param        => ru_ctrl_read_param,
+      --         reconfig          => ru_ctrl_reconfig,
+      --         reset_timer       => ru_ctrl_reset_timer,
+      --         write_param       => ru_ctrl_write_param,
+      --         data_in           => ru_ctrl_data_in,
+      --         data_out          => ru_ctrl_data_out(23 DOWNTO 0),
+      --         busy              => ru_ctrl_busy
+      --      );
+      --   END GENERATE;
+      --   
+      --   z126_01_ru_cyclonev_m25p32_gen: IF FLASH_TYPE = M25P32 GENERATE
+      --      z126_01_ru_cyclonev_i0 : z126_01_ru_cyclonev_m25p32
+      --      PORT MAP (
+      --         clock             => clk_40mhz,
+      --         reset             => ru_ctrl_reset,
+      --         
+      --         param             => ru_ctrl_param,
+      --         read_param        => ru_ctrl_read_param,
+      --         reconfig          => ru_ctrl_reconfig,
+      --         reset_timer       => ru_ctrl_reset_timer,
+      --         write_param       => ru_ctrl_write_param,
+      --         data_in           => ru_ctrl_data_in,
+      --         data_out          => ru_ctrl_data_out(23 DOWNTO 0),
+      --         busy              => ru_ctrl_busy
+      --      );
+      --   END GENERATE;
+      --END GENERATE;
       
       -- remote update controller
       z126_01_ru_gen: IF FPGA_FAMILY /= CYCLONE5 GENERATE

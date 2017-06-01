@@ -504,6 +504,27 @@ PORT (
      );
 END COMPONENT;
 
+   function f_sel_pcie_lanes(simulation : boolean)
+     return std_logic_vector is
+   begin
+     if (simulation) then
+       return "001"; -- x1 for simulation
+     else
+       return "100"; -- x4 for synthesis
+     end if;
+   end function;
+
+   function f_sel_cham_hex(simulation : boolean)
+     return string is
+   begin
+     if (simulation) then
+       return "../../A25_VME/Source/chameleon.hex";
+     else
+       return "../Source/chameleon.hex";
+     end if;
+   end function;
+
+
    CONSTANT CONST_500HZ : integer := 66667; -- half 500Hz clock period counter value at 66MHz
 
    SIGNAL sys_clk       : std_logic;                        -- system clock 66 MHz
@@ -729,8 +750,7 @@ pcie: ip_16z091_01_top
       SIMULATION           => '1',
       FPGA_FAMILY          => CYCLONE4,
       IRQ_WIDTH            => 13,
---      USE_LANES            => "001",			-- x1 for simulation
-      USE_LANES            => "100",		-- x4 for synthesis
+      USE_LANES            => f_sel_pcie_lanes(SIMULATION),
       NR_OF_WB_SLAVES      => NR_OF_WB_SLAVES,
       NR_OF_BARS_USED      => 5,
       VENDOR_ID            => 16#1A88#,
@@ -826,7 +846,7 @@ pcie: ip_16z091_01_top
       FPGA_FAMILY    => FPGA_FAMILY,
       read_only      => 1,
       USEDW_WIDTH    => 9, -- 0x200 = 512
-      LOCATION       => "../Source/chameleon.hex"
+      LOCATION       => f_sel_cham_hex(SIMULATION)
    )
    PORT MAP (
       clk            => sys_clk,

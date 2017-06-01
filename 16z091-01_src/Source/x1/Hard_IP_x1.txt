@@ -41,7 +41,6 @@
 -- Retrieval info:      <PRIVATE name = "actualBAR4Size" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "actualBAR5AvalonAddress" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "actualBAR5Size" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "allowedDeviceFamilies" value="[Arria V, Cyclone IV E, Cyclone IV GX]"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "altgx_generated" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "clockSource" value="N/A"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "contextState" value="NativeContext"  type="STRING"  enable="1" />
@@ -95,13 +94,13 @@
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_0_avalon_address" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_0_hardwired" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_0_pci_address" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pci_bar_0_prefetchable" value="true"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pci_bar_0_prefetchable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_1_auto_avalon_address" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_1_auto_sized" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_1_avalon_address" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_1_hardwired" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_1_pci_address" value="0"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pci_bar_1_prefetchable" value="true"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pci_bar_1_prefetchable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_2_auto_avalon_address" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_2_auto_sized" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pci_bar_2_avalon_address" value="0"  type="STRING"  enable="1" />
@@ -152,24 +151,24 @@
 -- Retrieval info:      <PRIVATE name = "p_pcie_altgx_keyParameters_used" value="{p_pcie_enable_hip=1, p_pcie_number_of_lanes=x1, p_pcie_rate=Gen1 (2.5 Gbps), p_pcie_phy=Cyclone IV GX, p_pcie_txrx_clock=100 MHz}"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_app_signal_interface" value="AvalonST"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_avalon_mm_lite" value="0"  type="INTEGER"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_0" value="256 MBytes - 28 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_1" value="256 KBytes - 18 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_2" value="512 KBytes - 19 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_3" value="128 Bytes - 7 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_4" value="32 Bytes - 5 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_5" value="64 Bytes - 6 bits"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_0" value="32-bit Prefetchable Memory"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_1" value="32-bit Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_0" value="256 KBytes - 18 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_1" value="1 MByte - 20 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_2" value="32 MBytes - 25 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_3" value="512 MBytes - 29 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_4" value="16 MBytes - 24 bits"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_size_bar_5" value="N/A"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_0" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_1" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_2" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_3" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_4" value="I/O Address Space"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_5" value="I/O Address Space"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_4" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_type_bar_5" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_0" value="1"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_1" value="1"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_2" value="1"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_3" value="1"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_4" value="1"  type="BOOLEAN"  enable="1" />
--- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_5" value="1"  type="BOOLEAN"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "p_pcie_bar_used_bar_5" value="0"  type="BOOLEAN"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_channel_number" value="0"  type="INTEGER"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_chk_io" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_pcie_class_code" value="0x068000"  type="STRING"  enable="1" />
@@ -331,9 +330,9 @@
 -- Retrieval info:      <PRIVATE name = "uiAvalonHWPCIAddress9" value="0x00000000"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiAvalonTranslationTable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiBar0PCIAddress" value="0x00000000"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiBar0Prefetchable" value="true"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiBar0Prefetchable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiBar1PCIAddress" value="0x00000000"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiBar1Prefetchable" value="true"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiBar1Prefetchable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiBar2PCIAddress" value="0x00000000"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiBar2Prefetchable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiBar3PCIAddress" value="0x00000000"  type="STRING"  enable="1" />
@@ -345,12 +344,12 @@
 -- Retrieval info:      <PRIVATE name = "uiCRAInfoPanel" value="other"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiExpROMType" value="Select to Enable"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiFixedTable" value="true"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiPCIBar0Type" value="32-bit Prefetchable Memory"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiPCIBar1Type" value="32-bit Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiPCIBar0Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiPCIBar1Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar2Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBar3Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiPCIBar4Type" value="I/O Address Space"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "uiPCIBar5Type" value="I/O Address Space"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiPCIBar4Type" value="32-bit Non-Prefetchable Memory"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "uiPCIBar5Type" value="Disable this and all higher BARs"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBarTable" value="false"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIBusArbiter" value="external"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "uiPCIDeviceMode" value="masterTarget"  type="STRING"  enable="1" />
@@ -361,10 +360,11 @@
 -- Retrieval info:      <PRIVATE name = "ui_pcie_msix_pba_bir" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "ui_pcie_msix_table_bir" value="0"  type="STRING"  enable="1" />
 -- Retrieval info:      <PRIVATE name = "p_tx_cdc_full_value" value="12"  type="INTEGER"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "allowedDeviceFamilies" value="[Arria V, Cyclone IV E, Cyclone IV GX, Cyclone V]"  type="STRING"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "simgen_enable">
 -- Retrieval info:      <PRIVATE name = "language" value="VHDL"  type="STRING"  enable="1" />
--- Retrieval info:      <PRIVATE name = "enabled" value="0"  type="STRING"  enable="1" />
+-- Retrieval info:      <PRIVATE name = "enabled" value="1"  type="STRING"  enable="1" />
 -- Retrieval info:     </NAMESPACE>
 -- Retrieval info:     <NAMESPACE name = "greybox">
 -- Retrieval info:      <PRIVATE name = "gb_enabled" value="0"  type="STRING"  enable="1" />
