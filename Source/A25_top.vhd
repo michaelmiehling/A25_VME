@@ -46,6 +46,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
+USE ieee.numeric_std.ALL;
 USE work.wb_pkg.ALL;
 USE work.fpga_pkg_2.ALL;
 USE work.z126_01_pkg.ALL;
@@ -534,7 +535,7 @@ END COMPONENT;
    SIGNAL clk_50        : std_logic;                        -- 50 MHz clock for reconfig_clk and cal_blk_clk
    SIGNAL clk_125       : std_logic;                        -- 125 MHz clock for fixed_clk
    SIGNAL clk_500       : std_logic;                        -- 500 Hz clock
-   SIGNAL cnt_500hz     : integer;
+   SIGNAL cnt_500hz     : unsigned(16 downto 0);
 
    -- MASTER SIGNALS
    SIGNAL wbmo_0       : wbo_type;
@@ -688,11 +689,11 @@ BEGIN
    PROCESS(sys_clk, sys_rst)
    BEGIN
       IF sys_rst = '1' THEN
-         cnt_500hz <= 0;
+         cnt_500hz <= (others => '0');
          clk_500 <= '0';
       ELSIF sys_clk'EVENT AND sys_clk = '1' THEN
-         IF cnt_500hz = 0 THEN 
-            cnt_500hz <= CONST_500HZ;
+         IF cnt_500hz = to_unsigned(0, cnt_500hz'length) THEN 
+            cnt_500hz <= to_unsigned(CONST_500HZ, cnt_500hz'length);
             clk_500 <= NOT clk_500;
          ELSE
             cnt_500hz <= cnt_500hz - 1;
