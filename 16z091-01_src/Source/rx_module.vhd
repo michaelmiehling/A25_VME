@@ -228,6 +228,10 @@ signal int_sop_q : std_logic;
 signal int_tlp_type : std_logic_vector(4 downto 0);
 signal int_tlp_fmt  : std_logic_vector(2 downto 0);
 
+-- define some aliases for easier handling
+alias rx_data0_type is rx_st_data0(28 downto 24);
+alias rx_data0_fmt  is rx_st_data0(31 downto 29);
+
 -- debug signals: none
 
 
@@ -243,18 +247,33 @@ begin
    int_rx_fifo_c_usedw    <= int_rx_wrusedw_c_temp;
    int_rx_fifo_wr_usedw   <= int_rx_wrusedw_wr_temp;
 
-   --int_tlp_type <= (others => '0') when rst = '1' else
-                   --rx_st_data0(28 downto 24) when rx_st_valid0 = '1' and rx_st_sop0 = '1' else
-                   --(others => '0');
-   int_tlp_type <= (others => '0') when rst = '1' else
-                   rx_st_data0(28 downto 24) when rx_st_valid0 = '1' and rx_st_sop0 = '1';
-   int_tlp_fmt  <= (others => '0') when rst = '1' else
-                   rx_st_data0(31 downto 29) when rx_st_valid0 = '1' and rx_st_sop0 = '1' else
-                   (others => '0');
-
 -- +----------------------------------------------------------------------------
 -- | process section
 -- +----------------------------------------------------------------------------
+   -- registers to remembe the type and fmt for the last received TLP
+   process(rst, clk)
+   begin
+     if rising_edge(clk) then
+       if rst = '1' then
+         int_tlp_type <= (others=>'0');
+       elsif (rx_st_valid0 = '1' and rx_st_sop0 = '1') then
+         int_tlp_type <= rx_data0_type;
+       end if;
+     end if;
+   end process;
+
+   process(rst, clk)
+   begin
+     if rising_edge(clk) then
+       if rst = '1' then
+         int_tlp_fmt <= (others=>'0');
+       elsif (rx_st_valid0 = '1' and rx_st_sop0 = '1') then
+         int_tlp_fmt <= rx_data0_fmt;
+       end if;
+     end if;
+   end process;
+
+
    rx_sig_manage : process(rst, clk)
    begin
       if rst = '1' then
@@ -336,8 +355,8 @@ begin
          rx_st_sop0          => rx_st_sop0,
          rx_st_eop0          => rx_st_eop0,
          rx_st_be0           => rx_st_be0,
-         tlp_type_i          => int_tlp_type,
-         tlp_fmt_i           => int_tlp_fmt,
+         tlp_type_i          => rx_data0_type,
+         tlp_fmt_i           => rx_data0_fmt,
          
          -- FIFO
          rx_fifo_c_enable_o  => int_c_wr_enable,
