@@ -128,7 +128,7 @@ ARCHITECTURE vme_dma_mstr_arch OF vme_dma_mstr IS
    SIGNAL load_cnt_int           : std_logic;
    SIGNAL en_mstr_dat_i_reg_int  : std_logic;
    SIGNAL clr_dma_en_int         : std_logic;         
-   SIGNAL cti_int                : std_logic_vector(2 DOWNTO 0); 
+   SIGNAL cti_int,cti_int_d0     : std_logic_vector(2 DOWNTO 0); 
 BEGIN
               
    cti <= cti_int;
@@ -151,6 +151,7 @@ BEGIN
       sour_dest <= '0';
       get_bd_int <= '1';
       clr_dma_en_int <= '0';
+      cti_int_d0  <= "000";
    ELSIF clk'EVENT AND clk = '1' THEN
       load_cnt_int <= en_mstr_dat_i_reg_int;
       
@@ -159,6 +160,8 @@ BEGIN
       ELSIF clr_dma_en_int = '1' OR (ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' AND mstr_state = write_data) THEN
         get_bd_int <= '1';
       END IF;
+
+      cti_int_d0 <= cti_int;
       
       CASE mstr_state IS
          WHEN idle =>
@@ -295,7 +298,7 @@ BEGIN
 END PROCESS mstr_fsm;
    
 mstr_out : PROCESS (mstr_state, ack_i, err_i, fifo_empty, fifo_almost_full, reached_size, dma_act_bd, 
-                     start_dma, dma_en, dma_null, mstr_ack, inc_sour, inc_dest, boundary)
+                     start_dma, dma_en, dma_null, mstr_ack, inc_sour, inc_dest, boundary, cti_int_d0)
 BEGIN
    CASE mstr_state IS
       WHEN idle =>
@@ -360,7 +363,7 @@ BEGIN
          ELSE 
             stb_o    <= '1';                  -- keep request
             inc_adr  <= '0';
-            cti_int  <= cti_int;
+            cti_int  <= cti_int_d0;
          END IF;           
          fifo_rd  <= '0';
          mstr_req <= '0';
@@ -428,7 +431,7 @@ BEGIN
             stb_o    <= '1';                  -- keep stb_o asserted
             fifo_rd  <= '0';
             inc_adr  <= '0';
-            cti_int  <= cti_int;
+            cti_int  <= cti_int_d0;
          END IF;           
          mstr_req <= '0';
         
