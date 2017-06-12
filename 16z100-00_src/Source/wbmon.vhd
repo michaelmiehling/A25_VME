@@ -521,8 +521,8 @@ enable <= '1';
                   wb_state <= IDLE;
                END IF;
 
-               IF (stb = '0') THEN
-                  outp(e,c,"Strobe went low without Acknowledge", x"0d", enable , ERROR);
+               IF (cyc = '0') THEN
+                  outp(e,c,"Cyc went low without Acknowledge", x"0d", enable , ERROR);
                   wb_state <= IDLE;
                END IF;
 
@@ -546,13 +546,15 @@ enable <= '1';
                   wb_state <= BURST;
                END IF;
 
-               -- CHECK SIGNALS:
-               -- we has to stay the same throughout the burst
-               outp(e,c,"We changed during burst (" & std_logic'image(we) & " sb " & std_logic'image(we_s) & ")", x"07", enable , ERROR, we = we_s);
-               -- adr has to be adr_s which is inremented automatically
-               outp(e,c,"Adr changed or increment wrong during burst (0x"&to_hstring(32,adr)&" sb 0x"&to_hstring(32,adr_s)&")", x"09", enable , ERROR, adr = adr_s);
-               -- sel has to stay the same
-               outp(e,c,"Sel changed during burst ("&to_string(sel)&" sb "&to_string(sel_s)&")", x"08", enable , ERROR, sel = sel_s);
+               IF stb = '1' THEN
+                -- CHECK SIGNALS:
+                -- we has to stay the same throughout the burst
+                outp(e,c,"We changed during burst (" & std_logic'image(we) & " sb " & std_logic'image(we_s) & ")", x"07", enable , ERROR, we = we_s);
+                -- adr has to be adr_s which is inremented automatically
+                outp(e,c,"Adr changed or increment wrong during burst (0x"&to_hstring(32,adr)&" sb 0x"&to_hstring(32,adr_s)&")", x"09", enable , ERROR, adr = adr_s);
+                -- sel has to stay the same
+                outp(e,c,"Sel changed during burst ("&to_string(sel)&" sb "&to_string(sel_s)&")", x"08", enable , ERROR, sel = sel_s);
+               END IF;
 
             WHEN CYCLE =>
                IF (stb = '0') THEN

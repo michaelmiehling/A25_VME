@@ -185,6 +185,7 @@ PORT (
    cyc_o_sram         : OUT std_logic;                        -- chip select for sram
    cyc_o_pci         : OUT std_logic;                        -- chip select for pci
    cyc_o_vme         : OUT std_logic;                        -- chip select for vme
+   cyc_int_i         : IN  std_logic;
    stb_o               : IN std_logic;                        -- request signal for cyc switching
    
    -- vme_dma_mstr
@@ -266,6 +267,7 @@ PORT (
    clk               : IN std_logic;
    
    -- wb_master_bus
+   cyc_o               : out std_logic;
    stb_o               : OUT std_logic;               -- request for wb_mstr_bus
    ack_i               : IN std_logic;               -- acknoledge from wb_mstr_bus
    err_i               : IN std_logic;               -- error answer from slave
@@ -347,6 +349,7 @@ END COMPONENT;
    SIGNAL en_mstr_dat_i_reg: std_logic;
    SIGNAL mstr_req         : std_logic;
    SIGNAL stb_o_int         : std_logic;
+   SIGNAL cyc_int         : std_logic;
 
    -- du
    SIGNAL dma_dest_adr      : std_logic_vector(31 DOWNTO 2);
@@ -417,6 +420,7 @@ PORT MAP (
    cyc_o_sram         => cyc_o_sram      ,
    cyc_o_pci         => cyc_o_pci      ,
    cyc_o_vme         => cyc_o_vme      ,
+   cyc_int_i         => cyc_int,
    stb_o               => stb_o_int,
    clr_dma_act_bd      => clr_dma_act_bd,
    sour_dest         => sour_dest      ,
@@ -476,6 +480,7 @@ dma_mstr: vme_dma_mstr
 PORT MAP (
    rst               => rst               ,
    clk               => clk               ,
+   cyc_o               => cyc_int,
    stb_o               => stb_o_int               ,
    ack_i               => ack_i               ,
    err_i               => err_i               ,

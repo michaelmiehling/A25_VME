@@ -90,6 +90,7 @@ PORT (
    cyc_o_sram         : OUT std_logic;                        -- chip select for sram
    cyc_o_pci         : OUT std_logic;                        -- chip select for pci
    cyc_o_vme         : OUT std_logic;                        -- chip select for vme
+   cyc_int_i         : IN  std_logic;
    stb_o               : IN std_logic;                        -- request signal for cyc switching
    
    -- vme_dma_mstr
@@ -136,14 +137,15 @@ ARCHITECTURE vme_dma_au_arch OF vme_dma_au IS
    SIGNAL dma_size_en      : std_logic;
    
 BEGIN
-   cyc_o_sram             <= cyc_o_sram_int WHEN stb_o = '1' ELSE '0';
-   cyc_o_pci             <= cyc_o_pci_int WHEN stb_o = '1' ELSE '0';
-   cyc_o_vme             <= cyc_o_vme_int WHEN stb_o = '1' ELSE '0';
+   cyc_o_sram             <= cyc_o_sram_int WHEN cyc_int_i = '1' ELSE '0';
+   cyc_o_pci             <= cyc_o_pci_int WHEN cyc_int_i = '1' ELSE '0';
+   cyc_o_vme             <= cyc_o_vme_int WHEN cyc_int_i = '1' ELSE '0';
 
    inc_int                <= inc_sour WHEN sour_dest = '1' ELSE inc_dest;
    dma_act_bd             <= dma_act_bd_int;
    
-   reached_size_int <= '1' WHEN dma_size_int = dma_size ELSE '0';
+   reached_size_int <= '1' WHEN (dma_size_int = dma_size-1 or
+                       dma_size_int=dma_size) ELSE '0';
 
    adr_o_int(31 DOWNTO 2) <= x"000f_f9" & dma_act_bd_int WHEN get_bd = '1' ELSE    -- switch iram adress [10:2] to adr_o
               dma_sour_adr_int WHEN sour_dest = '1' ELSE   -- switch source adress to adr_o & dma_access & swap

@@ -83,6 +83,7 @@ PORT (
    clk                  : IN std_logic;
    
    -- wb_master_bus
+   cyc_o                : OUT std_logic;
    stb_o                : OUT std_logic;                 -- request for wb_mstr_bus
    ack_i                : IN std_logic;                  -- acknoledge from wb_mstr_bus
    err_i                : IN std_logic;                  -- error answer from slave
@@ -122,15 +123,20 @@ PORT (
 END vme_dma_mstr;
 
 ARCHITECTURE vme_dma_mstr_arch OF vme_dma_mstr IS 
-   TYPE   mstr_states IS (idle, read_bd, store_bd, prep_read, read_data, read_ws, prep_write, prep_write2, prep_write3, write_data, write_ws, prep_read_bd);
+   TYPE   mstr_states IS (idle, read_bd, wait_bd, store_bd, prep_read, read_data,
+   wait_ack, read_ws, prep_write, prep_write2, prep_write3, write_data,
+   write_wait_ack, write_ws, prep_read_bd);
    SIGNAL mstr_state             : mstr_states;
    SIGNAL get_bd_int             : std_logic;
    SIGNAL load_cnt_int           : std_logic;
    SIGNAL en_mstr_dat_i_reg_int  : std_logic;
    SIGNAL clr_dma_en_int         : std_logic;         
-   SIGNAL cti_int                : std_logic_vector(2 DOWNTO 0); 
+   SIGNAL cti_int, cti_int_d0    : std_logic_vector(2 DOWNTO 0); 
+   signal cti_gated : std_logic_vector(2 downto 0);
+   signal prev_state : std_logic;
+   signal last_cycle : std_logic;
 BEGIN
-              
+
    cti <= cti_int;
    load_cnt <= load_cnt_int;
    get_bd <= get_bd_int;
@@ -151,19 +157,27 @@ BEGIN
       sour_dest <= '0';
       get_bd_int <= '1';
       clr_dma_en_int <= '0';
+      last_cycle <= '0';
    ELSIF clk'EVENT AND clk = '1' THEN
       load_cnt_int <= en_mstr_dat_i_reg_int;
       
-      IF dma_act_bd(3 DOWNTO 2) = "11" AND ack_i = '1' THEN 
-        get_bd_int <= '0';
-      ELSIF clr_dma_en_int = '1' OR (ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' AND mstr_state = write_data) THEN
-        get_bd_int <= '1';
-      END IF;
+      --IF dma_act_bd(3 DOWNTO 2) = "11" AND mstr_state = wait_bd THEN 
+      --  get_bd_int <= '0';
+      --ELSIF clr_dma_en_int = '1' OR (ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' AND mstr_state = write_wait_ack) THEN
+      --  get_bd_int <= '1';
+      --END IF;
       
       CASE mstr_state IS
          WHEN idle =>
+            cyc_o   <= '0';
+            stb_o   <= '0';
+            fifo_rd <= '0';
+            inc_adr <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             sour_dest      <= '0';
             clr_dma_en_int <= '0';
+            last_cycle <= '0';
             IF start_dma = '1' THEN                     -- start of dma => read first bd
                mstr_state     <= read_bd;
             ELSE
@@ -171,19 +185,53 @@ BEGIN
             END IF;
       
          WHEN read_bd =>                                -- part of bd requested from sram
+            fifo_rd <= '0';
+            cti_int <= "000";
             sour_dest      <= '0';
-            IF err_i = '1' OR dma_en /= '1' THEN
+            IF err_i = '1' OR dma_en = '0' THEN
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               mstr_req <= '0';
+               inc_adr  <= '0';
                mstr_state     <= idle;                  -- error from sram => end of dma acti_inton
                clr_dma_en_int <= '1';
+               get_bd_int <= '1';
             ELSIF ack_i = '1' THEN
-               mstr_state     <= store_bd;
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               mstr_req <= '1';
+               inc_adr  <= '1';
+               mstr_state     <= wait_bd;
                clr_dma_en_int <= '0';
             ELSE
-               mstr_state     <= read_bd;               -- stay until acknoledge of sram
+               cyc_o    <= '1';
+               stb_o    <= '1';
+               mstr_req <= '0';
+               inc_adr  <= '0';
                clr_dma_en_int <= '0';
             END IF;
+
+         WHEN wait_bd =>
+            cyc_o   <= '0';
+            stb_o   <= '0';
+            fifo_rd <= '0';
+            cti_int <= "000";
+            sour_dest <= '0';
+            mstr_req <= '0';
+            inc_adr  <= '0';
+            clr_dma_en_int <= '0';
+            IF dma_act_bd(3 downto 2)="11" THEN
+              get_bd_int <= '0'; -- since it's the last one read_bd, we clear get_bd_int
+            END IF;
+            mstr_state <= store_bd;
          
          WHEN store_bd =>                             -- part of bd will be stored in internal registers      
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             clr_dma_en_int <= '0';
             IF dma_act_bd(3 DOWNTO 2) = "00" THEN   
                sour_dest      <= '1';
@@ -194,264 +242,409 @@ BEGIN
             END IF;
            
          WHEN prep_read =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '1';                     -- if not first read then inc because of reached size
+            mstr_req <= '0';
+            cti_int  <= "010";
             clr_dma_en_int <= '0';
             sour_dest      <= '1';
+            last_cycle <= '0';
             mstr_state     <= read_data;
               
-         WHEN read_data =>                              -- request read from source address
-            IF err_i = '1' OR (dma_en /= '1' AND ack_i = '1') THEN
-               mstr_state   <= idle;                  -- error from source => end of dma acti_inton
-               sour_dest <= '0';
+         WHEN read_data =>
+            cyc_o <= '1';
+            stb_o <= '1';
+            fifo_rd <= '0';
+            inc_adr <= '0';
+            mstr_req <= '0';
+            --cti_int
+            clr_dma_en_int <= '0';
+            mstr_state <= wait_ack;
+
+         WHEN wait_ack =>                              -- request read from source address
+            fifo_rd  <= '0';
+            mstr_req <= '0';
+            IF err_i = '1' OR (dma_en = '0' AND ack_i = '1') THEN
+               cyc_o   <= '0';
+               stb_o   <= '0';
+               inc_adr <= '0';
+               cti_int <= "111";
+               sour_dest      <= '0';
                clr_dma_en_int <= '1';
-            ELSIF ack_i = '1' AND fifo_almost_full /= '1' AND reached_size /= '1' AND inc_sour = '0' AND boundary /= '1' THEN         
+               get_bd_int <= '1';
+               mstr_state     <= idle;                  -- error from source => end of dma acti_inton
+            ELSIF ack_i = '1' AND fifo_almost_full = '0' AND reached_size = '0' AND inc_sour = '0' AND boundary = '0' THEN         
+               cyc_o   <= '1';
+               stb_o   <= '0';
+               inc_adr <= '1';
+               cti_int <= "010";
+               sour_dest      <= '1';
+               clr_dma_en_int <= '0';
                mstr_state     <= read_data;            -- got ack from source address => read next data
+            ELSIF ack_i = '1' AND fifo_almost_full = '0' AND reached_size = '0' AND (inc_sour = '1' OR boundary = '1') THEN         
+               cyc_o   <= '0';
+               stb_o   <= '0';
+               inc_adr <= '1';
+               cti_int <= "111";
                sour_dest      <= '1';
                clr_dma_en_int <= '0';
-            ELSIF ack_i = '1' AND fifo_almost_full /= '1' AND reached_size /= '1' AND (inc_sour = '1' OR boundary = '1') THEN         
                mstr_state     <= read_ws;               -- got ack from source address => waitstate, then new single cycle
+            ELSIF ack_i = '1' AND last_cycle='0' AND (fifo_almost_full = '1' OR reached_size = '1') THEN
+               cyc_o   <= '1';
+               stb_o   <= '0';
+               inc_adr <= '1';
+               cti_int <= "111";
                sour_dest      <= '1';
                clr_dma_en_int <= '0';
-            ELSIF ack_i = '1' AND fifo_almost_full = '1' AND reached_size = '0' THEN
-               mstr_state     <= prep_write;            -- block of data was read => write data to destination
+               last_cycle <= '1';
+               mstr_state     <= read_data;
+            ELSIF ack_i = '1' AND last_cycle='1' AND (fifo_almost_full = '1' OR reached_size = '1') THEN
+               cyc_o   <= '0';
+               stb_o   <= '0';
+               inc_adr <= '0';
+               cti_int <= "000";
                sour_dest      <= '0';
                clr_dma_en_int <= '0';
-            ELSIF ack_i = '1' AND reached_size = '1' THEN
                mstr_state     <= prep_write;            -- block of data was read => write data to destination
-               sour_dest      <= '0';
-               clr_dma_en_int <= '0';
             ELSE 
-               mstr_state     <= read_data;            -- wait on ack_i even if fifo_almost_full or reached_size
+               cyc_o   <= '1';
+               stb_o   <= '1';
+               -- wait on ack_i even if fifo_almost_full or reached_size
+               inc_adr <= '0';
                sour_dest      <= '1';
                clr_dma_en_int <= '0';
             END IF;           
         
          WHEN read_ws =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             sour_dest      <= '1';
+            last_cycle <= '0';
             mstr_state     <= read_data;
             clr_dma_en_int <= '0';
            
          WHEN prep_write =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             sour_dest      <= '0';
-            mstr_state     <= prep_write2;
+            last_cycle <= '0';
+            mstr_state     <= prep_write3;
             clr_dma_en_int <= '0';
       
          WHEN prep_write2 =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             sour_dest      <= '0';
+            last_cycle <= '0';
             mstr_state     <= prep_write3;
             clr_dma_en_int <= '0';
       
          WHEN prep_write3 =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '1';                  -- prepare for first write
+            inc_adr  <= '1';--++
+            mstr_req <= '0';
+            cti_int  <= "010";
             sour_dest      <= '0';
+            last_cycle <= '0';
             mstr_state     <= write_data;
             clr_dma_en_int <= '0';
            
          WHEN write_data =>
-            IF err_i = '1' OR (dma_en /= '1' AND ack_i = '1') THEN
+           cyc_o    <= '1';
+           stb_o    <= '1';
+           fifo_rd  <= '0';
+           inc_adr  <= '0';
+           mstr_req <= '0';
+           sour_dest      <= '0';
+           clr_dma_en_int <= '0';
+           mstr_state <= write_wait_ack;
+
+         WHEN write_wait_ack =>
+            mstr_req <= '0';
+            IF err_i = '1' OR (dma_en = '0' AND ack_i = '1') THEN
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               fifo_rd  <= '0';
+               inc_adr  <= '0';         
+               cti_int  <= "111";
                sour_dest      <= '0';
                mstr_state     <= idle;                  -- error from destination => end of dma acti_inton
                clr_dma_en_int <= '1';
-            ELSIF ack_i = '1' AND fifo_empty /= '1' AND inc_dest = '0' AND boundary /= '1' THEN         
+               get_bd_int <= '1';
+            ELSIF ack_i = '1' AND fifo_almost_empty = '0' AND inc_dest = '0' AND boundary = '0' THEN         
+               cyc_o    <= '1';
+               stb_o    <= '0';
+               fifo_rd  <= '1';                  -- get next data from fifo
+               inc_adr  <= '1';                  -- read next data from fifo
+               cti_int  <= "010";
                sour_dest      <= '0';
                mstr_state     <= write_data;            -- got ack from destination address => write next data
                clr_dma_en_int <= '0';
-            ELSIF ack_i = '1' AND fifo_empty /= '1' AND (inc_dest = '1' OR boundary = '1') THEN         
+            ELSIF ack_i = '1' AND fifo_almost_empty /= '1' AND (inc_dest = '1' OR boundary = '1') THEN         
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               fifo_rd  <= '1';                  -- get next data from fifo
+               inc_adr  <= '1';                  -- read next data from fifo
+               cti_int  <= "111";
                sour_dest      <= '0';
                mstr_state     <= write_ws;            -- got ack from destination address => make waitstate
                clr_dma_en_int <= '0';
-            ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' AND dma_null = '1' THEN
+            ELSIF ack_i = '1' AND last_cycle='0' AND fifo_almost_empty = '1' AND reached_size = '1' AND dma_null = '1' THEN
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               fifo_rd  <= '1';                  -- no more data in fifo
+               inc_adr  <= '1';                  -- no more increment
+               cti_int  <= "111";
+               sour_dest      <= '0';
+               last_cycle <= '1';
+               mstr_state     <= write_data;                  -- data of bd was written and end of bd list => dma finished
+               clr_dma_en_int <= '0';                  -- end of dma => clear dma_en bit
+               get_bd_int <= '0';
+            ELSIF ack_i = '1' AND last_cycle='1' AND fifo_almost_empty = '1' AND reached_size = '1' AND dma_null = '1' THEN
+               ------------------------------------------
+               -- tutaj trzeba isc jeszcze raz do write_data. Moze zrobic podobnie jak warunek nizej? tzn z last_cycle
+               -- i dopiero w kolejnym stanie sprawdzac dma_null?
+               ------------------------------------------
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               fifo_rd  <= '0';                  -- no more data in fifo
+               inc_adr  <= '0';                  -- no more increment
+               cti_int  <= "111";
                sour_dest      <= '0';
                mstr_state     <= idle;                  -- data of bd was written and end of bd list => dma finished
                clr_dma_en_int <= '1';                  -- end of dma => clear dma_en bit
-            ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' THEN
+               get_bd_int <= '1';
+            ELSIF ack_i = '1' AND last_cycle='0' AND fifo_almost_empty = '1' AND reached_size = '1' THEN
+               cyc_o    <= '1';
+               stb_o    <= '0';
+               fifo_rd  <= '1';                  -- no more data in fifo
+               inc_adr  <= '1';                  -- increment dma_act_bd
+               cti_int  <= "111";
+               sour_dest      <= '0';
+               last_cycle     <= '1';
+               mstr_state     <= write_data;         -- data of bd was written => read next bd
+               clr_dma_en_int <= '0';
+            ELSIF ack_i = '1' AND last_cycle='1' AND fifo_almost_empty = '1' AND reached_size = '1' THEN
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               fifo_rd  <= '0';                  -- no more data in fifo
+               inc_adr  <= '1';                  -- increment dma_act_bd
+               cti_int  <= "111";
                sour_dest      <= '0';
                mstr_state     <= prep_read_bd;         -- data of bd was written => read next bd
                clr_dma_en_int <= '0';
-            ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '0' THEN
+            ELSIF ack_i = '1' AND fifo_almost_empty = '1' AND reached_size = '0' THEN
+               cyc_o    <= '0';
+               stb_o    <= '0';
+               fifo_rd  <= '0';                  -- no more data in fifo
+               inc_adr  <= '0';--++
+               cti_int  <= "111";
                sour_dest      <= '1';
                mstr_state     <= prep_read;            -- part data of bd was written => read next part of same bd
                clr_dma_en_int <= '0';
             ELSE 
+               cyc_o    <= '1';
+               stb_o    <= '1';
+               fifo_rd  <= '0';
+               inc_adr  <= '0';
                sour_dest      <= '0';
-               mstr_state     <= write_data;            -- wait on ack_i
                clr_dma_en_int <= '0';
             END IF;           
         
         WHEN write_ws =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             sour_dest <= '0';
             mstr_state    <= write_data;
             clr_dma_en_int <= '0';
         
         WHEN prep_read_bd =>
+            cyc_o    <= '0';
+            stb_o    <= '0';
+            fifo_rd  <= '0';
+            inc_adr  <= '0';
+            mstr_req <= '0';
+            cti_int  <= "000";
             sour_dest <= '0';
             mstr_state    <= read_bd;
             clr_dma_en_int <= '0';
+            get_bd_int <= '1';
            
-        WHEN OTHERS =>
-            sour_dest <= '0';
-            mstr_state    <= idle;
-            clr_dma_en_int <= '0';
+        --WHEN OTHERS =>
+        --    sour_dest <= '0';
+        --    mstr_state    <= idle;
+        --    clr_dma_en_int <= '0';
       END CASE;
    END IF;
 END PROCESS mstr_fsm;
    
 mstr_out : PROCESS (mstr_state, ack_i, err_i, fifo_empty, fifo_almost_full, reached_size, dma_act_bd, 
-                     start_dma, dma_en, dma_null, mstr_ack, inc_sour, inc_dest, boundary)
+                     start_dma, dma_en, dma_null, mstr_ack, inc_sour, inc_dest,
+                     boundary)--, cti_int_d0)
 BEGIN
    CASE mstr_state IS
       WHEN idle =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
 
       WHEN read_bd =>                                -- part of bd requested from sram
+         --GD stb_o    <= '1';
          IF err_i = '1' OR (dma_en /= '1' AND ack_i = '1') THEN
-            stb_o    <= '1';
-            mstr_req <= '0';
-            inc_adr  <= '0';
+         --GD    mstr_req <= '0';
+         --GD    inc_adr  <= '0';
          ELSIF ack_i = '1' THEN
-            stb_o    <= '1';                  -- request for sram
-            mstr_req <= '1';                  -- request access to internal registers
-            inc_adr  <= '1';                  -- increment bd adress for next bd
+         --GD    mstr_req <= '1';                  -- request access to internal registers
+         --GD    inc_adr  <= '1';                  -- increment bd adress for next bd
          ELSE
-            stb_o    <= '1';                  -- request for sram
-            mstr_req <= '0';
-            inc_adr  <= '0';
+         --GD    mstr_req <= '0';
+         --GD    inc_adr  <= '0';
          END IF;
-         fifo_rd  <= '0';
-         cti_int  <= "000";
+         --GD fifo_rd  <= '0';
+         --GD cti_int  <= "000";
 
       WHEN store_bd =>                             -- part of bd will be stored in internal registers      
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
      
       WHEN prep_read =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '1';                     -- if not first read then inc because of reached size
-         mstr_req <= '0';
-         cti_int  <= "010";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '1';                     -- if not first read then inc because of reached size
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "010";
            
       WHEN read_data =>                              -- request read from source address
-         IF err_i = '1' OR (dma_en /= '1' AND ack_i = '1') THEN
-            stb_o    <= '1';
-            inc_adr  <= '0';
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND fifo_almost_full /= '1' AND reached_size /= '1' AND inc_sour = '0' AND boundary /= '1' THEN         
-            stb_o    <= '1';                  -- request next data
-            inc_adr  <= '1';                  -- increment source address
-            cti_int  <= "010";
-         ELSIF ack_i = '1' AND fifo_almost_full /= '1' AND reached_size /= '1' AND (inc_sour = '1' OR boundary = '1') THEN         
-            stb_o    <= '1';                  -- keep for this cycle
-            inc_adr  <= '1';                  -- increment source address
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND fifo_almost_full = '1' AND reached_size = '0' THEN
-            stb_o    <= '1';                  -- keep request for this cycle
-            inc_adr  <= '0';                  -- no further data should be read => no increment
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND reached_size = '1' THEN
-            stb_o    <= '1';                  -- keep asserted for last cycle
-            inc_adr  <= '0';                  -- no further data should be read => no increment
-            cti_int  <= "111";
-         ELSE 
-            stb_o    <= '1';                  -- keep request
-            inc_adr  <= '0';
-            cti_int  <= cti_int;
-         END IF;           
-         fifo_rd  <= '0';
-         mstr_req <= '0';
+         --GD stb_o    <= '1';
+         --GD IF err_i = '1' OR (dma_en = '0' AND ack_i = '1') THEN
+         --GD    inc_adr  <= '0';
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND fifo_almost_full = '0' AND reached_size = '0' AND inc_sour = '0' AND boundary = '0' THEN         
+         --GD    inc_adr  <= '1';                  -- increment source address
+         --GD    cti_int  <= "010";
+         --GD ELSIF ack_i = '1' AND fifo_almost_full = '0' AND reached_size = '0' AND (inc_sour = '1' OR boundary = '1') THEN         
+         --GD    inc_adr  <= '1';                  -- increment source address
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND fifo_almost_full = '1' AND reached_size = '0' THEN
+         --GD    inc_adr  <= '0';                  -- no further data should be read => no increment
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND reached_size = '1' THEN
+         --GD    inc_adr  <= '0';                  -- no further data should be read => no increment
+         --GD    cti_int  <= "111";
+         --GD ELSE 
+         --GD    inc_adr  <= '0';
+         --GD    cti_int  <= cti_int;
+         --GD END IF;           
+         --GD fifo_rd  <= '0';
+         --GD mstr_req <= '0';
         
       WHEN read_ws =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
          
       WHEN prep_write =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
            
       WHEN prep_write2 =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
            
       WHEN prep_write3 =>
-         stb_o    <= '0';
-         fifo_rd  <= '1';                  -- prepare for first write
-         inc_adr  <= '1';--++
-         mstr_req <= '0';
-         cti_int  <= "010";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '1';                  -- prepare for first write
+         --GD inc_adr  <= '1';--++
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "010";
            
       WHEN write_data =>
-         IF err_i = '1' OR (dma_en /= '1' AND ack_i = '1') THEN
-            stb_o    <= '1';
-            fifo_rd  <= '0';
-            inc_adr  <= '0';         
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND fifo_empty /= '1' AND inc_dest = '0' AND boundary /= '1' THEN         
-            stb_o    <= '1';                  -- request write to destination
-            fifo_rd  <= '1';                  -- get next data from fifo
-            inc_adr  <= '1';                  -- read next data from fifo
-            cti_int  <= "010";
-         ELSIF ack_i = '1' AND fifo_empty /= '1' AND (inc_dest = '1' OR boundary = '1') THEN         
-            stb_o    <= '1';                  -- request write to destination
-            fifo_rd  <= '1';                  -- get next data from fifo
-            inc_adr  <= '1';                  -- read next data from fifo
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' AND dma_null = '1' THEN
-            stb_o    <= '1';                  -- keep asserted for this cycle
-            fifo_rd  <= '0';                  -- no more data in fifo
-            inc_adr  <= '0';                  -- no more increment
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' THEN
-            stb_o    <= '1';                  -- keep asserted for this cycle
-            fifo_rd  <= '0';                  -- no more data in fifo
-            inc_adr  <= '1';                  -- increment dma_act_bd
-            cti_int  <= "111";
-         ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '0' THEN
-            stb_o    <= '1';                  -- keep asserted for this cycle
-            fifo_rd  <= '0';                  -- no more data in fifo
-            inc_adr  <= '0';--++
-            cti_int  <= "111";
-         ELSE 
-            stb_o    <= '1';                  -- keep stb_o asserted
-            fifo_rd  <= '0';
-            inc_adr  <= '0';
-            cti_int  <= cti_int;
-         END IF;           
-         mstr_req <= '0';
+         --GD stb_o    <= '1';
+         --GD IF err_i = '1' OR (dma_en /= '1' AND ack_i = '1') THEN
+         --GD    fifo_rd  <= '0';
+         --GD    inc_adr  <= '0';         
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND fifo_empty /= '1' AND inc_dest = '0' AND boundary /= '1' THEN         
+         --GD    fifo_rd  <= '1';                  -- get next data from fifo
+         --GD    inc_adr  <= '1';                  -- read next data from fifo
+         --GD    cti_int  <= "010";
+         --GD ELSIF ack_i = '1' AND fifo_empty /= '1' AND (inc_dest = '1' OR boundary = '1') THEN         
+         --GD    fifo_rd  <= '1';                  -- get next data from fifo
+         --GD    inc_adr  <= '1';                  -- read next data from fifo
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' AND dma_null = '1' THEN
+         --GD    fifo_rd  <= '0';                  -- no more data in fifo
+         --GD    inc_adr  <= '0';                  -- no more increment
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '1' THEN
+         --GD    fifo_rd  <= '0';                  -- no more data in fifo
+         --GD    inc_adr  <= '1';                  -- increment dma_act_bd
+         --GD    cti_int  <= "111";
+         --GD ELSIF ack_i = '1' AND fifo_empty = '1' AND reached_size = '0' THEN
+         --GD    fifo_rd  <= '0';                  -- no more data in fifo
+         --GD    inc_adr  <= '0';--++
+         --GD    cti_int  <= "111";
+         --GD ELSE
+         --GD    fifo_rd  <= '0';
+         --GD    inc_adr  <= '0';
+         --GD    cti_int  <= "010"; -- GD;
+         --GD    --cti_int  <= cti_int; -- keep the old value
+         --GD END IF;           
+         --GD mstr_req <= '0';
         
       WHEN write_ws =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
         
       WHEN prep_read_bd =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
         
       WHEN OTHERS =>
-         stb_o    <= '0';
-         fifo_rd  <= '0';
-         inc_adr  <= '0';
-         mstr_req <= '0';
-         cti_int  <= "000";
+         --GD stb_o    <= '0';
+         --GD fifo_rd  <= '0';
+         --GD inc_adr  <= '0';
+         --GD mstr_req <= '0';
+         --GD cti_int  <= "000";
    END CASE;
 END PROCESS mstr_out;
 

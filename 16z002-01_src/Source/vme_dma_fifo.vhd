@@ -96,27 +96,8 @@ BEGIN
 PROCESS(clk, rst)
   BEGIN
      IF rst = '1' THEN
-      fifo_almost_full <= '0';
-      fifo_empty <= '1';     
-      fifo_almost_empty <= '0';
       fifo_dat_o <= (OTHERS => '0');
      ELSIF clk'EVENT AND clk = '1' THEN
-        IF fifo_usedw = "11111110" AND fifo_wr = '1' THEN
-         fifo_almost_full <= '1';
-      ELSIF fifo_rd = '1' THEN
-         fifo_almost_full <= '0';
-      END IF;
-      IF fifo_usedw = "00000001" AND fifo_rd = '1' THEN
-         fifo_empty <= '1';
-      ELSIF fifo_wr = '1' THEN
-         fifo_empty <= '0';
-      END IF;
-      IF fifo_usedw = "00000010" AND fifo_rd = '1' THEN
-         fifo_almost_empty <= '1';
-      ELSIF fifo_wr = '1' OR fifo_rd = '1' THEN
-         fifo_almost_empty <= '0';
-      END IF;
-      
       -- register for convertion of look-ahead fifo to normal fifo behaviour
       IF fifo_clr = '1' THEN
          fifo_dat_o <= (OTHERS => '0');
@@ -138,7 +119,9 @@ PROCESS(clk, rst)
 		lpm_widthu => 8,
 		overflow_checking => "ON",
 		underflow_checking => "ON",
-		use_eab => "ON")
+		use_eab => "ON",
+    almost_empty_value => 2,
+    almost_full_value  => 255)
 	PORT MAP (
 		aclr  => fifo_clr,
 		clock => clk,
@@ -146,6 +129,10 @@ PROCESS(clk, rst)
 		rdreq => fifo_rd,
 		wrreq => fifo_wr,
 		usedw => fifo_usedw,
-		q     => dat_o);
+		q     => dat_o,
+    empty => fifo_empty,
+    full  => open,
+    almost_empty => fifo_almost_empty,
+    almost_full  => fifo_almost_full);
 
 END vme_dma_fifo_arch;
