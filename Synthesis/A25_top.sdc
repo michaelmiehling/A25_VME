@@ -139,6 +139,10 @@ set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  12.000 [get_ports
 set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_sysres_i_n}]
 set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  12.000 [get_ports {vme_write_n}]
 set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_write_n}]
+set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  12.000 [get_ports {vme_ga[*}]
+set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_ga[*}]
+set_input_delay -add_delay -max -clock [get_clocks {sys_clk}]  12.000 [get_ports {vme_gap}]
+set_input_delay -add_delay -min -clock [get_clocks {sys_clk}]  0.000 [get_ports {vme_gap}]
 
 
 #**************************************************************
