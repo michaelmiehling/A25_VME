@@ -20,7 +20,7 @@
 -- +-Module Name-------------------+-cyc-+---offset-+-----size-+-bar-+
 -- |               Chameleon Table |   0 |        0 |      200 |   0 |
 -- |               16Z126_SERFLASH |   1 |      200 |       10 |   0 |
--- |                 16z002-01 VME |   2 |    10000 |    10000 |   0 |
+-- |                 16z002-01 VME |   2 |    10000 |      200 |   0 |
 -- |          16z002-01 VME A16D16 |   3 |    20000 |    10000 |   0 |
 -- |          16z002-01 VME A16D32 |   4 |    30000 |    10000 |   0 |
 -- |            16z002-01 VME SRAM |   5 |        0 |   100000 |   1 |
@@ -90,8 +90,8 @@ BEGIN
          END IF;
 
 
-         -- 16z002-01 VME - cycle 2 - offset 10000 - size 10000 --
-         IF pci_cyc_i(0) = '1' AND wbm_adr_o_q(17 DOWNTO 16) = "01" THEN
+         -- 16z002-01 VME - cycle 2 - offset 10000 - size 200 --
+         IF pci_cyc_i(0) = '1' AND wbm_adr_o_q(17 DOWNTO 9) = "010000000" THEN
             wbm_cyc_o_int(2) := '1';
          ELSE
             wbm_cyc_o_int(2) := '0';

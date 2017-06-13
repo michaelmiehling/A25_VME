@@ -28,20 +28,20 @@
 -- |16z002-01 VME A24D16         | m 1 0 0 x 00 00 | x 0 0 0 0 00 00 |  1000000 |
 -- |16z002-01 VME A24D32         | m 1 0 0 x 01 00 | x 0 0 0 0 01 00 |  1000000 |
 -- |16z002-01 VME A32D32         | m 1 0 0 x 01 01 | x 0 0 0 0 01 01 | 20000000 |
--- |16z002-01 VME CR/CSR         |                 | x 0 0 0 0 11 00 |  1000000 |
--- |16z002-01 VME A32D64         | m 1 0 0 x 10 01 |                 |          |
+-- |16z002-01 VME CR/CSR         |                 | x 0 0 0 0 10 00 |  1000000 |
+-- |16z002-01 VME A32D64         | m 1 0 0 x 11 01 |                 |          |
 -- |16z002-01 VME A16D16 swapped |                 | x 0 0 1 0 00 10 |    10000 |
 -- |16z002-01 VME A16D32 swapped |                 | x 0 0 1 0 01 10 |    10000 |
 -- |16z002-01 VME A24D16 swapped | m 1 0 1 x 00 00 | x 0 0 1 0 00 00 |  1000000 |
 -- |16z002-01 VME A24D32 swapped | m 1 0 1 x 01 00 | x 0 0 1 0 01 00 |  1000000 |
 -- |16z002-01 VME A32D32 swapped | m 1 0 1 x 01 01 | x 0 0 1 0 01 01 | 20000000 |
--- |16z002-01 VME A32D64 swapped | m 1 0 1 x 10 01 |                 |          |
+-- |16z002-01 VME A32D64 swapped | m 1 0 1 x 11 01 |                 |          |
 -- +-----------------------------+-----------------+-----------------+----------+
 -- D - DMA Access
 -- R - Register Access
 -- S - Swapped Access
 -- B - Burst Access
--- D - Data Width (00=D16, 01=D32, 10=D64, 11=CR/CSR)
+-- D - Data Width (00=D16, 01=D32, 11=D64, 10=CR/CSR)
 -- A - Address Width (10=A16, 00=A24, 01=A32, 11=IACK)
 -- M - Address Space (0=non-privileged 1=supervisory data)
 
@@ -69,9 +69,9 @@
 --------------------------------------------------------------------------------
 -- History:
 --------------------------------------------------------------------------------
--- $Revision: 1.4 $
+-- Revision 1.5  2017 07:00:00  mmiehling
+-- changed vme_acc_type/tga setting for CR/CSR and D32 to be compliant to DMA configuration bits
 --
--- $Log: vme_wbs.vhd,v $
 -- Revision 1.4  2013/09/12 08:45:21  mmiehling
 -- added bit 8 of tga for address modifier extension (supervisory, non-privileged data/program)
 --

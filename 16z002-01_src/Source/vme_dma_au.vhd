@@ -201,8 +201,8 @@ adr_o_proc : PROCESS(clk, rst)
            reached_size <= reached_size_int;
         END IF;
 
-      -- (0)   : A24(1)
-      -- (1)   : A32(1)
+      -- (0)   : A24(=0)
+      -- (1)   : A32(=1)
       -- (3:2) : 00=D16, 01=D32, 10=D64
       -- (4)   : if increment enabled the burst else single
       -- (5)   : swapped(1) or non swapped (0)

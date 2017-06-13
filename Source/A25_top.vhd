@@ -719,7 +719,7 @@ pll: pll_pcie
    wbmo_0_cyc <=                                      -- +-Module Name--------------+-cyc-+---offset-+-----size-+-bar-+ 
       "0001" WHEN wbmo_0_cyc_int(0) = '1' ELSE        -- |     Chameleon Table      |  0  |        0 |      200 |   0 | 
       "0010" WHEN wbmo_0_cyc_int(1) = '1' ELSE        -- |     16Z126_SERFLASH      |  1  |      200 |       20 |   0 |  
-      "0100" WHEN wbmo_0_cyc_int(2) = '1' ELSE        -- |       16z002-01 VME      |  2  |    10000 |    10000 |   0 |
+      "0100" WHEN wbmo_0_cyc_int(2) = '1' ELSE        -- |       16z002-01 VME      |  2  |    10000 |      200 |   0 |
       "0100" WHEN wbmo_0_cyc_int(3) = '1' ELSE        -- |16z002-01 VME A16D16      |  3  |    20000 |    10000 |   0 |
       "0100" WHEN wbmo_0_cyc_int(4) = '1' ELSE        -- |16z002-01 VME A16D32      |  4  |    30000 |    10000 |   0 |
       "1000" WHEN wbmo_0_cyc_int(5) = '1' ELSE        -- |  16z002-01 VME SRAM      |  5  |        0 |   100000 |   1 | 
@@ -739,7 +739,7 @@ pll: pll_pcie
       CONST_VME_A16D32  WHEN wbmo_0_cyc_int(4) = '1' ELSE      -- |16z002-01 VME A16D32      |  4  |    30000 |    10000 |   0 | 
       CONST_VME_IACK    WHEN wbmo_0_cyc_int(2) = '1'                                              
                             AND wbmo_0.adr(8) = '1' ELSE       -- |16z002-01 VME IACK        |  2  |    10100 |       10 |   0 |
-      CONST_VME_REGS    WHEN wbmo_0_cyc_int(2) = '1' ELSE      -- |16z002-01 VME REGS        |  2  |    10000 |    10000 |   0 |
+      CONST_VME_REGS    WHEN wbmo_0_cyc_int(2) = '1' ELSE      -- |16z002-01 VME REGS        |  2  |    10000 |      100 |   0 |
       CONST_VME_A32D32  WHEN wbmo_0_cyc_int(8) = '1' ELSE      -- |16z002-01 VME A32         |  8  |        0 | 20000000 |   3 |
       CONST_VME_A24D32  WHEN wbmo_0_cyc_int(7) = '1' ELSE      -- |16z002-01 VME A24D32      |  7  |  1000000 |  1000000 |   2 |
       CONST_VME_CRCSR   WHEN wbmo_0_cyc_int(9) = '1' ELSE      -- |16z002-01 VME CRCSR       |  9  |        0 |  1000000 |   4 |

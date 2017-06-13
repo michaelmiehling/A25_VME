@@ -36,9 +36,9 @@
 --------------------------------------------------------------------------------
 -- History:
 --------------------------------------------------------------------------------
--- $Revision: 1.3 $
+-- Revision 1.4  2017/06/13 07:00:14  MMiehling
+-- changed vme_acc_type setting for CR/CSR and D32 to be compliant to DMA configuration bits
 --
--- $Log: vme_pkg.vhd,v $
 -- Revision 1.3  2014/02/07 17:00:14  MMiehling
 -- bugfix: IACK addressing
 --
@@ -60,7 +60,7 @@ PACKAGE vme_pkg IS
    CONSTANT CONST_VME_A16D32     : std_logic_vector(6 DOWNTO 0):="0100110";
    CONSTANT CONST_VME_A24D16     : std_logic_vector(6 DOWNTO 0):="0100000";
    CONSTANT CONST_VME_A24D32     : std_logic_vector(6 DOWNTO 0):="0100100";
-   CONSTANT CONST_VME_CRCSR      : std_logic_vector(6 DOWNTO 0):="0101100";
+   CONSTANT CONST_VME_CRCSR      : std_logic_vector(6 DOWNTO 0):="0101000";
    CONSTANT CONST_VME_A32D32     : std_logic_vector(6 DOWNTO 0):="0100101";
    CONSTANT CONST_VME_A16D16S    : std_logic_vector(6 DOWNTO 0):="0000010";
    CONSTANT CONST_VME_A16D32S    : std_logic_vector(6 DOWNTO 0):="0000110";
@@ -70,11 +70,11 @@ PACKAGE vme_pkg IS
    CONSTANT CONST_VME_A24D16B    : std_logic_vector(6 DOWNTO 0):="0110000";
    CONSTANT CONST_VME_A24D32B    : std_logic_vector(6 DOWNTO 0):="0110100";
    CONSTANT CONST_VME_A32D32B    : std_logic_vector(6 DOWNTO 0):="0110101";
-   CONSTANT CONST_VME_A32D64B    : std_logic_vector(6 DOWNTO 0):="0111001";
+   CONSTANT CONST_VME_A32D64B    : std_logic_vector(6 DOWNTO 0):="0111101";
    CONSTANT CONST_VME_A24D16BS   : std_logic_vector(6 DOWNTO 0):="0010000";
    CONSTANT CONST_VME_A24D32BS   : std_logic_vector(6 DOWNTO 0):="0010100";
    CONSTANT CONST_VME_A32D32BS   : std_logic_vector(6 DOWNTO 0):="0010101";
-   CONSTANT CONST_VME_A32D64BS   : std_logic_vector(6 DOWNTO 0):="0011001";
+   CONSTANT CONST_VME_A32D64BS   : std_logic_vector(6 DOWNTO 0):="0011101";
 
    TYPE io_ctrl_type   IS record 
       d_dir             : std_logic;   -- external driver control data direction (1: drive to vmebus 0: drive to fpga)

@@ -39,9 +39,9 @@
 --------------------------------------------------------------------------------
 -- History:
 --------------------------------------------------------------------------------
--- $Revision: 1.7 $
+-- Revision 1.8  2017/06/13 07:00:00  mmiehling
+-- changed vme_acc_type setting for CR/CSR and D32 to be compliant to DMA configuration bits
 --
--- $Log: vme_au.vhd,v $
 -- Revision 1.7  2015/09/16 09:20:09  mwawrik
 -- Added generics A16_REG_MAPPING and USE_LONGADD
 --
@@ -702,11 +702,11 @@ BEGIN
    -- A16/D32          m 0 0 01 10
    -- A24/D16          m 0 0 00 00
    -- A24/D32          m 0 0 01 00
-   -- CR/CSR           x 0 0 11 00
+   -- CR/CSR           x 0 0 10 00
    -- A32/D32          m 0 0 01 01
    -- IACK             m 0 0 00 11
    -- A32/D32/BLT      m 0 1 01 01
-   -- A32/D64/BLT      m 0 1 10 01
+   -- A32/D64/BLT      m 0 1 11 01
    -- A24/D16/BLT      m 0 1 00 00
    -- A24/D32/BLT      m 0 1 01 00
    --  " swapped       m 1 x xx xx
@@ -810,7 +810,7 @@ BEGIN
                            vme_a1 <= '1';
                         END IF;
                         
-            WHEN "01100" => 
+            WHEN "01000" => 
                       	vam_out <= "101111";   -- x2f   CR/CSR access
                       	iackn_out <= '1';
                       	ma_d64 <= '0';
