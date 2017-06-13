@@ -42,6 +42,7 @@
 LIBRARY ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_arith.all;
+use ieee.std_logic_misc.all;
 
 entity z091_01_wb_adr_dec is
    generic(
@@ -141,10 +142,6 @@ begin
             wbm_cyc_o_int(8) := '0';
          END IF;
 
-         IF pci_cyc_i /= zero AND wbm_cyc_o_int = "000000000" THEN
-            wbm_cyc_o_int(0) := '1';
-         END IF;
-
          -- 16z002-01 VME CRCSR - cycle 9 - offset 0 - size 1000000 --
          IF pci_cyc_i(4) = '1' THEN
             wbm_cyc_o_int(9) := '1';
@@ -152,7 +149,7 @@ begin
             wbm_cyc_o_int(9) := '0';
          END IF;
 
-         IF pci_cyc_i /= zero AND wbm_cyc_o_int = "0000000000" THEN
+         IF or_reduce(pci_cyc_i) = '1' AND wbm_cyc_o_int = zero THEN
             wbm_cyc_o_int(0) := '1';
          END IF;
 
