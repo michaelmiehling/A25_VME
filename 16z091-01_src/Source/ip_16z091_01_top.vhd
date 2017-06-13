@@ -721,6 +721,7 @@ begin
    assert not no_valid_device(supported_devices => SUPPORTED_DEVICES, device => FPGA_FAMILY) report "16z091-01: no valid FPGA device selected" severity failure;
    -- coverage on
 
+   gp_debug_port <= (others => '0');
    --wbm_cyc_o         <= wbm_cyc_o_int;     
    npor_int          <= ext_rst_n and '1';
    pll_powerdown_int <= not npor_int;
