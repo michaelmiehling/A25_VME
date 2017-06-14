@@ -250,7 +250,7 @@ mensb_fsm : PROCESS (clk, rst)
                sel_loc_data_out(1) <= '0';
                run_mstr <= '0';
                loc_write_flag <= '0';
-               IF mstr_busy = '1' AND vme_acc_type_l(3 DOWNTO 2) = "10" AND wbs_we_i = '1' THEN
+               IF mstr_busy = '1' AND vme_acc_type_l(3 DOWNTO 2) = "11" AND wbs_we_i = '1' THEN
                   mensb_state <= mensb_vme;
                   wbs_ack_o_int <= '1';               -- acknoledge low d64 write
                   wbs_err_o <= '0';
@@ -272,7 +272,7 @@ mensb_fsm : PROCESS (clk, rst)
                   mensb_state <= mensb_vme_end;
                   wbs_ack_o_int <= '1';                -- also ack for termination of wbb access
                   wbs_err_o <= '1';                     -- error
-               ELSIF mstr_ack = '1' AND vme_acc_type_l(3 DOWNTO 2) = "10" AND wbs_we_i = '0' THEN
+               ELSIF mstr_ack = '1' AND vme_acc_type_l(3 DOWNTO 2) = "11" AND wbs_we_i = '0' THEN
                   mensb_state <= mensb_vme_d64;
                   wbs_ack_o_int <= '1';
                   wbs_err_o <= '0';
