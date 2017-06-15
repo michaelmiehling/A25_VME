@@ -113,6 +113,7 @@ ARCHITECTURE switch_fab_3_arch OF switch_fab_3 IS
    SIGNAL wbi_slave_stb : std_logic;
 BEGIN
 
+  wbi_slave.bte <= "00";
 
 without_q : IF NOT registered GENERATE 
    

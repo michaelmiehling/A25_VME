@@ -105,6 +105,7 @@ ARCHITECTURE switch_fab_2_arch OF switch_fab_2 IS
 
 BEGIN
 
+  wbi_slave.bte <= "00";
 
 without_q : IF NOT registered GENERATE 
    
