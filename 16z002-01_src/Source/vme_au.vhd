@@ -269,6 +269,7 @@ ARCHITECTURE vme_au_arch OF vme_au IS
    SIGNAL lwordn_slv_int      : std_logic;
    SIGNAL asn_q               : std_logic;
    SIGNAL iackn_in_q          : std_logic;
+   signal writen_int				: std_logic;
    
    SIGNAL vme_a16_mask        : std_logic_vector(31 DOWNTO 12);
    SIGNAL vme_a24_mask        : std_logic_vector(31 DOWNTO 12);
@@ -337,10 +338,12 @@ BEGIN
          asn_q          <= '1';
          iackin_daisy   <= '1';
          iackn_in_q     <= '1';
+         writen_int		<= '1';
       ELSIF clk'EVENT AND clk = '1' THEN
          iackn_in_q <= iackn_in;
          asn_q <= asn_in;
          iackin_daisy <= iackin;
+         writen_int <= NOT wbs_we_i;
          
          CASE irq_state IS
             WHEN idle =>
@@ -400,10 +403,10 @@ BEGIN
       END IF;
    END PROCESS am;
    
-   wri : PROCESS(vam_oe, wbs_we_i, writen)
+   wri : PROCESS(vam_oe, wbs_we_i, writen, writen_int)
    BEGIN
       IF vam_oe = '1' THEN
-         writen <= NOT wbs_we_i;
+         writen <= writen_int;
          sl_writen_int <= to_x01(writen);
       ELSE
          writen <= 'Z';
