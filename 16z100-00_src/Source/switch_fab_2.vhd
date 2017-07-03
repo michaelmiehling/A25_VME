@@ -97,6 +97,7 @@ ARCHITECTURE switch_fab_2_arch OF switch_fab_2 IS
 -- TYPE sw_states IS (sw_0, sw_1);
    SIGNAL sw_state   : sw_states;
    SIGNAL sw_nxt_state  : sw_states;
+   signal sel_we     : std_logic;
    SIGNAL ack_0_int  : std_logic;
    SIGNAL ack_1_int  : std_logic;
    SIGNAL sel        : std_logic_vector(1 DOWNTO 0);
@@ -104,6 +105,7 @@ ARCHITECTURE switch_fab_2_arch OF switch_fab_2 IS
 
 BEGIN
 
+  wbi_slave.bte <= "00";
 
 without_q : IF NOT registered GENERATE 
    
@@ -114,6 +116,11 @@ without_q : IF NOT registered GENERATE
          sw_state <= sw_0;
       ELSIF clk'EVENT AND clk = '1' THEN
          sw_state <= sw_nxt_state;
+         IF sw_nxt_state = sw_0 THEN
+           sel_we <= '0';
+         else
+           sel_we <= '1';
+         END IF;
          CASE sw_nxt_state IS
             WHEN sw_0 =>
                IF cyc_0 = '1' THEN
@@ -209,12 +216,16 @@ without_q : IF NOT registered GENERATE
          END CASE;
       END PROCESS;
       
-   PROCESS(sw_state, wbo_0.we, wbo_1.we)
+   -- Greg Daniluk 12/06/2017
+   -- I know this process looks weirdly different from the others and could
+   -- simply use sw_state to select. There are many multiplexers already driven
+   -- by sw_state thus I've introduced another register (sel_we) to duplicate
+   -- the path and to get the timing closue.
+   PROCESS(sel_we, wbo_0.we, wbo_1.we)
       BEGIN
-         CASE sw_state IS
-            WHEN sw_0 => wbi_slave.we <= wbo_0.we;    
-            WHEN sw_1 => wbi_slave.we <= wbo_1.we;    
-            WHEN OTHERS => wbi_slave.we <= wbo_0.we;     
+         CASE sel_we IS
+            WHEN '1' => wbi_slave.we <= wbo_1.we;    
+            WHEN OTHERS => wbi_slave.we <= wbo_0.we;    
          END CASE;
       END PROCESS;
       

@@ -94,6 +94,7 @@ BEGIN
    wbi_slave.we   <= wbo_0.we;
    wbi_slave.cti  <= wbo_0.cti;
    wbi_slave.tga  <= wbo_0.tga;
+   wbi_slave.bte  <= "00";
    
    PROCESS(clk, rst)
    BEGIN
