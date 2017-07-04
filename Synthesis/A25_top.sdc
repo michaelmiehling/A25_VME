@@ -47,13 +47,11 @@ create_clock -name {refclk} -period 10.000 -waveform { 0.000 5.000 } [get_ports 
 # Create Generated Clock
 #**************************************************************
 #derive_pll_clocks
-create_generated_clock -name {clk_125} -source [get_ports {clk_16mhz}] -duty_cycle 50.000 -multiply_by 125 -divide_by 16 -master_clock {clk_16mhz} [get_pins {pll|altpll_component|auto_generated|pll1|clk[0]}] 
-create_generated_clock -name {clk_50} -source [get_ports {clk_16mhz}] -duty_cycle 50.000 -multiply_by 25 -divide_by 8 -master_clock {clk_16mhz} [get_pins {pll|altpll_component|auto_generated|pll1|clk[1]}] 
-create_generated_clock -name {sys_clk} -source [get_ports {clk_16mhz}] -duty_cycle 50.000 -multiply_by 25 -divide_by 6 -master_clock {clk_16mhz} [get_pins {pll|altpll_component|auto_generated|pll1|clk[2]}] 
-create_generated_clock -name {clk_33} -source [get_ports {clk_16mhz}] -duty_cycle 50.000 -multiply_by 25 -divide_by 12 -master_clock {clk_16mhz} [get_pins {pll|altpll_component|auto_generated|pll1|clk[4]}] 
-#create_generated_clock -name {sr_clk_int} -source [get_ports {clk_16mhz}] -duty_cycle 50.000 -multiply_by 25 -divide_by 6 -phase -50 -master_clock {clk_16mhz} [get_ports {sr_clk}] 
-
-create_generated_clock -source [get_pins {pll|altpll_component|auto_generated|pll1|clk[3]}] -duty_cycle 50.000 -multiply_by 25 -divide_by 6 -phase 0 -name sr_clk_ext [get_ports {sr_clk}]
+create_generated_clock -source {pll|altpll_component|auto_generated|pll1|inclk[0]} -divide_by 16 -multiply_by 125 -duty_cycle 50.00 -name {clk_125} {pll|altpll_component|auto_generated|pll1|clk[0]}
+create_generated_clock -source {pll|altpll_component|auto_generated|pll1|inclk[0]} -divide_by 8 -multiply_by 25 -duty_cycle 50.00 -name {clk_50} {pll|altpll_component|auto_generated|pll1|clk[1]}
+create_generated_clock -source {pll|altpll_component|auto_generated|pll1|inclk[0]} -divide_by 6 -multiply_by 25 -duty_cycle 50.00 -name {sys_clk} {pll|altpll_component|auto_generated|pll1|clk[2]}
+create_generated_clock -source {pll|altpll_component|auto_generated|pll1|inclk[0]} -divide_by 6 -multiply_by 25 -duty_cycle 50.00 -name {sr_clk_ext} {pll|altpll_component|auto_generated|pll1|clk[3]}
+create_generated_clock -source {pll|altpll_component|auto_generated|pll1|inclk[0]} -divide_by 12 -multiply_by 25 -duty_cycle 50.00 -name {clk_33} {pll|altpll_component|auto_generated|pll1|clk[4]}
 
 #**************************************************************
 # Set Clock Latency
