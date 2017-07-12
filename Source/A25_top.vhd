@@ -524,8 +524,18 @@ END COMPONENT;
        return "../Source/chameleon.hex";
      end if;
    end function;
-
-
+   
+   function f_sel_sim_bool(simulation : boolean)
+     return bit is
+   begin
+     if (simulation) then
+       return '1';
+     else
+       return '0';
+     end if;
+   end function;
+   
+   
    CONSTANT CONST_500HZ : integer := 66667; -- half 500Hz clock period counter value at 66MHz
 
    SIGNAL sys_clk       : std_logic;                        -- system clock 66 MHz
@@ -745,7 +755,7 @@ pll: pll_pcie
                                                                                                                                
 pcie: ip_16z091_01_top 
    GENERIC MAP (
-      SIMULATION           => '1',
+      SIMULATION           => f_sel_sim_bool(SIMULATION),
       FPGA_FAMILY          => CYCLONE4,
       IRQ_WIDTH            => 13,
       USE_LANES            => f_sel_pcie_lanes(SIMULATION),
@@ -899,7 +909,7 @@ pcie: ip_16z091_01_top
 
 sflash: z126_01_top 
    GENERIC MAP (
-      SIMULATION              => FALSE,
+      SIMULATION              => SIMULATION,
       FPGA_FAMILY             => CYCLONE4,
       FLASH_TYPE              => M25P32,
       USE_DIRECT_INTERFACE    => FALSE,
