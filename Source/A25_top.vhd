@@ -526,7 +526,7 @@ END COMPONENT;
    end function;
    
    function f_sel_sim_bool(simulation : boolean)
-     return bit is
+     return std_logic is
    begin
      if (simulation) then
        return '1';
