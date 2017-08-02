@@ -70,6 +70,7 @@ USE ieee.std_logic_1164.ALL;
 
 library altera_mf;
 use altera_mf.altera_mf_components.all;
+USE ieee.std_logic_arith.CONV_STD_LOGIC_VECTOR;
 
 ENTITY vme_dma_fifo IS
 PORT (
