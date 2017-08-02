@@ -322,6 +322,9 @@ begin
                -- do payload loop, that means: one request was transmitted from Wishbone but the length is too big
                -- thus split up in order to obey PCIe max_payload_size or max_read_size, which means
                -- to send several packets with the same header info except address and length
+               -- CAUTION: 
+               --    if the last packet to be sent has length =1 then last_DW must be =0
+               --    and the original setting for last_DW must be inserted for first_DW
                if(payload_loop = '0') then
                   data_qq(39 downto 36) <= last_DW_int;                          -- last DW
                   data_qq(35 downto 32) <= first_DW_int;                         -- first DW
@@ -329,8 +332,13 @@ begin
                   data_qq(39 downto 36) <= x"F";
                   data_qq(35 downto 32) <= first_DW_int;                         -- first DW
                elsif(payload_loop = '1' and first_last_full = "10") then
-                  data_qq(39 downto 36) <= last_DW_int;                          -- last DW
-                  data_qq(35 downto 32) <= x"F";
+                  if send_len = "0000000001" then
+                     data_qq(39 downto 36) <= x"0";
+                     data_qq(35 downto 32) <= last_DW_int;
+                  else
+                     data_qq(39 downto 36) <= last_DW_int;                          -- last DW
+                     data_qq(35 downto 32) <= x"F";
+                  end if;
                elsif(payload_loop = '1' and first_last_full = "11") then
                   data_qq(39 downto 36) <= x"F";
                   data_qq(35 downto 32) <= x"F";
