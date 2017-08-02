@@ -81,47 +81,65 @@ PORT (
    fifo_rd            : IN std_logic;
    fifo_dat_i         : IN std_logic_vector(31 DOWNTO 0);
    fifo_dat_o         : OUT std_logic_vector(31 DOWNTO 0);
-   fifo_almost_full   : OUT std_logic;
-   fifo_almost_empty  : OUT std_logic;
-   fifo_empty         : OUT std_logic
+   fifo_almost_full   : OUT std_logic;                      -- two words can be written before fifo is full
+   fifo_almost_empty  : OUT std_logic;                      -- one word is in fifo before empty
+   fifo_full          : OUT std_logic;                      -- fifo is full
+   fifo_empty         : OUT std_logic                       -- fifo is empty
      );
 END vme_dma_fifo;
 
 ARCHITECTURE vme_dma_fifo_arch OF vme_dma_fifo IS 
+   constant CONST_FIFO_SIZE   : integer := 256;
    SIGNAL fifo_usedw    : std_logic_vector(7 DOWNTO 0);
    SIGNAL low_level     : std_logic:='0';
    SIGNAL dat_o         : std_logic_vector(31 DOWNTO 0);
 BEGIN
 
 PROCESS(clk, rst)
-  BEGIN
-     IF rst = '1' THEN
-      fifo_almost_full <= '0';
-      fifo_empty <= '1';     
-      fifo_almost_empty <= '0';
-      fifo_dat_o <= (OTHERS => '0');
-     ELSIF clk'EVENT AND clk = '1' THEN
-        IF fifo_usedw = "11111110" AND fifo_wr = '1' THEN
-         fifo_almost_full <= '1';
-      ELSIF fifo_rd = '1' THEN
+   BEGIN
+      IF rst = '1' THEN
          fifo_almost_full <= '0';
-      END IF;
-      IF fifo_usedw = "00000001" AND fifo_rd = '1' THEN
-         fifo_empty <= '1';
-      ELSIF fifo_wr = '1' THEN
-         fifo_empty <= '0';
-      END IF;
-      IF fifo_usedw = "00000010" AND fifo_rd = '1' THEN
-         fifo_almost_empty <= '1';
-      ELSIF fifo_wr = '1' OR fifo_rd = '1' THEN
+         fifo_full <= '0';
+         fifo_empty <= '1';     
          fifo_almost_empty <= '0';
-      END IF;
-      
-      -- register for convertion of look-ahead fifo to normal fifo behaviour
-      IF fifo_clr = '1' THEN
          fifo_dat_o <= (OTHERS => '0');
-      ELSIF fifo_rd = '1' THEN
-         fifo_dat_o <= dat_o;
+      ELSIF clk'EVENT AND clk = '1' THEN
+         -- indicate whether two words can be written to fifo before full
+         IF fifo_usedw = conv_std_logic_vector(CONST_FIFO_SIZE-3, 8) AND fifo_wr = '1' THEN  
+            fifo_almost_full <= '1';
+         ELSIF fifo_rd = '1' THEN
+            fifo_almost_full <= '0';
+         END IF;
+            
+         -- indicate whether fifo is full
+         IF fifo_usedw = conv_std_logic_vector(CONST_FIFO_SIZE-2, 8) AND fifo_wr = '1' THEN  
+            fifo_full <= '1';
+         ELSIF fifo_rd = '1' THEN
+            fifo_full <= '0';
+         END IF;
+            
+         -- indicate whether fifo is empty
+         IF fifo_usedw = conv_std_logic_vector(1, 8) AND fifo_rd = '1' THEN   
+            fifo_empty <= '1';
+         ELSIF fifo_wr = '1' THEN
+            fifo_empty <= '0';
+         END IF;
+            
+         -- indicate whether one word can be read before empty
+         IF fifo_usedw = conv_std_logic_vector(2, 8) AND fifo_rd = '1' THEN   
+            fifo_almost_empty <= '1';
+         ELSIF fifo_usedw = conv_std_logic_vector(0, 8) AND fifo_wr = '1' THEN  -- if fifo is empty an one word gets written
+            fifo_almost_empty <= '1';
+         ELSIF fifo_wr = '1' OR fifo_rd = '1' THEN
+            fifo_almost_empty <= '0';
+         END IF;
+      
+         -- register for convertion of look-ahead fifo to normal fifo behaviour
+         IF fifo_clr = '1' THEN
+            fifo_dat_o <= (OTHERS => '0');
+         ELSIF fifo_rd = '1' THEN
+            fifo_dat_o <= dat_o;
+         END IF;
       END IF;
      
      END IF;

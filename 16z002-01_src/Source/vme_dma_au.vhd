@@ -99,6 +99,8 @@ PORT (
    reached_size      : OUT std_logic;                        -- if all data from one bd was read and stored in the fifo
    load_cnt            : IN std_logic;                        -- after new bd was stored in register, counters must be loaded with new values
    boundary            : OUT std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
+   almost_boundary            : OUT std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
+   almost_reached_size      : OUT std_logic;                        -- if all data from one bd was read and stored in the fifo
    clr_dma_act_bd      : IN std_logic;                        -- clears dma_act_bd if dma_mstr has done without error or
                                                             -- when dma_err will be cleared
    -- vme_dma_du
@@ -118,135 +120,165 @@ END vme_dma_au;
 
 ARCHITECTURE vme_dma_au_arch OF vme_dma_au IS 
    
-   CONSTANT dma_size_cnt_val   : std_logic_vector(15 DOWNTO 0):= x"0001";
-   SIGNAL dma_act_bd_int    : std_logic_vector(7 DOWNTO 2);
-   SIGNAL inc_int            : std_logic;
-   SIGNAL dma_size_int      : std_logic_vector(15 DOWNTO 0);
-   SIGNAL dma_sour_adr_int   : std_logic_vector(31 DOWNTO 2);
-   SIGNAL dma_dest_adr_int   : std_logic_vector(31 DOWNTO 2);
-   SIGNAL cyc_o_sram_int   : std_logic;
-   SIGNAL cyc_o_pci_int      : std_logic;
-   SIGNAL cyc_o_vme_int      : std_logic;
-   SIGNAL adr_o_int         : std_logic_vector(31 DOWNTO 0);
-   SIGNAL reached_size_int   : std_logic;
-   SIGNAL boundary_blt      : std_logic;
-   SIGNAL boundary_mblt      : std_logic;
-   SIGNAL dest_is_0         : std_logic;
-   SIGNAL sour_is_0         : std_logic;
-   SIGNAL dma_size_en      : std_logic;
+   CONSTANT dma_size_cnt_val        : std_logic_vector(15 DOWNTO 0):= x"0001";
+   SIGNAL dma_act_bd_int            : std_logic_vector(7 DOWNTO 2);
+   SIGNAL inc_int                   : std_logic;
+   SIGNAL dma_size_int              : std_logic_vector(15 DOWNTO 0);
+   SIGNAL dma_sour_adr_int          : std_logic_vector(31 DOWNTO 2);
+   SIGNAL dma_dest_adr_int          : std_logic_vector(31 DOWNTO 2);
+   SIGNAL cyc_o_sram_int            : std_logic;
+   SIGNAL cyc_o_pci_int             : std_logic;
+   SIGNAL cyc_o_vme_int             : std_logic;
+   SIGNAL adr_o_int                 : std_logic_vector(31 DOWNTO 0);
+   SIGNAL reached_size_int          : std_logic;
+   SIGNAL almost_reached_size_int   : std_logic;
+   SIGNAL boundary_blt              : std_logic;
+   SIGNAL boundary_mblt             : std_logic;
+   SIGNAL almost_boundary_blt       : std_logic;
+   SIGNAL almost_boundary_mblt      : std_logic;
+   SIGNAL dma_size_en               : std_logic;
+   signal tga_int                   : std_logic_vector(8 DOWNTO 0);
    
 BEGIN
-   cyc_o_sram             <= cyc_o_sram_int WHEN stb_o = '1' ELSE '0';
-   cyc_o_pci             <= cyc_o_pci_int WHEN stb_o = '1' ELSE '0';
-   cyc_o_vme             <= cyc_o_vme_int WHEN stb_o = '1' ELSE '0';
+   cyc_o_sram  <= cyc_o_sram_int WHEN stb_o = '1' ELSE '0';
+   cyc_o_pci   <= cyc_o_pci_int WHEN stb_o = '1' ELSE '0';
+   cyc_o_vme   <= cyc_o_vme_int WHEN stb_o = '1' ELSE '0';
 
-   inc_int                <= inc_sour WHEN sour_dest = '1' ELSE inc_dest;
-   dma_act_bd             <= dma_act_bd_int;
+   inc_int     <= inc_sour WHEN sour_dest = '1' ELSE inc_dest;
+   dma_act_bd  <= dma_act_bd_int;
    
    reached_size_int <= '1' WHEN dma_size_int = dma_size ELSE '0';
+   almost_reached_size_int <= '1' WHEN (dma_size_int + 1) = dma_size ELSE '0';
 
    adr_o_int(31 DOWNTO 2) <= x"000f_f9" & dma_act_bd_int WHEN get_bd = '1' ELSE    -- switch iram adress [10:2] to adr_o
               dma_sour_adr_int WHEN sour_dest = '1' ELSE   -- switch source adress to adr_o & dma_access & swap
               dma_dest_adr_int ;                              -- switch destination adress to adr_o & dma_access & swap
-     adr_o_int(1 DOWNTO 0) <= "00";
+   adr_o_int(1 DOWNTO 0) <= "00";
               
 
-   dest_is_0 <= '1' WHEN dma_dest_adr_int(7 DOWNTO 2) = "000000" ELSE '0';
-   sour_is_0 <= '1' WHEN dma_sour_adr_int(7 DOWNTO 2) = "000000" ELSE '0';
-            
                                                   
    boundary <= boundary_blt OR boundary_mblt;   
+   almost_boundary <= almost_boundary_blt OR almost_boundary_mblt;   
       
-   sel_o <= (OTHERS => '1');
+   sel_o <= (OTHERS => '1');                         -- always longword accessess
 
+   -- (0)   : A24(=0)
+   -- (1)   : A32(=1)
+   -- (3:2) : 00=D16, 01=D32, 10=D64
+   -- (4)   : if increment enabled the burst else single
+   -- (5)   : swapped(1) or non swapped (0)
+   -- (6)   : =0 always VME bus access (no register access)
+   -- (7)   : =1 indicates access to vme_ctrl by DMA
+   -- (8)   : 0= non-privileged 1= supervisory
+   tga_int <= dma_vme_am(4) & "10" & NOT dma_vme_am(0) & NOT inc_int & dma_vme_am(3 DOWNTO 2) & '0' & dma_vme_am(1);
       
 adr_o_proc : PROCESS(clk, rst)
-  BEGIN
-     IF rst = '1' THEN
-        adr_o <= (OTHERS => '0');
-        dma_sour_adr_int <= (OTHERS => '0');
-        dma_dest_adr_int <= (OTHERS => '0');
-        dma_act_bd_int <= (OTHERS => '0');
-      cyc_o_sram_int <= '0';
-      cyc_o_pci_int <= '0';
-      cyc_o_vme_int <= '0';
-      we_o <= '0';
-      reached_size <= '0';
-      tga_o <= (OTHERS => '0');
-      boundary_blt <= '0';
-      boundary_mblt <= '0';
-     ELSIF clk'EVENT AND clk = '1' THEN
-        -- rule of vmebus: do not cross 256 byte boundaries (0x100)
-        IF dma_vme_am(3) = '0' AND ((dma_dest_device(1) = '1' AND dest_is_0 = '1' AND sour_dest = '0') OR
-                                   (dma_sour_device(1) = '1' AND sour_is_0 = '1' AND sour_dest = '1')) THEN
-           boundary_blt <= '1';
-        ELSE
-           boundary_blt <= '0';
-        END IF;
-        -- for mblt-d64: do not cross 2k byte boundaries (0x800)
-        IF dma_vme_am(3) = '1' AND ((dma_dest_device(1) = '1' AND dest_is_0 = '1' AND dma_dest_adr_int(10 DOWNTO 8) = "000" AND sour_dest = '0') OR
-                                   (dma_sour_device(1) = '1' AND sour_is_0 = '1' AND dma_sour_adr_int(10 DOWNTO 8) = "000" AND sour_dest = '1')) THEN
-           boundary_mblt <= '1';
-        ELSE
-           boundary_mblt <= '0';
-        END IF;
-        
-        IF inc_adr = '1' OR get_bd = '1' THEN
-           adr_o <= adr_o_int;
-        END IF;
-
-        IF load_cnt = '1' THEN
-           reached_size <= '0';
-        ELSIF inc_adr = '1' AND sour_dest = '1' THEN
-           reached_size <= reached_size_int;
-        END IF;
-
-      -- (0)   : A24(=0)
-      -- (1)   : A32(=1)
-      -- (3:2) : 00=D16, 01=D32, 10=D64
-      -- (4)   : if increment enabled the burst else single
-      -- (5)   : swapped(1) or non swapped (0)
-      -- (6)   : =0 always VME bus access (no register access)
-      -- (7)   : =1 indicates access to vme_ctrl by DMA
-      -- (8)   : 0= non-privileged 1= supervisory
-      tga_o <= dma_vme_am(4) & "10" & NOT  dma_vme_am(0) & NOT inc_int & dma_vme_am(3 DOWNTO 2) & '0' & dma_vme_am(1);
-      
-        IF get_bd = '1' THEN
-         cyc_o_sram_int <= '1';
+   BEGIN
+      IF rst = '1' THEN
+         adr_o <= (OTHERS => '0');
+         dma_sour_adr_int <= (OTHERS => '0');
+         dma_dest_adr_int <= (OTHERS => '0');
+         dma_act_bd_int <= (OTHERS => '0');
+         cyc_o_sram_int <= '0';
          cyc_o_pci_int <= '0';
          cyc_o_vme_int <= '0';
-         we_o <= '0';                                    -- only reading from sram
-        ELSIF sour_dest = '1' THEN                           -- SOURCE
-         cyc_o_sram_int <= dma_sour_device(0);
-         cyc_o_vme_int <= dma_sour_device(1);
-         cyc_o_pci_int <= dma_sour_device(2);
-         we_o <= '0';                                    -- read from source
-        ELSE                                                -- DESTINATION
-         cyc_o_sram_int <= dma_dest_device(0);
-         cyc_o_vme_int <= dma_dest_device(1);
-         cyc_o_pci_int <= dma_dest_device(2);
-         we_o <= '1';                                    -- write to destination
-        END IF;
-        
-        IF load_cnt = '1' THEN
-           dma_sour_adr_int <= dma_sour_adr;
-        ELSIF get_bd = '0' AND sour_dest = '1' AND inc_adr = '1' AND inc_sour = '0' THEN
-           dma_sour_adr_int <= dma_sour_adr_int + 1;
-        END IF;
-     
-        IF load_cnt = '1' THEN
-           dma_dest_adr_int <= dma_dest_adr;
-        ELSIF get_bd = '0' AND sour_dest = '0' AND inc_adr = '1' AND inc_dest = '0' THEN
-           dma_dest_adr_int <= dma_dest_adr_int + 1;
-        END IF;
-        
-        IF start_dma = '1' OR clr_dma_act_bd = '1' THEN
-           dma_act_bd_int <= (OTHERS => '0');
-        ELSIF get_bd = '1' AND inc_adr = '1' THEN
-           dma_act_bd_int <= dma_act_bd_int + 1;
-        END IF;
-     END IF;
-  END PROCESS adr_o_proc;
+         we_o <= '0';
+         reached_size <= '0';
+         almost_reached_size <= '0';
+         tga_o <= (OTHERS => '0');
+         boundary_blt <= '0';
+         boundary_mblt <= '0';
+         almost_boundary_blt <= '0';
+         almost_boundary_mblt <= '0';
+      ELSIF clk'EVENT AND clk = '1' THEN
+         -- rule of vmebus: do not cross 256 byte boundaries (0x100)
+         IF dma_vme_am(3) = '0' AND ((dma_dest_device(1) = '1' AND dma_dest_adr_int(7 DOWNTO 2) = "000000" AND sour_dest = '0') OR
+                                    (dma_sour_device(1) = '1' AND dma_sour_adr_int(7 DOWNTO 2) = "000000" AND sour_dest = '1')) THEN
+            boundary_blt <= '1';
+         ELSE
+            boundary_blt <= '0';
+         END IF;
+         IF dma_vme_am(3) = '0' AND ((dma_dest_device(1) = '1' AND dma_dest_adr_int(7 DOWNTO 2) = "111111" AND sour_dest = '0') OR
+                                    (dma_sour_device(1) = '1' AND dma_sour_adr_int(7 DOWNTO 2) = "111111" AND sour_dest = '1')) THEN
+            almost_boundary_blt <= '1';
+         ELSE
+            almost_boundary_blt <= '0';
+         END IF;
+          
+         -- for mblt-d64: do not cross 2k byte boundaries (0x800)
+         IF dma_vme_am(3) = '1' AND ((dma_dest_device(1) = '1' AND dma_dest_adr_int(7 DOWNTO 2) = "000000" AND dma_dest_adr_int(10 DOWNTO 8) = "000" AND sour_dest = '0') OR
+                                    (dma_sour_device(1) = '1' AND dma_sour_adr_int(7 DOWNTO 2) = "000000" AND dma_sour_adr_int(10 DOWNTO 8) = "000" AND sour_dest = '1')) THEN
+            boundary_mblt <= '1';
+         ELSE
+            boundary_mblt <= '0';
+         END IF;
+         IF dma_vme_am(3) = '1' AND ((dma_dest_device(1) = '1' AND dma_dest_adr_int(10 DOWNTO 2) = "111111111" AND sour_dest = '0') OR
+                                    (dma_sour_device(1) = '1' AND dma_sour_adr_int(10 DOWNTO 2) = "111111111" AND sour_dest = '1')) THEN
+            almost_boundary_mblt <= '1';
+         ELSE
+            almost_boundary_mblt <= '0';
+         END IF;
+         
+         IF inc_adr = '1' OR get_bd = '1' THEN
+            adr_o <= adr_o_int;
+         END IF;
+         
+         IF load_cnt = '1' THEN
+            reached_size <= '0';
+            almost_reached_size <= '0';
+         ELSIF inc_adr = '1' AND sour_dest = '1' THEN
+            reached_size <= reached_size_int;
+            almost_reached_size <= almost_reached_size_int;
+         END IF;
+         
+      
+         IF get_bd = '1' THEN
+            cyc_o_sram_int <= '1';
+            cyc_o_pci_int <= '0';
+            cyc_o_vme_int <= '0';
+            we_o <= '0';                                    -- only reading from sram
+            tga_o <= (OTHERS => '0'); 
+         ELSIF sour_dest = '1' THEN                           -- SOURCE
+            cyc_o_sram_int <= dma_sour_device(0);
+            cyc_o_vme_int <= dma_sour_device(1);
+            cyc_o_pci_int <= dma_sour_device(2);
+            we_o <= '0';                                    -- read from source
+            if dma_sour_device(1) = '1' then                -- if access to vme range, use tga for space selection
+               tga_o <= tga_int;
+            else                                            -- if access to SRAM or PCI => no special tga setting
+               tga_o <= (OTHERS => '0'); 
+            end if;
+         ELSE                                                -- DESTINATION
+            cyc_o_sram_int <= dma_dest_device(0);
+            cyc_o_vme_int <= dma_dest_device(1);
+            cyc_o_pci_int <= dma_dest_device(2);
+            we_o <= '1';                                    -- write to destination
+            if dma_dest_device(1) = '1' then                -- if access to vme range, use tga for space selection
+               tga_o <= tga_int;
+            else                                            -- if access to SRAM or PCI => no special tga setting
+               tga_o <= (OTHERS => '0'); 
+            end if;
+         END IF;
+         
+         IF load_cnt = '1' THEN
+            dma_sour_adr_int <= dma_sour_adr;
+         ELSIF get_bd = '0' AND sour_dest = '1' AND inc_adr = '1' AND inc_sour = '0' THEN
+            dma_sour_adr_int <= dma_sour_adr_int + 1;
+         END IF;
+         
+         IF load_cnt = '1' THEN
+            dma_dest_adr_int <= dma_dest_adr;
+         ELSIF get_bd = '0' AND sour_dest = '0' AND inc_adr = '1' AND inc_dest = '0' THEN
+            dma_dest_adr_int <= dma_dest_adr_int + 1;
+         END IF;
+         
+         IF start_dma = '1' OR clr_dma_act_bd = '1' THEN
+            dma_act_bd_int <= (OTHERS => '0');
+         ELSIF get_bd = '1' AND inc_adr = '1' THEN
+            dma_act_bd_int <= dma_act_bd_int + 1;
+         END IF;
+      END IF;
+   END PROCESS adr_o_proc;
   
   dma_size_en <= '1' WHEN sour_dest = '1' AND inc_adr = '1' ELSE '0';
  

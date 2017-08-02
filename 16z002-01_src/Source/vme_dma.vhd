@@ -194,6 +194,8 @@ PORT (
    reached_size      : OUT std_logic;                        -- if all data from one bd was read and stored in the fifo
    load_cnt            : IN std_logic;                        -- after new bd was stored in register, counters must be loaded with new values
    boundary            : OUT std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
+   almost_boundary      : out std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
+   almost_reached_size  : out std_logic;                        -- if all data from one bd was read and stored in the fifo
    clr_dma_act_bd      : IN std_logic;                        -- clears dma_act_bd if dma_mstr has done without error or
                                                             -- when dma_err will be cleared
    
@@ -273,6 +275,7 @@ PORT (
    
    -- fifo
    fifo_empty         : IN std_logic;               -- indicates that no more data is available
+   fifo_full            : in std_logic;                  -- indicates that no more data can be stored in fifo
    fifo_almost_full   : IN std_logic;               -- indicates that only one data can be stored in the fifo
    fifo_almost_empty  : IN std_logic;              -- indicates that only one data is stored in the fifo
    fifo_wr            : OUT std_logic;               -- if asserted, fifo will be filled with another data
@@ -286,6 +289,8 @@ PORT (
    dma_act_bd         : IN std_logic_vector(7 DOWNTO 2);      -- [7:3] = active bd number
    load_cnt            : OUT std_logic;               -- after new bd was stored in register, counters must be loaded with new values
    boundary            : IN std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
+   almost_boundary      : IN std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
+   almost_reached_size  : IN std_logic;                        -- if all data from one bd was read and stored in the fifo
    we_o_int            : IN std_logic;
    
    -- vme_dma_du
@@ -299,8 +304,7 @@ PORT (
    inc_dest            : IN std_logic;               -- indicates if destination adress should be incremented
    
    -- arbiter      
-   mstr_req            : OUT std_logic;               -- request for internal register access
-   mstr_ack            : IN std_logic                  -- acknoledge for internal register access
+   mstr_req            : OUT std_logic               -- request for internal register access
      );
 END COMPONENT;
 
@@ -316,6 +320,7 @@ PORT (
    fifo_dat_o         : OUT std_logic_vector(31 DOWNTO 0);
    fifo_almost_full   : OUT std_logic;
    fifo_almost_empty  : OUT std_logic;
+   fifo_full          : OUT std_logic;
    fifo_empty         : OUT std_logic
      );
 END COMPONENT;
@@ -325,6 +330,7 @@ END COMPONENT;
    SIGNAL fifo_almost_full   : std_logic;
    SIGNAL fifo_almost_empty  : std_logic;
    SIGNAL fifo_empty         : std_logic;
+   SIGNAL fifo_full          : std_logic;
    
    -- slv
    SIGNAL slv_req            : std_logic;
@@ -366,8 +372,10 @@ END COMPONENT;
    -- au
    SIGNAL adr_o_int         : std_logic_vector(31 DOWNTO 0);
    SIGNAL reached_size      : std_logic;
+   SIGNAL almost_reached_size      : std_logic;
    SIGNAL dma_act_bd_int   : std_logic_vector(7 DOWNTO 2);
    SIGNAL boundary         : std_logic;
+   SIGNAL almost_boundary         : std_logic;
    SIGNAL we_o_int         : std_logic;
 
 BEGIN
@@ -414,6 +422,7 @@ PORT MAP (
    tga_o               => tga_o,
    we_o               => we_o_int            ,
    boundary            => boundary,
+   almost_boundary            => almost_boundary,
    cyc_o_sram         => cyc_o_sram      ,
    cyc_o_pci         => cyc_o_pci      ,
    cyc_o_vme         => cyc_o_vme      ,
@@ -423,6 +432,7 @@ PORT MAP (
    inc_adr            => inc_adr         ,
    get_bd            => get_bd         ,
    reached_size      => reached_size   ,
+   almost_reached_size      => almost_reached_size   ,
    load_cnt            => load_cnt         ,
    start_dma         => start_dma      ,
    dma_act_bd         => dma_act_bd_int      ,
@@ -481,16 +491,19 @@ PORT MAP (
    err_i               => err_i               ,
    cti               => cti,
    fifo_empty         => fifo_empty         ,
+   fifo_full            => fifo_full,
    fifo_almost_full   => fifo_almost_full   ,
    fifo_almost_empty   => fifo_almost_empty   ,
    fifo_wr            => fifo_wr            ,
    fifo_rd            => fifo_rd            ,
    boundary            => boundary,
+   almost_boundary            => almost_boundary,
    we_o_int            => we_o_int,
    sour_dest         => sour_dest         ,
    inc_adr            => inc_adr            ,
    get_bd            => get_bd            ,
    reached_size      => reached_size      ,
+   almost_reached_size      => almost_reached_size   ,
    dma_act_bd         => dma_act_bd_int         ,
    load_cnt            => load_cnt            ,
    start_dma         => start_dma         ,
@@ -501,8 +514,7 @@ PORT MAP (
    inc_dest            => inc_dest,
    dma_null            => dma_null            ,
    en_mstr_dat_i_reg   => en_mstr_dat_i_reg   ,
-   mstr_req            => mstr_req            ,
-   mstr_ack            => mstr_ack            
+   mstr_req            => mstr_req            
      );
 
 dma_fifo: vme_dma_fifo
@@ -516,6 +528,7 @@ PORT MAP (
    fifo_dat_o         => mstr_dat_o         ,
    fifo_almost_full   => fifo_almost_full   ,
    fifo_almost_empty  => fifo_almost_empty,
+   fifo_full         => fifo_full   ,
    fifo_empty         => fifo_empty         
      );
 
