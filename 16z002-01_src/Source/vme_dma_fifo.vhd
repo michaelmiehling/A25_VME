@@ -143,7 +143,6 @@ PROCESS(clk, rst)
          END IF;
       END IF;
      
-     END IF;
   END PROCESS;
 
 	fifo: scfifo --256x32bit
