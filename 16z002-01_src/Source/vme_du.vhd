@@ -144,6 +144,10 @@ PORT (
    vme_adr_in              : OUT std_logic_vector(31 DOWNTO 0);   -- vme adress input lines
    my_iack                 : IN std_logic;
    d64                     : IN std_logic;                        -- indicates d64 mblt
+   vam_reg                 : IN std_logic_vector(5 DOWNTO 0);     -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
+   vme_adr_in_reg          : IN std_logic_vector(31 DOWNTO 2);    -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
+   sl_writen_reg           : IN std_logic;                        -- vme read/wrtie signal (registered with en_vme_adr_in)
+   iackn_in_reg            : IN std_logic;                        -- iack signal (registered with en_vme_adr_in)
 
    -- sys_arbiter
    lwordn                  : IN std_logic;                        -- stored for vme slave access
@@ -272,6 +276,10 @@ ARCHITECTURE vme_du_arch OF vme_du IS
    SIGNAL ga_q                   : std_logic_vector(5 DOWNTO 0);        -- geographical addresses and parity
    SIGNAL slot_nr                : std_logic_vector(4 DOWNTO 0);        -- slot number
    SIGNAL brl_int                : std_logic_vector(1 DOWNTO 0);        -- bus request level
+   SIGNAL berr_vam               : std_logic_vector(5 downto 0);
+   SIGNAL berr_adr               : std_logic_vector(31 downto 0);
+   SIGNAL berr_rw                : std_logic;
+   SIGNAL berr_iack              : std_logic;
   
 BEGIN
    vme_adr_in <= va_in_reg;
@@ -499,6 +507,8 @@ BEGIN
          WHEN "10011" => reg_data_out <= x"00" & slv32_pci_q_int(23 DOWNTO 8) & "000" & slv32_pci_q_int(4 DOWNTO 0);    -- 0x04c
          WHEN "10100" => reg_data_out <= x"0000" & "000" & slot_nr & "00" & ga_q;                                       -- 0x050
          WHEN "10101" => reg_data_out <= x"0000_000" & "00" & brl_int;                                                  -- 0x054 
+         WHEN "10110" => reg_data_out <= berr_adr;                                                                      -- 0x058 
+         WHEN "10111" => reg_data_out <= x"0000_00" & berr_iack & berr_rw & berr_vam;                                   -- 0x05c 
          WHEN OTHERS => reg_data_out <= (OTHERS => '0');                     
       END CASE;
    END IF;
@@ -746,16 +756,33 @@ rwdena : PROCESS (clk, rst)
   END PROCESS rwdena;
 
 
-  -- BERR-bit:
+  -- BERR-bit and BERR_ADR/BERR_ACC
 berrena : PROCESS (clk, rst)
   BEGIN
     IF rst = '1' THEN
       mstr_int(2) <= '0';
+      berr_vam <= (OTHERS => '0');
+      berr_adr <= (OTHERS => '0');
+      berr_rw <= '0';
+      berr_iack <= '0';
     ELSIF (clk'event AND clk = '1') THEN
-      IF set_berr = '1' AND wbs_tga_i(7) = '0' THEN   -- set berr-bit only if not dma access!
+      -- set bus error bit/irq for single and DMA accesses which causes an vme bus error
+      IF set_berr = '1' THEN   
         mstr_int(2) <= '1';
-      ELSIF write_flag = '1' AND int_adr(6 DOWNTO 2) = "00100" AND reg_data_in(2) = '1' AND int_be(0) = '1' THEN
+      ELSIF write_flag = '1' AND int_adr(6 DOWNTO 2) = "00100" AND reg_data_in(2) = '1' AND int_be(0) = '1' THEN  -- write '1' to berr bit
         mstr_int(2)   <= '0';
+      END IF;
+         
+      IF set_berr = '1' THEN
+         berr_vam <= vam_reg;
+         berr_adr <= vme_adr_in_reg & "00";
+         berr_rw <= sl_writen_reg;
+         berr_iack <= NOT iackn_in_reg;
+      ELSIF write_flag = '1' AND int_adr(6 DOWNTO 2) = "00100" AND reg_data_in(2) = '1' AND int_be(0) = '1' THEN  -- write '1' to berr bit
+         berr_vam <= (OTHERS => '0');
+         berr_adr <= (OTHERS => '0');
+         berr_rw <= '0';
+         berr_iack <= '0';
       END IF;
     END IF;
   END PROCESS berrena;

@@ -226,7 +226,7 @@ PORT (
    a_dir             : OUT std_logic;                          -- external driver control address direction (1: drive to vmebus 0: drive to fpga)
    a_oe_n            : OUT std_logic;                          -- external driver control address output enable low activ
    
-   v2p_rstn          : OUT   std_logic                         -- Reset from VMEbus to System on board
+   v2p_rst           : OUT std_logic                           -- Reset between VMEbus and Host CPU
      );
 END wbb2vme_top;
 
@@ -328,7 +328,7 @@ PORT (
    a_dir             : OUT std_logic;                          -- external driver control address direction (1: drive to vmebus 0: drive to fpga)
    a_oe_n            : OUT std_logic;                          -- external driver control address output enable low activ
    
-   v2p_rstn          : OUT   std_logic                         -- Reset from VMEbus to System on board
+   v2p_rst           : OUT std_logic                           -- Reset between VMEbus and Host CPU
      );
 END COMPONENT;
 
@@ -468,7 +468,7 @@ PORT MAP(
    am_oe_n           => am_oe_n    ,
    a_dir             => a_dir      ,
    a_oe_n            => a_oe_n     ,
-   v2p_rstn          => v2p_rstn   
+   v2p_rst           => v2p_rst   
      );
 
 vmedma: vme_dma

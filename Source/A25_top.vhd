@@ -501,7 +501,7 @@ PORT (
    a_dir             : OUT std_logic;                          -- external driver control address direction (1: drive to vmebus 0: drive to fpga)
    a_oe_n            : OUT std_logic;                          -- external driver control address output enable low activ
    
-   v2p_rstn          : OUT   std_logic                         -- Reset from VMEbus to System on board
+   v2p_rst           : OUT std_logic                           -- Reset between VMEbus and Host CPU
      );
 END COMPONENT;
 
@@ -597,6 +597,7 @@ END COMPONENT;
    SIGNAL vme_berr         : std_logic;     
    SIGNAL vme_mstr_busy    : std_logic; 
    SIGNAL led_cnt          : std_logic_vector(17 DOWNTO 0);    -- 2^18 = 3.9 ms
+   SIGNAL v2p_rst          : std_logic;
    
    -- high active signals on A25
    SIGNAL vme_irq_o_n       : std_logic_vector(7 DOWNTO 1);
@@ -628,6 +629,8 @@ BEGIN
 --   led_green_n <= slot01;
    vme_sysclk <= clk_16mhz;
    vme_scon_n <= slot01n;
+   
+   v2p_rstn <= '0' WHEN v2p_rst = '1' ELSE 'Z';
 
    -- counter for extending vme master active pulses to at least 3 ms
    PROCESS(sys_clk, sys_rst)
@@ -773,7 +776,7 @@ pcie: ip_16z091_01_top
       BAR_MASK_3           => x"E0000000",   -- 512M
       BAR_MASK_4           => x"FF000000",	 -- 16M
       BAR_MASK_5           => x"FFFFF000",
-      PCIE_REQUEST_LENGTH  => "0000100000",    -- 32DW = 128Byte
+      PCIE_REQUEST_LENGTH  => "0000010000",    -- 16DW = 64Byte
       RX_LPM_WIDTHU        => 10,
       TX_HEADER_LPM_WIDTHU => 5,
       TX_DATA_LPM_WIDTHU   => 10
@@ -1051,7 +1054,7 @@ PORT MAP (
    am_oe_n           => vme_am_oe_n,
    a_dir             => vme_a_dir  ,
    a_oe_n            => vme_a_oe_n ,
-   v2p_rstn          => v2p_rstn
+   v2p_rst           => v2p_rst 
    );
    
 wbb : wb_bus

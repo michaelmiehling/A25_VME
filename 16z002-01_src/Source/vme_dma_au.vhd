@@ -79,41 +79,42 @@ USE ieee.std_logic_unsigned.ALL;
 
 ENTITY vme_dma_au IS
 PORT (
-   rst               : IN std_logic;
-   clk               : IN std_logic;
+   rst                  : IN std_logic;
+   clk                  : IN std_logic;
       
    -- wb_signals
-   adr_o               : OUT std_logic_vector(31 DOWNTO 0);   -- adress for wb-bus
-   sel_o               : OUT std_logic_vector(3 DOWNTO 0);      -- byte enables for wb_bus
-   we_o               : OUT std_logic;                        -- write/read
-   tga_o               : OUT std_logic_vector(8 DOWNTO 0);      -- type of dma
-   cyc_o_sram         : OUT std_logic;                        -- chip select for sram
-   cyc_o_pci         : OUT std_logic;                        -- chip select for pci
-   cyc_o_vme         : OUT std_logic;                        -- chip select for vme
-   stb_o               : IN std_logic;                        -- request signal for cyc switching
+   adr_o                : OUT std_logic_vector(31 DOWNTO 0);      -- adress for wb-bus
+   sel_o                : OUT std_logic_vector(3 DOWNTO 0);       -- byte enables for wb_bus
+   we_o                 : OUT std_logic;                          -- write/read
+   tga_o                : OUT std_logic_vector(8 DOWNTO 0);       -- type of dma
+   cyc_o_sram           : OUT std_logic;                          -- chip select for sram
+   cyc_o_pci            : OUT std_logic;                          -- chip select for pci
+   cyc_o_vme            : OUT std_logic;                          -- chip select for vme
+   stb_o                : IN std_logic;                           -- request signal for cyc switching
    
    -- vme_dma_mstr
-   sour_dest         : IN std_logic;                        -- if set, source adress will be used, otherwise destination ad. for adr_o
-   inc_adr            : IN std_logic;                        -- flag indicates when adr should be incremented (depend on sour_dest and get_bd)
-   get_bd            : IN std_logic;                        -- if set, adress for next bd reading is switched to adr_o
-   reached_size      : OUT std_logic;                        -- if all data from one bd was read and stored in the fifo
-   load_cnt            : IN std_logic;                        -- after new bd was stored in register, counters must be loaded with new values
-   boundary            : OUT std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
-   almost_boundary            : OUT std_logic;                        -- indicates 256 byte boundary if D16 or D32 burst
-   almost_reached_size      : OUT std_logic;                        -- if all data from one bd was read and stored in the fifo
-   clr_dma_act_bd      : IN std_logic;                        -- clears dma_act_bd if dma_mstr has done without error or
-                                                            -- when dma_err will be cleared
+   sour_dest            : IN std_logic;                           -- if set, source adress will be used, otherwise destination ad. for adr_o
+   inc_adr              : IN std_logic;                           -- flag indicates when adr should be incremented (depend on sour_dest and get_bd)
+   get_bd               : IN std_logic;                           -- if set, adress for next bd reading is switched to adr_o
+   reached_size         : OUT std_logic;                          -- if all data from one bd was read and stored in the fifo
+   load_cnt             : IN std_logic;                           -- after new bd was stored in register, counters must be loaded with new values
+   boundary             : OUT std_logic;                          -- indicates 256 byte boundary if D16 or D32 burst
+   almost_boundary      : out std_logic;                          -- indicates 256 byte boundary if D16 or D32 burst
+   almost_reached_size  : out std_logic;                          -- if all data from one bd was read and stored in the fifo
+   clr_dma_act_bd       : IN std_logic;                           -- clears dma_act_bd if dma_mstr has done without error or
+                                                                  -- when dma_err will be cleared
+   
    -- vme_dma_du
-   start_dma         : IN std_logic;                        -- flag starts dma-fsm and clears counters
-   dma_act_bd         : OUT std_logic_vector(7 DOWNTO 2);      -- [7:3] = active bd number
-   dma_dest_adr      : IN std_logic_vector(31 DOWNTO 2);      -- active bd destination adress
-   dma_sour_adr      : IN std_logic_vector(31 DOWNTO 2);      -- active bd source adress
-   dma_sour_device   : IN std_logic_vector(2 DOWNTO 0);      -- selects the source device
-   dma_dest_device   : IN std_logic_vector(2 DOWNTO 0);      -- selects the destination device
-   dma_vme_am         : IN std_logic_vector(4 DOWNTO 0);      -- type of dma transmission
-   inc_sour            : IN std_logic;                        -- indicates if source adress should be incremented
-   inc_dest            : IN std_logic;                        -- indicates if destination adress should be incremented
-   dma_size            : IN std_logic_vector(15 DOWNTO 0)      -- size of data package
+   start_dma            : IN std_logic;                           -- flag starts dma-fsm and clears counters
+   dma_act_bd           : OUT std_logic_vector(7 DOWNTO 2);       -- [7:3] = active bd number
+   dma_dest_adr         : IN std_logic_vector(31 DOWNTO 2);       -- active bd destination adress
+   dma_sour_adr         : IN std_logic_vector(31 DOWNTO 2);       -- active bd source adress
+   dma_sour_device      : IN std_logic_vector(2 DOWNTO 0);        -- selects the source device
+   dma_dest_device      : IN std_logic_vector(2 DOWNTO 0);        -- selects the destination device
+   dma_vme_am           : IN std_logic_vector(4 DOWNTO 0);        -- type of dma transmission
+   inc_sour             : IN std_logic;                           -- indicates if source adress should be incremented
+   inc_dest             : IN std_logic;                           -- indicates if destination adress should be incremented
+   dma_size             : IN std_logic_vector(15 DOWNTO 0)        -- size of data package
 
      );
 END vme_dma_au;

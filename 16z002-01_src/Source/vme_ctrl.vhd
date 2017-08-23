@@ -232,7 +232,7 @@ PORT (
    a_dir             : OUT std_logic;                          -- external driver control address direction (1: drive to vmebus 0: drive to fpga)
    a_oe_n            : OUT std_logic;                          -- external driver control address output enable low activ
    
-   v2p_rstn          : OUT   std_logic                         -- Reset from VMEbus to System on board
+   v2p_rst           : OUT std_logic                           -- Reset between VMEbus and Host CPU
      );
 END vme_ctrl;
 
@@ -275,6 +275,10 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       vme_adr_in            : OUT std_logic_vector(31 DOWNTO 0);   -- vme adress input lines
       my_iack               : IN std_logic;
       d64                  : IN std_logic;                        -- indicates d64 mblt
+      vam_reg                 : IN std_logic_vector(5 DOWNTO 0);    -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
+      vme_adr_in_reg          : IN std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
+      sl_writen_reg           : in std_logic;                        -- vme read/wrtie signal (registered with en_vme_adr_in)
+      iackn_in_reg            : in std_logic;                    -- iack signal (registered with en_vme_adr_in)
       
       -- vme_sys_arbiter
       lwordn               : IN std_logic;                        -- stored for vme slave access
@@ -523,6 +527,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       inc_loc_adr_m_cnt       : IN std_logic;                     -- increment address counter
       sl_inc_loc_adr_m_cnt    : IN std_logic;                     -- increment address counter
       sl_writen_reg           : OUT std_logic;
+      iackn_in_reg            : OUT std_logic;                    -- iack signal (registered with en_vme_adr_in)
       my_iack                 : OUT std_logic;
       clr_intreq              : IN std_logic;                     -- clear interrupt request (intr(3) <= '0'
       sl_en_vme_data_in_reg   : IN std_logic;                     -- register enable for vme data in
@@ -684,7 +689,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       sysfailn          : OUT   std_logic;         -- indicates when A15 is not ready or in reset
       sysrstn_in        : IN  std_logic;
       sysrstn_out       : OUT std_logic;
-      v2p_rstn          : OUT std_logic;           -- Reset between VMEbus and PowerPC-bus
+      v2p_rst           : OUT std_logic;           -- Reset between VMEbus and Host CPU
       bg3n_in           : IN  std_logic;           -- bus grant signal in (if not connected => slot01)
       slot01n           : OUT std_logic;           -- enables V_SYSCLK (16 MHz)
       berrn_out         : OUT std_logic            -- bus error 
@@ -869,6 +874,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL sl_byte_routing              : std_logic;
    SIGNAL sl_acc                       : std_logic_vector(4 DOWNTO 0);
    SIGNAL sl_writen_reg                : std_logic;
+   SIGNAL iackn_in_reg                 : std_logic;                    -- iack signal (registered with en_vme_adr_in)
    SIGNAL reg_acc                      : std_logic;
    SIGNAL sram_acc                     : std_logic;
    SIGNAL pci_acc                      : std_logic;
@@ -1014,6 +1020,10 @@ BEGIN
       mailbox_irq                => mailbox_irq,
       write_flag                 => write_flag,
       d64                        => d64,
+      vam_reg                    => vam_reg,
+      vme_adr_in_reg             => vme_adr_in_reg,
+      sl_writen_reg              => sl_writen_reg,
+      iackn_in_reg               => iackn_in_reg,
       sel_reg_data_in            => mensb_active,
       sel_loc_data_out           => sel_loc_data_out,
       en_wbm_dat_o               => en_wbm_dat_o,
@@ -1239,6 +1249,7 @@ BEGIN
       dsan_in                 => ds_i_n(0),
       dsbn_in                 => ds_i_n(1),
       sl_writen_reg           => sl_writen_reg,
+      iackn_in_reg            => iackn_in_reg,
       sl_acc                  => sl_acc,
       sl_acc_valid            => sl_acc_valid,
       pci_offset_q            => pci_offset_q,
@@ -1331,7 +1342,7 @@ BEGIN
       sysfailn          => sysfail_o_n,
       sysrstn_in        => sysresin,
       sysrstn_out       => sysresn,
-      v2p_rstn          => v2p_rstn,
+      v2p_rst           => v2p_rst,
       bg3n_in           => bg_i_n(3),
       slot01n           => slot01n,
       berrn_out         => berrn

@@ -190,6 +190,7 @@ ENTITY vme_au IS
       inc_loc_adr_m_cnt       : IN std_logic;                     -- increment address counter
       sl_inc_loc_adr_m_cnt    : IN std_logic;                     -- increment address counter
       sl_writen_reg           : OUT std_logic;
+      iackn_in_reg            : OUT std_logic;                    -- iack signal (registered with en_vme_adr_in)
       my_iack                 : OUT std_logic;
       clr_intreq              : IN std_logic;                     -- clear interrupt request (intr(3) <= '0'
       sl_en_vme_data_in_reg   : IN std_logic;                     -- register enable for vme data in
@@ -203,8 +204,8 @@ ENTITY vme_au IS
       lwordn_mstr          : OUT std_logic;                       -- master access lwordn
       
       -- locmon
-      vam_reg              : OUT std_logic_vector(5 DOWNTO 0);    -- registered vam_in
-      vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring (registered with en_vme_adr_in)
+      vam_reg              : OUT std_logic_vector(5 DOWNTO 0);    -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
+      vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
       
       -- vme_du
       mstr_reg             : IN std_logic_vector(13 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
@@ -216,7 +217,7 @@ ENTITY vme_au IS
       slv32_pci_q          : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register for PCI
       intr_reg             : IN std_logic_vector(3 DOWNTO 0);     -- interrupt request register
       sysc_reg             : IN std_logic_vector(2 DOWNTO 0);     -- system control register (ato, sysr, sysc)
-      pci_offset_q         : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access
+      pci_offset_q         : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access        
       
       int_be               : OUT std_logic_vector(3 DOWNTO 0);    -- internal byte enables
       int_adr              : OUT std_logic_vector(18 DOWNTO 0)    -- internal adress
@@ -486,7 +487,7 @@ BEGIN
          sl_byte_routing            <= '0';
          sl_hit                     <= (OTHERS => '0');
          sl_acc_reg                 <= (OTHERS => '0');
-         
+         iackn_in_reg               <= '1';
       ELSIF clk'EVENT AND clk = '1' THEN
          ld_loc_adr_m_cnt_q <= ld_loc_adr_m_cnt;
          
@@ -548,6 +549,7 @@ BEGIN
             vme_adr_in_reg_int <= vme_adr_in;
             vam_in_reg <= vam_in;
             sl_writen_reg_int <= sl_writen_int;
+            iackn_in_reg <= iackn_in;
          END IF;
          
          sl_acc_reg(4 DOWNTO 0) <= sl_acc_int;
@@ -732,21 +734,29 @@ BEGIN
       ELSIF clk'EVENT AND clk = '1' THEN
          CASE vme_acc_type(4 DOWNTO 0) IS
             WHEN "00011" => vam_out <= "010000";-- x10   IACK-Cycle
-                      iackn_out <= '0';
+                     iackn_out <= '0';
+                     mstr_cycle_int   <= '0';     -- only one cycle is permitted
+                     ma_d64 <= '0';
+                     IF wbs_sel_i = "1111" THEN
+                        vme_a1 <= '0';         -- longword will be transmitted
+                        dsan_out_int   <= '0';
+                        dsbn_out_int   <= '0';
+                        ma_byte_routing <= '0';
+                        lwordn_mstr_int   <= '0';
+                     ELSIF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                        vme_a1 <= '0';         -- only low word will be transmitted
+                        dsan_out_int   <= NOT wbs_sel_i(1);
+                        dsbn_out_int   <= NOT wbs_sel_i(0);
+                        ma_byte_routing <= '1';
                         lwordn_mstr_int   <= '1';
-                      mstr_cycle_int   <= '0';
-                      ma_d64 <= '0';
-                      IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                         vme_a1 <= '0';         -- only low word will be transmitted
-                         dsan_out_int   <= '0';
-                         dsbn_out_int   <= '1';
-                         ma_byte_routing <= '1';
-                      ELSE
-                         vme_a1 <= '1';         -- only high word will be transmitted
-                         dsan_out_int   <= '0';
-                         dsbn_out_int   <= '1';
-                         ma_byte_routing <= '0';
-                      END IF;
+                     ELSE
+                        vme_a1 <= '1';         -- only high word will be transmitted
+                        dsan_out_int   <= NOT wbs_sel_i(3);
+                        dsbn_out_int   <= NOT wbs_sel_i(2);
+                        ma_byte_routing <= '0';
+                        lwordn_mstr_int   <= '1';
+                     END IF;
+
             WHEN "00010" => 
                       CASE mstr_reg(9 DOWNTO 8) IS                 -- A16_MODE
                          WHEN AM_NON_DAT => vam_out <= "101001";   -- x29   A16 D16 non-privileged access

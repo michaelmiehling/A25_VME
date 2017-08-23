@@ -77,7 +77,7 @@
 -- sysfailn must be 1 or 0 because external driver makes z
 --
 -- Revision 1.6  2003/12/01 10:03:51  MMiehling
--- v2p_rstn is open collector now
+-- v2p_rst_intn is open collector now
 --
 -- Revision 1.5  2003/07/14 08:38:06  MMiehling
 -- added sysfailn_int; changed rst_counter
@@ -124,7 +124,7 @@ ENTITY vme_bustimer IS
    sysfailn          : OUT   std_logic;         -- indicates when A15 is not ready or in reset
    sysrstn_in        : IN  std_logic;
    sysrstn_out       : OUT std_logic;
-   v2p_rstn          : OUT std_logic;           -- Reset between VMEbus and PowerPC-bus
+   v2p_rst           : OUT std_logic;           -- Reset between VMEbus and Host CPU
    bg3n_in           : IN  std_logic;           -- bus grant signal in (if not connected => slot01)
    slot01n           : OUT std_logic;           -- enables V_SYSCLK (16 MHz)
    berrn_out         : OUT std_logic            -- bus error 
@@ -141,7 +141,7 @@ ARCHITECTURE bustimer_arc OF vme_bustimer IS
    SIGNAL btresn           : std_logic;   -- bus timer reset
    SIGNAL cnt              : std_logic_vector(12 DOWNTO 0); -- approximately 60 us
    SIGNAL sysrstn_out_int  : std_logic;
-   SIGNAL v2p_rstn_int     : std_logic;
+   SIGNAL v2p_rst_int      : std_logic;
 
    TYPE rst_states IS (IDLE, WAIT_ON_RST, RST_VME, RST_VME2, WAIT_ON_VME, RST_CPU, WAIT_ON_CPU, STARTUP_END);
    SIGNAL rst_state        : rst_states;
@@ -172,19 +172,9 @@ BEGIN
 
    slot01n <= NOT sysc_bit;
    sysrstn_out <= sysrstn_out_int;
-   set_sysc <= set_sysc_int;
-   
-v2p : PROCESS(v2p_rstn_int)
-  BEGIN
-     IF v2p_rstn_int = '0' THEN
-        v2p_rstn <= '0';
-     ELSE
-        v2p_rstn <= 'Z';
-     END IF;
-  END PROCESS v2p;
-   
+   set_sysc <= set_sysc_int; 
    sysfailn <= '0' WHEN startup_rst = '1' ELSE '1';
-
+   v2p_rst <= v2p_rst_int;                                                        
    
 -------------------------------------------------------------------------------
 -- Bus Timer. Works only when sysc_bit is set. Generates a bus error after 62 us
@@ -302,7 +292,7 @@ BEGIN
       set_sysc_int            <= '0';
       bgouten                 <= '0';
       sysrstn_out_int         <= '0';
-      v2p_rstn_int            <= '1';
+      v2p_rst_int             <= '0';  
       clr_sysr                <= '0';
       rst_state               <= IDLE;
       rst_pre_cnt             <= '0';
@@ -318,7 +308,7 @@ BEGIN
          WHEN IDLE =>
             bgouten              <= '0';
             sysrstn_out_int      <= '0';              -- activate reset to vme-bus
-            v2p_rstn_int         <= '1';              -- no reset to cpu
+            v2p_rst_int          <= '0';              -- no reset to cpu
             clr_sysr             <= '0';
             IF main_cnt_end = '1' THEN
                rst_state         <= STARTUP_END;
@@ -334,7 +324,7 @@ BEGIN
          WHEN STARTUP_END =>
             bgouten              <= '0';
             sysrstn_out_int      <= '1';              -- no reset to vme-bus
-            v2p_rstn_int         <= '1';              -- no reset to cpu
+            v2p_rst_int          <= '0';              -- no reset to cpu
             clr_sysr             <= '0';
             IF main_cnt_end = '1' AND degl_rst = '0' AND degl_sysrstn = '1' THEN   -- wait until cpu and vme does not deliver active reset
                rst_state         <= WAIT_ON_RST;
@@ -351,7 +341,7 @@ BEGIN
             bgouten              <= '1';
             sysrstn_out_int      <= '1';              -- no reset to vme-bus
             clr_sysr             <= '0';           
-            v2p_rstn_int         <= '1';              -- no reset to cpu
+            v2p_rst_int          <= '0';              -- no reset to cpu
             IF (degl_rst = '1' OR sysr_bit = '1') AND sysc_bit = '1' THEN          -- in slot 1 and cpu or bit has active reset
                rst_state         <= RST_VME;
                rst_pre_cnt       <= '0';
@@ -370,7 +360,7 @@ BEGIN
          WHEN RST_CPU =>
             bgouten              <= '1';
             sysrstn_out_int      <= '1';              -- no reset to vme-bus
-            v2p_rstn_int         <= '0';              -- active reset to cpu 
+            v2p_rst_int          <= '1';              -- active reset to cpu 
             clr_sysr             <= '0';
             IF pre_cnt_end = '1' THEN         -- after 10 us, release cpu reset
                rst_state         <= WAIT_ON_CPU;
@@ -386,7 +376,7 @@ BEGIN
          WHEN WAIT_ON_CPU =>
             bgouten              <= '1';
             sysrstn_out_int      <= '1';              -- no reset to vme-bus
-            v2p_rstn_int         <= degl_sysrstn;     
+            v2p_rst_int          <= not degl_sysrstn;     
             clr_sysr             <= '0';
             IF degl_sysrstn = '1' AND degl_rst = '0' THEN     -- wait until vme-bus and cpu reset is inactive
                rst_state         <= WAIT_ON_RST;
@@ -406,7 +396,7 @@ BEGIN
             ELSE
                sysrstn_out_int      <= '0';              -- active reset to vme-bus
             END IF;
-            v2p_rstn_int         <= '1';              -- no reset to cpu
+            v2p_rst_int          <= '0';              -- no reset to cpu
             clr_sysr             <= '1';
             IF main_cnt_end = '1' THEN             -- keep vme-bus reset active for counter time
                rst_state         <= RST_VME2;
@@ -426,7 +416,7 @@ BEGIN
             ELSE
                sysrstn_out_int      <= '0';              -- active reset to vme-bus
             END IF;
-            v2p_rstn_int         <= '1';           -- no reset to cpu
+            v2p_rst_int          <= '0';           -- no reset to cpu
             clr_sysr             <= '1';
             IF main_cnt_end = '1' AND degl_rst = '0' THEN  -- wait until cpu-reset is inactive
                rst_state         <= WAIT_ON_VME;
@@ -442,7 +432,7 @@ BEGIN
          WHEN WAIT_ON_VME =>
             bgouten              <= '1';
             sysrstn_out_int      <= '1';           -- no reset to vme-bus
-            v2p_rstn_int         <= '1';           -- no reset to cpu
+            v2p_rst_int          <= '0';           -- no reset to cpu
             clr_sysr             <= '0';
             IF degl_sysrstn = '1' THEN             -- wait until vme-bus reset is inactive
                rst_state         <= WAIT_ON_RST;
@@ -457,7 +447,7 @@ BEGIN
          WHEN OTHERS =>
             bgouten              <= '0';
             sysrstn_out_int      <= '1';
-            v2p_rstn_int         <= '1';
+            v2p_rst_int          <= '0';
             clr_sysr             <= '0';
             rst_state            <= WAIT_ON_RST;
             rst_pre_cnt          <= '0';

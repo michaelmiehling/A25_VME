@@ -76,6 +76,7 @@
 
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+USE ieee.std_logic_arith.CONV_STD_LOGIC_VECTOR;
 
 ENTITY vme_dma_mstr IS
 PORT (
@@ -117,6 +118,7 @@ PORT (
    en_mstr_dat_i_reg    : OUT std_logic;                 -- enable for data in
    inc_sour             : IN std_logic;                  -- indicates if source adress should be incremented
    inc_dest             : IN std_logic;                  -- indicates if destination adress should be incremented
+   dma_size             : IN std_logic_vector(15 DOWNTO 0);      -- size of data package
    
    -- arbiter      
    mstr_req             : OUT std_logic                  -- request for internal register access
@@ -209,12 +211,20 @@ BEGIN
             END IF;
            
          WHEN prep_read =>
-            clr_dma_en_int <= '0';
-            sour_dest      <= '1';
-            mstr_state     <= prep_read2;
-            stb_o <= '0';
-            cti_int <= "000";                         -- no burst if address gets not incremented
-              
+            IF dma_size = conv_std_logic_vector(0, 16) THEN 
+               clr_dma_en_int <= '1';                    -- stop DMA because dma_size = 0 
+               sour_dest      <= '0';
+               mstr_state     <= idle;
+               stb_o <= '0';
+               cti_int <= "000";                         
+            ELSE
+               clr_dma_en_int <= '0';
+               sour_dest      <= '1';
+               mstr_state     <= prep_read2;
+               stb_o <= '0';
+               cti_int <= "000";                         -- no burst if address gets not incremented
+            END IF;
+                             
          WHEN prep_read2 =>
             clr_dma_en_int <= '0';
             sour_dest      <= '1';
