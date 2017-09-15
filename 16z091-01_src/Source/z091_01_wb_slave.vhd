@@ -146,6 +146,10 @@ signal rd_trans_done      : std_logic;                                         -
 signal len_is_1024DW      : std_logic;                                         -- if asserted length is 1024
                                                                                -- 1024DW is encoded as len=0 thus
                                                                                -- needed to distinguish from reset value
+signal compare_to_4k_len : std_logic;                                          -- enable 4k honoring
+signal to_4k_len         : std_logic_vector(9 downto 0);                       -- DW counter which holds amount of DWs until next 4k boundary
+signal requested_len     : std_logic_vector(9 downto 0);                       -- save requested length for reads
+signal act_read_size     : std_logic_vector(9 downto 0);                       -- actual read size composed in IDLE state
 
 -- registered signals
 signal max_read_q     : std_logic_vector(2 downto 0);                          -- used for CDC synchronization
@@ -244,6 +248,8 @@ begin
          cpl_return_len     <= (others => '0');
          rd_trans_done      <= '0';
          len_is_1024DW      <= '0';
+         compare_to_4k_len  <= '0';
+         to_4k_len          <= (others => '0');
 
          state <= IDLE;
       elsif wb_clk'event and wb_clk = '1' then
@@ -281,11 +287,30 @@ begin
                   wbs_adr_int  <= wbs_adr;
                   first_DW_int <= wbs_sel;
 
+                  ----------------------------------------------------------------------------------------
+                  -- calculate length to 4k boundary:
+                  -- wbs_adr[12] denotes 4k boundary which is 0x1000
+                  -- maximum transfer length is 1024DW = 1024 *4B = 4096B := 0x1000
+                  -- => if wbs_adr[11:0] = 0b000 then all lenghts are ok
+                  --    otherwise calculate length offset to next 4k boundary, use to_4k_len as DW counter
+                  -- subtracting wbs_adr from the next 4k boundary results in a byte value
+                  -- -> use 1024 instead of 4096 to calculated DW counter instead of byte counter
+                  --    ! manage first_DW_be and last_DW_be accordingly
+                  ----------------------------------------------------------------------------------------
+                  if wbs_adr(11 downto 0) = x"000" then
+                     compare_to_4k_len <= '0';
+                     to_4k_len         <= (others => '0');
+                  else
+                     compare_to_4k_len <= '1';
+                     to_4k_len         <= std_logic_vector(to_unsigned((1024 - to_integer(unsigned(wbs_adr(11 downto 2)))), 10));
+                  end if;
+
                   if wbs_we = '0' and wbs_cti = "010" then
                      rd_burst <= '1';
                   else
                      rd_burst <= '0';
                   end if;
+
                   -----------------------------------------------------------------------------------
                   -- if write request and TX data FIFO full or
                   -- read request and TX header FIFO full then
@@ -293,7 +318,6 @@ begin
                   -- for both read and write requests the header FIFO must have at least 2 DW space
                   -- (here 3 for easier checking)
                   -----------------------------------------------------------------------------------
-                  --if (wbs_we = '1' and tx_fifo_w_data_full = '1') or (wbs_we = '0' and tx_fifo_wr_head_full = '1') then
                   if (wbs_we = '1' and (tx_fifo_w_data_full = '1' or tx_fifo_w_data_usedw > RESUME_FIFO_ACCESS or
                                         tx_fifo_wr_head_full = '1' or tx_fifo_wr_head_usedw(4 downto 2) = "111")) or 
                      (wbs_we = '0' and (tx_fifo_wr_head_full = '1' or tx_fifo_wr_head_usedw(4 downto 2) = "111")) then
@@ -311,7 +335,9 @@ begin
                      state                  <= HEADER_TO_FIFO;
                   end if;
                else
-                  state <= IDLE;
+                  compare_to_4k_len <= '0';
+                  to_4k_len         <= (others => '0');
+                  state             <= IDLE;
                end if;
 
 
@@ -323,26 +349,29 @@ begin
                rx_fifo_c_rd_enable    <= '0';
                wbs_ack                <= '0';
 
-               wr_req         <= wr_req;
-               rd_req         <= rd_req;
-               wr_burst       <= '0';
-               --rd_burst       <= '0';
-               --rd_burst       <= rd_burst;
-               put_header     <= '1';
-               put_h0_h1      <= '1';
-               multi_cpl      <= '0';                                          -- new read startet thus reset
-               first_DW_int   <= first_DW_int;
-               last_DW_int    <= last_DW_int;
-               cpl_return_len <= (others => '0');                              -- requesting new packet thus clear cpl_return_len
-               rd_trans_done  <= '0';
-               len_is_1024DW  <= '0';
+               wr_req            <= wr_req;
+               rd_req            <= rd_req;
+               wr_burst          <= '0';
+               put_header        <= '1';
+               put_h0_h1         <= '1';
+               multi_cpl         <= '0';                                        -- new read startet thus reset
+               first_DW_int      <= first_DW_int;
+               last_DW_int       <= last_DW_int;
+               cpl_return_len    <= (others => '0');                            -- requesting new packet thus clear cpl_return_len
+               rd_trans_done     <= '0';
+               len_is_1024DW     <= '0';
+               compare_to_4k_len <= compare_to_4k_len;
+               to_4k_len         <= to_4k_len;
 
+               -- NOTE: this setting is not always true as this state can now be entered for wr_burst as
+               --       well but it has no influence on write bursts so it will remain unchanged
                if wbs_cti = "010" then
                   rd_burst <= '1';
                else
                   rd_burst <= '0';
                end if;
                ----------------------------------------------------------
+
                -- update address information for reads because multiple
                -- read cycles without transition to IDLE are possible
                ----------------------------------------------------------
@@ -358,6 +387,7 @@ begin
                if wr_req = '1' then
                   cnt_len <= cnt_len;
                else
+                  -- cnt_len is not used for RD headers so it may be cleared here
                   cnt_len <= (others => '0');
                end if;
 
@@ -383,7 +413,6 @@ begin
                   rd_trans_done      <= '0';
                   len_is_1024DW      <= '0';
                   state              <= IDLE;
-               --if put_h0_h1 = '1' then
                elsif put_h0_h1 = '1' then
                   tx_fifo_wr_head_en_int <= '0';
                   put_header             <= '0';
@@ -433,7 +462,6 @@ begin
                put_header         <= '0';
                put_h0_h1          <= '0';
                wr_req             <= '0';
-               --rd_req             <= '1';
                rd_burst           <= rd_burst;
                wr_burst           <= '0';
                max_wr_len_reached <= '0';
@@ -442,12 +470,6 @@ begin
                cnt_len            <= std_logic_vector(unsigned(cnt_len) + to_unsigned(1,10));
                cpl_return_len     <= cpl_return_len;
                len_is_1024DW      <= len_is_1024DW;
-
-               --if wbs_cti = "010" then
-                  --rd_burst <= '1';
-               --else
-                  --rd_burst <= '0';
-               --end if;
 
                --------------------------------------------------------------------------------
                -- there are several possible transitions:
@@ -486,7 +508,6 @@ begin
                   rd_trans_done      <= '0';
                   len_is_1024DW      <= '0';
                   state              <= IDLE;
-               --if rx_fifo_c_empty = '1' and cnt_len < length_int then
                elsif rx_fifo_c_empty = '1' and cnt_len < length_int then
                   rx_fifo_c_rd_enable <= '0';
                   wbs_ack             <= '0';
@@ -502,7 +523,6 @@ begin
                   -------------------------------------------------------------
                   wbs_ack       <= '0';
                   rd_trans_done <= '1';
-                  --if wbs_adr_int(2) = '1' then
                   if wbs_tga = '0' and wbs_adr_int(2) = '1' then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= IDLE;
@@ -521,7 +541,7 @@ begin
                   -- requested length is reached and data is transferred completely
                   -- drop dummy packet for aligned & odd or !aligned & even
                   -------------------------------------------------------------------
-                  if cpl_return_len = PCIE_REQUEST_LENGTH and cnt_len = length_int then
+                  if cpl_return_len = requested_len and cnt_len = length_int then
                      if (wbs_adr_int(2) = '0' and length_int(0) = '0') or
                         (wbs_adr_int(2) = '1' and length_int(0) = '1') then
                         rx_fifo_c_rd_enable <= '0';
@@ -534,7 +554,7 @@ begin
                   -- drop all outstanding CPLDs but capture header thus go to GET_RD_HEADER
                   -- from there we'll go to DROP_DATA again
                   ---------------------------------------------------------------------------
-                  elsif cpl_return_len < PCIE_REQUEST_LENGTH and cnt_len = length_int then
+                  elsif cpl_return_len < requested_len and cnt_len = length_int then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= GET_RD_HEADER;
 
@@ -557,7 +577,7 @@ begin
                   -----------------------------------------------------------------------------
                   if first_rd_cycle = '1' and cnt_len = ZERO_10B then
                      state <= RD_TRANS;
-                  elsif cnt_len = length_int and cpl_return_len = PCIE_REQUEST_LENGTH then
+                  elsif cnt_len = length_int and cpl_return_len = requested_len then
                      wbs_ack <= '0';
                      ------------------------------------------
                      -- check if dummy packet must be removed
@@ -566,13 +586,33 @@ begin
                         (wbs_adr_int(2) = '1' and length_int(0) = '0') then
                         state <= DROP_DATA;
                      else
+                        ----------------------------------------------------------------------------------------
+                        -- calculate length to 4k boundary:
+                        -- wbs_adr[12] denotes 4k boundary which is 0x1000
+                        -- maximum transfer length is 1024DW = 1024 *4B = 4096B := 0x1000
+                        -- => if wbs_adr[11:0] = 0b000 then all lenghts are ok
+                        --    otherwise calculate length offset to next 4k boundary, use to_4k_len as DW counter
+                        -- subtracting wbs_adr from the next 4k boundary results in a byte value
+                        -- -> use 1024 instead of 4096 to calculated DW counter instead of byte counter
+                        --    ! manage first_DW_be and last_DW_be accordingly
+                        -- wbs_adr is the last transferred address here so to_4k_len must be reduced by 4bytes
+                        ----------------------------------------------------------------------------------------
+                        --if wbs_adr(11 downto 0) = x"000" then
+                        if (unsigned(wbs_adr(11 downto 0)) + to_unsigned(4,12)) = x"000" then
+                           compare_to_4k_len <= '0';
+                           to_4k_len         <= (others => '0');
+                        else
+                           compare_to_4k_len <= '1';
+                           to_4k_len     <= std_logic_vector(to_unsigned((1024 - to_integer(unsigned(wbs_adr(11 downto 2))) -1), 10));
+                        end if;
+
                         tx_fifo_wr_head_en_int <= '1';
                         rx_fifo_c_rd_enable    <= '0';
                         wbs_ack                <= '0';
                         put_header             <= '1';
                         state                  <= HEADER_TO_FIFO;
                      end if;
-                  elsif cnt_len = length_int and cpl_return_len < PCIE_REQUEST_LENGTH then
+                  elsif cnt_len = length_int and cpl_return_len < requested_len then
                      wbs_ack <= '0';
                      if (wbs_adr_int(2) = '0' and length_int(0) = '1') or
                         (wbs_adr_int(2) = '1' and length_int(0) = '0') then
@@ -594,17 +634,19 @@ begin
                rx_fifo_c_rd_enable    <= '0';
                wbs_ack                <= '1';
 
-               put_header     <= '0';
-               put_h0_h1      <= '0';
-               wr_req         <= '1';
-               rd_req         <= '0';
-               multi_cpl      <= '0';
-               cnt_len        <= std_logic_vector(unsigned(cnt_len) + to_unsigned(1,10));
-               cpl_return_len <= (others => '0');
-               rd_trans_done  <= '0';
-               len_is_1024DW  <= '0';
-               wbs_adr_int    <= wbs_adr_int;
-               first_DW_int   <= first_DW_int;
+               put_header        <= '0';
+               put_h0_h1         <= '0';
+               wr_req            <= '1';
+               rd_req            <= '0';
+               multi_cpl         <= '0';
+               cnt_len           <= std_logic_vector(unsigned(cnt_len) + to_unsigned(1,10));
+               cpl_return_len    <= (others => '0');
+               rd_trans_done     <= '0';
+               len_is_1024DW     <= '0';
+               wbs_adr_int       <= wbs_adr_int;
+               first_DW_int      <= first_DW_int;
+               compare_to_4k_len <= compare_to_4k_len;
+               to_4k_len         <= to_4k_len;
 
                if cnt_len = FULL_10B then
                   max_wr_len_reached <= '1';
@@ -613,6 +655,7 @@ begin
                end if;
 
                -------------------------------------------------------------
+               -- stop transfer upon error timeout
                -- if TX data FIFO is full suspend until space is available
                -- cti = "000" and cti = "111" signal end of transfer thus
                --   put header to FIFO
@@ -641,13 +684,7 @@ begin
                   rd_trans_done      <= '0';
                   len_is_1024DW      <= '0';
                   state              <= IDLE;
-               --if tx_fifo_w_data_usedw >= SUSPEND_FIFO_ACCESS then
                elsif tx_fifo_w_data_usedw >= SUSPEND_FIFO_ACCESS then
-                  --tx_fifo_wr_head_en_int <= '0';
-                  --tx_fifo_w_data_enable  <= '0';
-                  --rx_fifo_c_rd_enable    <= '0';
-                  --wbs_ack                <= '0';
-                  --state                  <= WAIT_ON_FIFO;
                   if cnt_len(0) = '1' then
                      tx_fifo_w_data_enable <= '1';
                   else
@@ -657,18 +694,38 @@ begin
                   rx_fifo_c_rd_enable    <= '0';
                   wbs_ack                <= '0';
                   put_header             <= '1';
-                  last_DW_int            <= x"F";
-                  state                  <= HEADER_TO_FIFO;
+
+                  -- full FIFO and last packet of transfer could coincide and would not be covered here so use wbs_sel instead of 0xF
+                  -- if cnt_len = 0x1 then last_DW_int must be 0x0 as single transfers only contain first_DW_int
+                  if cnt_len = ONE_10B then
+                     last_DW_int <= x"0";
+                  else
+                     last_DW_int <= wbs_sel;
+                  end if;
+
+                  state <= HEADER_TO_FIFO;
                elsif wbs_cti = "010" then
                   wr_burst <= '1';
 
-                  if max_wr_len_reached = '1' then
+                  if max_wr_len_reached = '1' or (compare_to_4k_len = '1' and cnt_len = to_4k_len) then
+                     -- store dummy packet if to_4k_len is not even, max_wr_len_reached should result in even length
+                     if cnt_len(0) = '1' then
+                        tx_fifo_w_data_enable <= '1';
+                     else
+                        tx_fifo_w_data_enable  <= '0';
+                     end if;
+
+                     -- if cnt_len = 0x1 then last_DW_int must be 0x0 as single transfers only contain first_DW_int
+                     if cnt_len = ONE_10B then
+                        last_DW_int <= x"0";
+                     else
+                        last_DW_int <= x"F";
+                     end if;
+
                      tx_fifo_wr_head_en_int <= '1';
-                     tx_fifo_w_data_enable  <= '0';
                      rx_fifo_c_rd_enable    <= '0';
                      wbs_ack                <= '0';
                      put_header             <= '1';
-                     last_DW_int            <= x"F";
                      state                  <= HEADER_TO_FIFO;
                   else
                      state <= WR_TRANS;
@@ -725,6 +782,8 @@ begin
                cpl_return_len     <= cpl_return_len;
                rd_trans_done      <= rd_trans_done;
                len_is_1024DW      <= len_is_1024DW;
+               compare_to_4k_len  <= compare_to_4k_len;
+               to_4k_len          <= to_4k_len;
 
                ---------------------------------------------------------
                -- if wr_req and rd_req =0 then previous state was IDLE
@@ -760,7 +819,6 @@ begin
                   rd_trans_done      <= '0';
                   len_is_1024DW      <= '0';
                   state              <= IDLE;
-               --if wr_req = '1' and tx_fifo_w_data_full = '0' and tx_fifo_w_data_usedw <= RESUME_FIFO_ACCESS then
                elsif wr_req = '1' and tx_fifo_w_data_full = '0' and tx_fifo_w_data_usedw <= RESUME_FIFO_ACCESS then
                   tx_fifo_w_data_enable <= '1';
                   wbs_ack               <= '1';
@@ -806,6 +864,8 @@ begin
                first_DW_int       <= first_DW_int;
                cnt_len            <= ONE_10B;
                rd_trans_done      <= rd_trans_done;
+               compare_to_4k_len  <= compare_to_4k_len;
+               to_4k_len          <= to_4k_len;
 
                ------------------------------------------------------------------------
                -- update internal address for multiple CPLDs to manage FIFO correctly
@@ -842,8 +902,10 @@ begin
                -- capture if multiple CPLD will be send
                -- relevant for bursts only
                ------------------------------------------
-               --if get_header_q = '1' and wbs_cti = "010" and cpl_return_len < PCIE_REQUEST_LENGTH then
-               if get_header_q = '1' and rd_burst = '1' and cpl_return_len < PCIE_REQUEST_LENGTH then
+               --if get_header_q = '1' and rd_burst = '1' and cpl_return_len < requested_len then
+               if get_header_q = '1' and rd_burst = '1' and (
+                  (requested_len /= ZERO_10B and cpl_return_len < requested_len) or
+                  (requested_len = ZERO_10B and cpl_return_len > requested_len)) then
                   multi_cpl <= '1';
                end if;
 
@@ -887,7 +949,6 @@ begin
                -- WB transaction done but outstanding CPLDs
                -- -> burst only
                ----------------------------------------------
-               --if multi_cpl = '1' and rd_trans_done = '1' and ((wbs_adr_int(2) = '0' and get_header_qqq = '1') or (wbs_adr_int(2) = '1' and get_header_qq = '1')) then
                elsif multi_cpl = '1' and rd_trans_done = '1' and ((wbs_adr_int(2) = '0' and get_header_qqq = '1') or (wbs_adr_int(2) = '1' and get_header_qq = '1')) then
                   state <= DROP_DATA;
                ------------------------------------------------------------
@@ -896,7 +957,6 @@ begin
                -- I/O completions always return with lower address =0
                -- thus they are always aligned!
                ------------------------------------------------------------
-               --elsif (wbs_adr_int(2) = '0' and get_header_qqq = '1') or (wbs_adr_int(2) = '1' and get_header_qq = '1') then
                elsif (wbs_tga = '0' and ((wbs_adr_int(2) = '0' and get_header_qqq = '1') or (wbs_adr_int(2) = '1' and get_header_qq = '1'))) or
                      (wbs_tga = '1' and get_header_qqq = '1') then
                   rx_fifo_c_rd_enable <= '1';
@@ -927,6 +987,8 @@ begin
                cpl_return_len     <= cpl_return_len;
                rd_trans_done      <= rd_trans_done;
                len_is_1024DW      <= len_is_1024DW;
+               compare_to_4k_len  <= compare_to_4k_len;
+               to_4k_len          <= to_4k_len;
 
                -----------------------------------------------------
                -- remain in DROP_DATA and don't go to WAIT ON FIFO
@@ -968,22 +1030,20 @@ begin
                   rd_trans_done      <= '0';
                   len_is_1024DW      <= '0';
                   state              <= IDLE;
-               --if wbs_tga_q = '1' then
                elsif wbs_tga_q = '1' then
                   rx_fifo_c_rd_enable <= '0';
                   state               <= IDLE;
                ------------------------------
                -- no dummy packet to remove
                ------------------------------
-               --if cnt_len = length_int and (
                elsif cnt_len = length_int and (
                   (wbs_adr_int(2) = '0' and length_int(0) = '0') or
                   (wbs_adr_int(2) = '1' and length_int(0) = '1') ) then
 
-                  if multi_cpl = '0' or (multi_cpl = '1' and cpl_return_len = PCIE_REQUEST_LENGTH) then
+                  if multi_cpl = '0' or (multi_cpl = '1' and cpl_return_len = requested_len) then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= IDLE;
-                  elsif multi_cpl = '1' and cpl_return_len < PCIE_REQUEST_LENGTH then
+                  elsif multi_cpl = '1' and cpl_return_len < requested_len then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= GET_RD_HEADER;
                   else
@@ -996,10 +1056,10 @@ begin
                   (wbs_adr_int(2) = '0' and length_int(0) = '1') or
                   (wbs_adr_int(2) = '1' and length_int(0) = '0') ) then
 
-                  if multi_cpl = '0' or (multi_cpl = '1' and cpl_return_len = PCIE_REQUEST_LENGTH) then
+                  if multi_cpl = '0' or (multi_cpl = '1' and cpl_return_len = requested_len) then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= IDLE;
-                  elsif multi_cpl = '1' and cpl_return_len < PCIE_REQUEST_LENGTH then
+                  elsif multi_cpl = '1' and cpl_return_len < requested_len then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= GET_RD_HEADER;
                   else
@@ -1015,8 +1075,10 @@ begin
          -- coverage off
          when others =>
             -- synthesis translate_off
-            wbs_ack <= '0';
-            state   <= IDLE;
+            wbs_ack           <= '0';
+            compare_to_4k_len <= '0';
+            to_4k_len         <= (others => '0');
+            state             <= IDLE;
             report "wrong state encoding in process fsm_transout of z091_01_wb_slave.vhd" severity error;
             -- synthesis translate_on
          -- coverage on
@@ -1026,29 +1088,44 @@ begin
 
 -------------------------------------------------------------------------------
 
-   --wbs_data : process(wb_rst, put_header, put_h0_h1, wbs_tga, wbs_tga_q, wbs_cti, get_header, wr_req, rd_req, max_read_len,
-                      --first_DW_int, last_DW_int, cnt_len, wbs_adr_int, rx_fifo_c_out)
    wbs_data : process(wb_rst, wb_clk)
    begin
       if wb_rst = '1' then
+         requested_len      <= (others => '0');
          tx_fifo_wr_head_in <= (others => '0');
          length_int         <= (others => '0');
+         act_read_size      <= (others => '0');
+
       elsif wb_clk'event and wb_clk = '1' then
+         -------------------------------------------------------------------------------------
+         -- compose the actual maximum read size out of PCIE_REQUEST_LENGTH and max_read_len
+         -- CAUTION: max_read_len may not change during an ongoing burst!
+         -------------------------------------------------------------------------------------
+         if max_read_len = "0000000000" then
+            act_read_size <= PCIE_REQUEST_LENGTH;
+         elsif PCIE_REQUEST_LENGTH > max_read_len or PCIE_REQUEST_LENGTH = "0000000000" then
+            act_read_size <= max_read_len;
+         else
+            act_read_size <= PCIE_REQUEST_LENGTH;
+         end if;
+
          -------------------------------------------------
          -- assemble write request specific header parts
          -------------------------------------------------
          if(put_header = '1' and put_h0_h1 = '0' and wr_req = '1') then
-            tx_fifo_wr_head_in(31)           <= '1';
+            requested_len          <= (others => '0');
+            tx_fifo_wr_head_in(31) <= '1';
+
             --------------------------------------------------
             -- write request is done when header is composed
             -- thus use registered copy of tga
             --------------------------------------------------
-            if(wbs_tga_q = '0') then                                           -- memory
-               tx_fifo_wr_head_in(30)        <= '1';
-               tx_fifo_wr_head_in(29)        <= '1';
-            else                                                               -- I/O
-               tx_fifo_wr_head_in(30)        <= '0';
-               tx_fifo_wr_head_in(29)        <= '0';
+            if(wbs_tga_q = '0') then                                            -- memory
+               tx_fifo_wr_head_in(30) <= '1';
+               tx_fifo_wr_head_in(29) <= '1';
+            else                                                                -- I/O
+               tx_fifo_wr_head_in(30) <= '0';
+               tx_fifo_wr_head_in(29) <= '0';
             end if;
             tx_fifo_wr_head_in(28 downto 18) <= "00000000000";
             tx_fifo_wr_head_in(17 downto 14) <= first_DW_int;
@@ -1056,60 +1133,93 @@ begin
             ---------------------------------------------------------------------------------
             -- cnt_len counts to one more while transitioning to next state thus subtract 1
             ---------------------------------------------------------------------------------
-            tx_fifo_wr_head_in(9 downto 0)   <= std_logic_vector(unsigned(cnt_len) - to_unsigned(1,10));
+            tx_fifo_wr_head_in(9 downto 0) <= std_logic_vector(unsigned(cnt_len) - to_unsigned(1,10));
          ------------------------------------------------
          -- assemble read request specific header parts
          ------------------------------------------------
          elsif(put_header = '1' and put_h0_h1 = '0' and rd_req = '1') then
-            tx_fifo_wr_head_in(31)           <= '0';
-            tx_fifo_wr_head_in(30)           <= '0';
-            if(wbs_tga = '0') then                                             -- memory
-               tx_fifo_wr_head_in(29)        <= '1';
-            else                                                               -- I/O
-               tx_fifo_wr_head_in(29)        <= '0';
+            tx_fifo_wr_head_in(31) <= '0';
+            tx_fifo_wr_head_in(30) <= '0';
+            if(wbs_tga              = '0') then                                 -- memory
+               tx_fifo_wr_head_in(29) <= '1';
+            else                                                                -- I/O
+               tx_fifo_wr_head_in(29) <= '0';
             end if;
             tx_fifo_wr_head_in(28 downto 18) <= "00000000000";
             ---------------------------------------
             -- always request all bytes for reads
             -- WBM will chose later
             ---------------------------------------
-            tx_fifo_wr_head_in(17 downto 14) <= x"F";                          -- first_DW
+            tx_fifo_wr_head_in(17 downto 14) <= x"F";                           -- first_DW
 
             ---------------------------------------------------------------------------------------------------------------------------
             -- if PCIE_REQUEST_LENGTH is max (=0), max_read_len is either =0 too then maximum size is allowed or max_read_len is /= 0
             -- then max_read_len must be used -> using max_read_len for both cases is always correct
             -- otherwise PCIE_REQUEST_LENGTH is only allowed if <= max_read_len
+            -- all values may not exceed to_4k_len if it has to be obeyed which is denoted by compare_to_4k_len
             ---------------------------------------------------------------------------------------------------------------------------
-            --if(wbs_cti = "000") then
             if wbs_cti = "000" or wbs_cti = "111" then
+               requested_len                  <= "0000000001";
                tx_fifo_wr_head_in(9 downto 0) <= "0000000001";
                --------------------------------
                -- for single read last_DW =0!
                --------------------------------
-               tx_fifo_wr_head_in(13 downto 10) <= x"0";                       -- last_DW
+               tx_fifo_wr_head_in(13 downto 10) <= x"0";                        -- last_DW
             else
-               tx_fifo_wr_head_in(13 downto 10) <= x"F";                       -- last_DW
+               tx_fifo_wr_head_in(13 downto 10) <= x"F";                        -- last_DW
 
-               if(PCIE_REQUEST_LENGTH = "0000000000") then
-                  tx_fifo_wr_head_in(9 downto 0) <= max_read_len;
-               elsif(PCIE_REQUEST_LENGTH /= "0000000000" and PCIE_REQUEST_LENGTH <= max_read_len) then
-                  tx_fifo_wr_head_in(9 downto 0) <= PCIE_REQUEST_LENGTH;
+               
+               if compare_to_4k_len = '1' then
+                  if act_read_size <= to_4k_len then
+                     tx_fifo_wr_head_in(9 downto 0) <= act_read_size;
+                     requested_len                  <= act_read_size;
+                  else
+                     requested_len                  <= to_4k_len;
+                     tx_fifo_wr_head_in(9 downto 0) <= to_4k_len;
+                  end if;                     
                else
-                  tx_fifo_wr_head_in(9 downto 0) <= max_read_len;
+                  tx_fifo_wr_head_in(9 downto 0) <= act_read_size;
+                  requested_len                  <= act_read_size;
                end if;
+               --if compare_to_4k_len = '1' and to_4k_len /= "0000000000" then
+               --   if PCIE_REQUEST_LENGTH <= max_read_len and PCIE_REQUEST_LENGTH <= to_4k_len then
+               --      requested_len                    <= PCIE_REQUEST_LENGTH;
+               --      tx_fifo_wr_head_in(9 downto 0)   <= PCIE_REQUEST_LENGTH;
+               --   elsif PCIE_REQUEST_LENGTH <= max_read_len and PCIE_REQUEST_LENGTH > to_4k_len then
+               --      requested_len                  <= to_4k_len;
+               --      tx_fifo_wr_head_in(9 downto 0) <= to_4k_len;
+               --   elsif PCIE_REQUEST_LENGTH > max_read_len and max_read_len > to_4k_len then
+               --      requested_len                  <= to_4k_len;
+               --      tx_fifo_wr_head_in(9 downto 0) <= to_4k_len;
+               --   else
+               --      requested_len                    <= max_read_len;
+               --      tx_fifo_wr_head_in(9 downto 0)   <= max_read_len;
+               --   end if;
+               --else
+               --   if(PCIE_REQUEST_LENGTH = "0000000000") then
+               --      requested_len                  <= max_read_len;
+               --      tx_fifo_wr_head_in(9 downto 0) <= max_read_len;
+               --   elsif(PCIE_REQUEST_LENGTH <= max_read_len or max_read_len = "0000000000") then
+               --      requested_len                  <= PCIE_REQUEST_LENGTH;
+               --      tx_fifo_wr_head_in(9 downto 0) <= PCIE_REQUEST_LENGTH;
+               --   else
+               --      requested_len                  <= max_read_len;
+               --      tx_fifo_wr_head_in(9 downto 0) <= max_read_len;
+               --   end if;
+               --end if;
                
             end if;
          ------------------------------------------------------------------------------
          -- length is for both read and write requests at the same position in header
          ------------------------------------------------------------------------------
          elsif(put_header = '1' and put_h0_h1 = '1') then
+            requested_len      <= requested_len;
             tx_fifo_wr_head_in <= wbs_adr_int(31 downto 2) & "00";
          end if;
          
          -------------------------------------------
          -- store length of this completion packet
          -------------------------------------------
-         --if(get_header = '1') then
          if state = GET_RD_HEADER and rx_fifo_c_empty = '0' and get_header = '0' and get_header_q = '0' and get_header_qq = '0' and get_header_qqq = '0' then
             length_int <= rx_fifo_c_out(9 downto 0);
          end if;

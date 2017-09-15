@@ -776,10 +776,10 @@ pcie: ip_16z091_01_top
       BAR_MASK_3           => x"E0000000",   -- 512M
       BAR_MASK_4           => x"FF000000",	 -- 16M
       BAR_MASK_5           => x"FFFFF000",
-      PCIE_REQUEST_LENGTH  => "0000010000",    -- 16DW = 64Byte
+      PCIE_REQUEST_LENGTH  => "0001000000",    -- 64DW = 256Byte
       RX_LPM_WIDTHU        => 10,
       TX_HEADER_LPM_WIDTHU => 5,
-      TX_DATA_LPM_WIDTHU   => 10
+      TX_DATA_LPM_WIDTHU   => 7
    )
    PORT MAP (
    -- Hard IP ports:
