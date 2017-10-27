@@ -76,6 +76,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.std_logic_unsigned.ALL;
+USE ieee.std_logic_arith.CONV_STD_LOGIC_VECTOR;
 
 ENTITY vme_dma_au IS
 PORT (
@@ -226,7 +227,11 @@ adr_o_proc : PROCESS(clk, rst)
          
          IF load_cnt = '1' THEN
             reached_size <= '0';
-            almost_reached_size <= '0';
+            if dma_size = conv_std_logic_vector(0, 16) then                -- if just one longword shall be transfered, indicate almost reached
+               almost_reached_size <= '1'; 
+            else
+               almost_reached_size <= '0';
+            end if;
          ELSIF inc_adr = '1' AND sour_dest = '1' THEN
             reached_size <= reached_size_int;
             almost_reached_size <= almost_reached_size_int;

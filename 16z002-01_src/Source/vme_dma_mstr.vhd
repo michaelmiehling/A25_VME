@@ -211,19 +211,11 @@ BEGIN
             END IF;
            
          WHEN prep_read =>
-            IF dma_size = conv_std_logic_vector(0, 16) THEN 
-               clr_dma_en_int <= '1';                    -- stop DMA because dma_size = 0 
-               sour_dest      <= '0';
-               mstr_state     <= idle;
-               stb_o <= '0';
-               cti_int <= "000";                         
-            ELSE
-               clr_dma_en_int <= '0';
-               sour_dest      <= '1';
-               mstr_state     <= prep_read2;
-               stb_o <= '0';
-               cti_int <= "000";                         -- no burst if address gets not incremented
-            END IF;
+            clr_dma_en_int <= '0';
+            sour_dest      <= '1';
+            mstr_state     <= prep_read2;
+            stb_o <= '0';
+            cti_int <= "000";                         -- no burst if address gets not incremented
                              
          WHEN prep_read2 =>
             clr_dma_en_int <= '0';
