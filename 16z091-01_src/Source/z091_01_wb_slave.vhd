@@ -212,7 +212,9 @@ begin
          get_header_qq          <= get_header_q;
          get_header_qqq         <= get_header_qq;
          first_rd_cycle         <= get_header_qqq;
-         wbs_tga_q              <= wbs_tga;
+         if state = HEADER_TO_FIFO then
+            wbs_tga_q           <= wbs_tga;
+         end if;
       end if;
    end process reg_proc;
 
@@ -523,7 +525,7 @@ begin
                   -------------------------------------------------------------
                   wbs_ack       <= '0';
                   rd_trans_done <= '1';
-                  if wbs_tga = '0' and wbs_adr_int(2) = '1' then
+                  if wbs_tga_q = '0' and wbs_adr_int(2) = '1' then
                      rx_fifo_c_rd_enable <= '0';
                      state               <= IDLE;
                   else
@@ -957,8 +959,8 @@ begin
                -- I/O completions always return with lower address =0
                -- thus they are always aligned!
                ------------------------------------------------------------
-               elsif (wbs_tga = '0' and ((wbs_adr_int(2) = '0' and get_header_qqq = '1') or (wbs_adr_int(2) = '1' and get_header_qq = '1'))) or
-                     (wbs_tga = '1' and get_header_qqq = '1') then
+               elsif (wbs_tga_q = '0' and ((wbs_adr_int(2) = '0' and get_header_qqq = '1') or (wbs_adr_int(2) = '1' and get_header_qq = '1'))) or
+                     (wbs_tga_q = '1' and get_header_qqq = '1') then
                   rx_fifo_c_rd_enable <= '1';
                   wbs_ack             <= '1';
                   state <= RD_TRANS;
@@ -1120,7 +1122,7 @@ begin
             -- write request is done when header is composed
             -- thus use registered copy of tga
             --------------------------------------------------
-            if(wbs_tga_q = '0') then                                            -- memory
+            if(wbs_tga = '0') then                                            -- memory
                tx_fifo_wr_head_in(30) <= '1';
                tx_fifo_wr_head_in(29) <= '1';
             else                                                                -- I/O
