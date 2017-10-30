@@ -175,7 +175,7 @@ END vme_master;
 
 ARCHITECTURE vme_master_arch OF vme_master IS
 
-   TYPE   mstr_states IS (mstr_idle, req_bus, got_bus, set_adr, set_as, set_ds, got_low_d64, got_dtackn, data_stored, rmw_wait);
+   TYPE   mstr_states IS (mstr_idle, req_bus, got_bus, set_adr, set_as, wait_on_dtackn, set_ds, got_low_d64, got_dtackn, data_stored, rmw_wait);
    SIGNAL    mstr_state : mstr_states;
    SIGNAL dtackn               : std_logic;
    SIGNAL dtackn_reg               : std_logic;
@@ -597,6 +597,49 @@ BEGIN
             ma_en_vme_data_in_reg      <= '0';
             rst_rmw_int                <= '0';
             ma_en_vme_data_in_reg_high <= '0';
+
+         WHEN wait_on_dtackn =>
+            if dtackn = '1' then
+               mstr_state           <= set_ds;
+            else
+               mstr_state           <= wait_on_dtackn;
+            end if;
+            IF d64 = '0' AND second_word_int = '1' AND mstr_cycle = '1' THEN
+               second_word_int      <= '0';
+            ELSE
+               second_word_int      <= second_word_int;
+            END IF;
+            asn_out_int             <= '0';
+            mstr_ack                <= '0';  
+            mstr_busy               <= '1';         
+            vam_oe_int              <= '1';
+            rst_rmw_int             <= '0';
+            soen_int                <= '0';
+            dwb                        <= '0';
+            IF (((mstr_reg(0) = '1' AND wb_dma_acc_q = '0') OR mstr_cycle = '1') AND second_word_int = '0') OR burst = '1' THEN
+               ma_io_ctrl.am_dir          <= '1';
+               ma_io_ctrl.am_oe_n         <= '0';
+            ELSE
+               ma_io_ctrl.am_dir          <= '0';
+               ma_io_ctrl.am_oe_n         <= '0';
+            END IF;
+            dsn_ena                    <= '0';
+            IF d64 = '1' AND second_word_int = '0' AND wbs_we_i = '0' THEN    -- d64 read burst => address lines should be used as read data
+               ma_io_ctrl.a_dir        <= '0';
+            ELSE
+               ma_io_ctrl.a_dir        <= '1';
+            END IF;
+            ma_io_ctrl.d_dir           <= '0';
+            ma_oe_vd                   <= '0';
+            ma_oe_va                   <= '0';
+            IF (((mstr_reg(0) = '1' AND wb_dma_acc_q = '0') OR mstr_cycle = '1') AND second_word_int = '0') OR asn_regd = '1' THEN
+               brel_int                <= '0';
+            ELSE
+               brel_int                <= '1';
+            END IF;
+            ma_en_vme_data_in_reg      <= '0';
+            ma_en_vme_data_in_reg_high <= '0';
+               
                
          WHEN data_stored =>
             IF berrn = '0' THEN
@@ -609,8 +652,10 @@ BEGIN
                rst_rmw_int             <= '0';
                soen_int                <= '1';
             ELSIF burst = '1' AND run_mstr = '1' THEN
-               IF wbs_we_i = '0' AND d64 = '1' THEN
+               IF wbs_we_i = '0' AND d64 = '1' and dtackn = '1' THEN
                   mstr_state           <= set_ds;
+               ELSIF wbs_we_i = '0' AND d64 = '1' and dtackn = '0' THEN
+                  mstr_state           <= wait_on_dtackn;
                ELSE
                   mstr_state           <= got_bus;
                END IF;
