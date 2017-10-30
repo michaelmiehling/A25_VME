@@ -214,9 +214,11 @@ begin
          -- fails because ack_int is released too late
          if(app_int_ack = '1' or app_msi_ack = '1') then
             inter_ack <= '1';
-            ack_int   <= '1';
          elsif(ack_ok_qq = '1') then
             inter_ack <= '0';
+         end if;
+         if(app_int_ack = '1' or app_msi_ack = '1') then
+            ack_int   <= '1';
          elsif(wb_inter_qqq = '0') then
             ack_int   <= '0';
          end if;
