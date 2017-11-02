@@ -280,7 +280,7 @@ BEGIN
             mstr_state     <= read_data;
             clr_dma_en_int <= '0';
             stb_o <= '1';
-            if inc_dest = '0' and reached_size = '1' then
+            if inc_dest = '0' and (reached_size = '1' or fifo_almost_full = '1') then
                cti_int <= "000";                         -- last longword => perform single access
             elsif inc_dest = '0' and reached_size = '0' then
                cti_int <= "010";                         -- more than one longword => perform burst access
