@@ -126,101 +126,101 @@ USE ieee.std_logic_unsigned.ALL;
 
 ENTITY vme_au IS
    GENERIC (
-      A16_REG_MAPPING   : boolean := TRUE;                        -- if true, access to vme slave A16 space goes to vme runtime registers and above 0x800 to sram (compatible to old revisions)
-                                                                  -- if false, access to vme slave A16 space goes to sram
-      LONGADD_SIZE      : integer range 3 TO 8:=3;
-      USE_LONGADD       : boolean := TRUE                          -- If FALSE, bits (7 DOWNTO 5) of SIGNAL longadd will be allocated to vme_adr_out(31 DOWNTO 29)
-                                                                   -- If TRUE, number of bits allocated to vme_adr_out depends on GENERIC LONGADD_SIZE
+      A16_REG_MAPPING   : boolean := TRUE;         -- if true, access to vme slave A16 space goes to vme runtime registers and above 0x800 to sram (compatible to old revisions)
+                                                   -- if false, access to vme slave A16 space goes to sram
+      LONGADD_SIZE      : integer range 3 TO 8:=3; 
+      USE_LONGADD       : boolean := TRUE          -- If FALSE, bits (7 DOWNTO 5) of SIGNAL longadd will be allocated to vme_adr_out(31 DOWNTO 29)
+                                                   -- If TRUE, number of bits allocated to vme_adr_out depends on GENERIC LONGADD_SIZE
       );
    PORT (
-      clk                  : IN std_logic;                      -- 66 MHz
-      rst                  : IN std_logic;                      -- global reset signal (asynch)
-      test                 : OUT std_logic;
+      clk                     : IN std_logic;                        -- 66 MHz
+      rst                     : IN std_logic;                        -- global reset signal (asynch)
+      test                    : OUT std_logic;
       
       -- mensb slave
       wbs_adr_i               : IN std_logic_vector(31 DOWNTO 0);    -- mensb slave adress lines
       wbs_sel_i               : IN std_logic_vector(3 DOWNTO 0);     -- mensb slave byte enable lines
       wbs_we_i                : IN std_logic;                        -- mensb slave read/write
-      vme_acc_type            : IN std_logic_vector(6 DOWNTO 0);     -- signal indicates the type of VME slave access
+      vme_acc_type            : IN std_logic_vector(8 DOWNTO 0);     -- signal indicates the type of VME slave access
       ma_en_vme_data_out_reg  : IN std_logic;                        -- enable of vme_adr_out
       wbs_tga_i               : IN std_logic_vector(8 DOWNTO 0);
       
       -- mensb master
-      wbm_adr_o            : OUT std_logic_vector(31 DOWNTO 0);   -- mensb master adress lines
-      wbm_sel_o            : OUT std_logic_vector(3 DOWNTO 0);    -- mensb master byte enable lines
-      wbm_we_o             : OUT std_logic;                       -- mensb master read/write
-      sram_acc             : OUT std_logic;                       -- sram access is requested by vmebus
-      pci_acc              : OUT std_logic;                       -- pci access is requested by vmebus
-      reg_acc              : OUT std_logic;                       -- reg access is requested by vmebus
-      sl_acc_wb            : OUT std_logic_vector(4 DOWNTO 0);    -- sampled with ld_loc_adr_cnt
-      
-      -- vme
-      vme_adr_in           : IN std_logic_vector(31 DOWNTO 0);    -- vme address input lines
-      vme_adr_out          : OUT std_logic_vector(31 DOWNTO 0);   -- vme address output lines
+      wbm_adr_o               : OUT std_logic_vector(31 DOWNTO 0);   -- mensb master adress lines
+      wbm_sel_o               : OUT std_logic_vector(3 DOWNTO 0);    -- mensb master byte enable lines
+      wbm_we_o                : OUT std_logic;                       -- mensb master read/write
+      sram_acc                : OUT std_logic;                       -- sram access is requested by vmebus
+      pci_acc                 : OUT std_logic;                       -- pci access is requested by vmebus
+      reg_acc                 : OUT std_logic;                       -- reg access is requested by vmebus
+      sl_acc_wb               : OUT std_logic_vector(4 DOWNTO 0);    -- sampled with ld_loc_adr_cnt
+                              
+      -- vme                  
+      vme_adr_in              : IN std_logic_vector(31 DOWNTO 0);    -- vme address input lines
+      vme_adr_out             : OUT std_logic_vector(31 DOWNTO 0);   -- vme address output lines
       
       ---------------------------------------------------------------------------------------------------
       -- pins to vmebus
-      asn_in               : IN std_logic;                        -- vme adress strobe input
-      vam                  : INOUT std_logic_vector(5 DOWNTO 0);  -- vme address modifier
-      dsan_out             : OUT std_logic;                       -- data strobe byte(0) out
-      dsbn_out             : OUT std_logic;                       -- data strobe byte(1) out
-      dsan_in              : IN std_logic;                        -- data strobe byte(0) in
-      dsbn_in              : IN std_logic;                        -- data strobe byte(1) in
-      writen               : INOUT std_logic;                     -- write enable      tco = tbd.   tsu <= tbd.   PIN tbd.
-      iackn                : INOUT std_logic;                     -- handler's output !   PIN tbd.
-      iackin               : IN std_logic;                        -- vme daisy chain interrupt acknoledge input
-      iackoutn             : OUT std_logic;                       -- vme daisy chain interrupt acknoledge output
+      asn_in                  : IN std_logic;                        -- vme adress strobe input
+      vam                     : INOUT std_logic_vector(5 DOWNTO 0);  -- vme address modifier
+      dsan_out                : OUT std_logic;                       -- data strobe byte(0) out
+      dsbn_out                : OUT std_logic;                       -- data strobe byte(1) out
+      dsan_in                 : IN std_logic;                        -- data strobe byte(0) in
+      dsbn_in                 : IN std_logic;                        -- data strobe byte(1) in
+      writen                  : INOUT std_logic;                     -- write enable      tco = tbd.   tsu <= tbd.   PIN tbd.
+      iackn                   : INOUT std_logic;                     -- handler's output !   PIN tbd.
+      iackin                  : IN std_logic;                        -- vme daisy chain interrupt acknoledge input
+      iackoutn                : OUT std_logic;                       -- vme daisy chain interrupt acknoledge output
       ---------------------------------------------------------------------------------------------------
       
-      mensb_active         : IN std_logic;      -- acknoledge/active signal for mensb slave access
-      
-      -- vme master
-      mstr_cycle           : OUT std_logic;     -- number of master cycles should be done (0=1x, 1=2x)
-      second_word          : IN std_logic;      -- indicates the second transmission if in D16 mode and 32bit should be transmitted
-      dsn_ena              : IN std_logic;      -- signal switches dsan_out and dsbn_out on and off
-      vam_oe               : IN std_logic;      -- vam output enable
-      ma_d64               : OUT std_logic;     -- indicates a d64 burst transmission
-      sl_d64               : OUT std_logic;     -- indicates a d64 burst transmission
+      mensb_active            : IN std_logic;                        -- acknoledge/active signal for mensb slave access
+                                                                     
+      -- vme master                                                  
+      mstr_cycle              : OUT std_logic;                       -- number of master cycles should be done (0=1x, 1=2x)
+      second_word             : IN std_logic;                        -- indicates the second transmission if in D16 mode and 32bit should be transmitted
+      dsn_ena                 : IN std_logic;                        -- signal switches dsan_out and dsbn_out on and off
+      vam_oe                  : IN std_logic;                        -- vam output enable
+      ma_d64                  : OUT std_logic;                       -- indicates a d64 burst transmission
+      sl_d64                  : OUT std_logic;                       -- indicates a d64 burst transmission
       
       -- vme slave
-      sl_acc                  : OUT std_logic_vector(4 DOWNTO 0); -- slave access hits and burst data transmission type
-      sl_acc_valid            : OUT std_logic;                    -- sl_acc has been calculated and is valid
-      asn_in_sl_reg           : IN std_logic;                     -- registered asn signal
-      ld_loc_adr_m_cnt        : IN std_logic;                     -- load address counter
-      inc_loc_adr_m_cnt       : IN std_logic;                     -- increment address counter
-      sl_inc_loc_adr_m_cnt    : IN std_logic;                     -- increment address counter
-      sl_writen_reg           : OUT std_logic;
-      iackn_in_reg            : OUT std_logic;                    -- iack signal (registered with en_vme_adr_in)
-      my_iack                 : OUT std_logic;
-      clr_intreq              : IN std_logic;                     -- clear interrupt request (intr(3) <= '0'
-      sl_en_vme_data_in_reg   : IN std_logic;                     -- register enable for vme data in
-      en_vme_adr_in           : IN std_logic;                     -- samples adress and am after asn goes low
+      sl_acc                  : OUT std_logic_vector(4 DOWNTO 0);    -- slave access hits and burst data transmission type
+      sl_acc_valid            : OUT std_logic;                       -- sl_acc has been calculated and is valid
+      asn_in_sl_reg           : IN std_logic;                        -- registered asn signal
+      ld_loc_adr_m_cnt        : IN std_logic;                        -- load address counter
+      inc_loc_adr_m_cnt       : IN std_logic;                        -- increment address counter
+      sl_inc_loc_adr_m_cnt    : IN std_logic;                        -- increment address counter
+      sl_writen_reg           : OUT std_logic;                       
+      iackn_in_reg            : OUT std_logic;                       -- iack signal (registered with en_vme_adr_in)
+      my_iack                 : OUT std_logic;                       
+      clr_intreq              : IN std_logic;                        -- clear interrupt request (intr(3) <= '0'
+      sl_en_vme_data_in_reg   : IN std_logic;                        -- register enable for vme data in
+      en_vme_adr_in           : IN std_logic;                        -- samples adress and am after asn goes low
       
       -- sys_arbiter
-      sl_byte_routing      : OUT std_logic;                       -- to mensb byte routing
-      ma_byte_routing      : OUT std_logic;                       -- signal for byte swapping
-      sl_sel_vme_data_out  : OUT std_logic_vector(1 DOWNTO 0);    -- mux select: 00=loc_data_in_m 01=loc_data_in_s 10=reg_data
-      lwordn_slv           : OUT std_logic;                       -- stored for vme slave access
-      lwordn_mstr          : OUT std_logic;                       -- master access lwordn
+      sl_byte_routing         : OUT std_logic;                       -- to mensb byte routing
+      ma_byte_routing         : OUT std_logic;                       -- signal for byte swapping
+      sl_sel_vme_data_out     : OUT std_logic_vector(1 DOWNTO 0);    -- mux select: 00=loc_data_in_m 01=loc_data_in_s 10=reg_data
+      lwordn_slv              : OUT std_logic;                       -- stored for vme slave access
+      lwordn_mstr             : OUT std_logic;                       -- master access lwordn
       
       -- locmon
-      vam_reg              : OUT std_logic_vector(5 DOWNTO 0);    -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
-      vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
-      
-      -- vme_du
-      mstr_reg             : IN std_logic_vector(13 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
-      longadd              : IN std_logic_vector(7 DOWNTO 0);     -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
-      slv16_reg            : IN std_logic_vector(4 DOWNTO 0);     -- slave A16 base address register
-      slv24_reg            : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
-      slv32_reg            : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register
-      slv24_pci_q          : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register for PCI
-      slv32_pci_q          : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register for PCI
-      intr_reg             : IN std_logic_vector(3 DOWNTO 0);     -- interrupt request register
-      sysc_reg             : IN std_logic_vector(2 DOWNTO 0);     -- system control register (ato, sysr, sysc)
-      pci_offset_q         : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access        
-      
-      int_be               : OUT std_logic_vector(3 DOWNTO 0);    -- internal byte enables
-      int_adr              : OUT std_logic_vector(18 DOWNTO 0)    -- internal adress
+      vam_reg                 : OUT std_logic_vector(5 DOWNTO 0);    -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
+      vme_adr_in_reg          : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
+                              
+      -- vme_du               
+      mstr_reg                : IN std_logic_vector(13 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
+      longadd                 : IN std_logic_vector(7 DOWNTO 0);     -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
+      slv16_reg               : IN std_logic_vector(4 DOWNTO 0);     -- slave A16 base address register
+      slv24_reg               : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
+      slv32_reg               : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register
+      slv24_pci_q             : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register for PCI
+      slv32_pci_q             : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register for PCI
+      intr_reg                : IN std_logic_vector(3 DOWNTO 0);     -- interrupt request register
+      sysc_reg                : IN std_logic_vector(2 DOWNTO 0);     -- system control register (ato, sysr, sysc)
+      pci_offset_q            : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access        
+                              
+      int_be                  : OUT std_logic_vector(3 DOWNTO 0);    -- internal byte enables
+      int_adr                 : OUT std_logic_vector(18 DOWNTO 0)    -- internal adress
    );
 END vme_au;
 
@@ -270,7 +270,7 @@ ARCHITECTURE vme_au_arch OF vme_au IS
    SIGNAL lwordn_slv_int      : std_logic;
    SIGNAL asn_q               : std_logic;
    SIGNAL iackn_in_q          : std_logic;
-   signal writen_int				: std_logic;
+   signal writen_int            : std_logic;
    
    SIGNAL vme_a16_mask        : std_logic_vector(31 DOWNTO 12);
    SIGNAL vme_a24_mask        : std_logic_vector(31 DOWNTO 12);
@@ -339,7 +339,7 @@ BEGIN
          asn_q          <= '1';
          iackin_daisy   <= '1';
          iackn_in_q     <= '1';
-         writen_int		<= '1';
+         writen_int      <= '1';
       ELSIF clk'EVENT AND clk = '1' THEN
          iackn_in_q <= iackn_in;
          asn_q <= asn_in;
@@ -525,24 +525,24 @@ BEGIN
          
          -- select VME address based on address mode, LONGADD register and generics
          IF ma_en_vme_data_out_reg = '1' THEN
-         		if vme_acc_type(1 DOWNTO 0) = "00" then         													-- A24
-            	vme_adr_out(31 DOWNTO 2) <= "00000000" & wbs_adr_i(23 DOWNTO 2);
-            		
-            elsif vme_acc_type(1 downto 0) = "01" then         												-- A32
-	            IF wbs_tga_i(7) = '0' THEN   																								-- single access from PCI / no dma?
-	              IF USE_LONGADD = TRUE THEN 																								-- flexible size of longadd parameter => not compatible to A21!
-	                vme_adr_out(31 DOWNTO 2) <= longadd(7 DOWNTO (8-LONGADD_SIZE)) & wbs_adr_i((31-LONGADD_SIZE) DOWNTO 2);    
-	              ELSE  																																		-- compatibility mode: uses 3 bits of longadd (compatible to A21/A15)
-	                vme_adr_out(31 DOWNTO 2) <= longadd(2 DOWNTO 0) & wbs_adr_i(28 DOWNTO 2);       
-	              END IF;
-	            ELSE 																																				-- dma access uses complete address (no LONGADD usage)
-								vme_adr_out(31 DOWNTO 2) <= wbs_adr_i(31 DOWNTO 2);
-	            END IF;
+               if vme_acc_type(1 DOWNTO 0) = "00" then                                                -- A24
+               vme_adr_out(31 DOWNTO 2) <= "00000000" & wbs_adr_i(23 DOWNTO 2);
+                  
+            elsif vme_acc_type(1 downto 0) = "01" then                                             -- A32
+               IF wbs_tga_i(7) = '0' THEN                                                                           -- single access from PCI / no dma?
+                 IF USE_LONGADD = TRUE THEN                                                                         -- flexible size of longadd parameter => not compatible to A21!
+                   vme_adr_out(31 DOWNTO 2) <= longadd(7 DOWNTO (8-LONGADD_SIZE)) & wbs_adr_i((31-LONGADD_SIZE) DOWNTO 2);    
+                 ELSE                                                                                                        -- compatibility mode: uses 3 bits of longadd (compatible to A21/A15)
+                   vme_adr_out(31 DOWNTO 2) <= longadd(2 DOWNTO 0) & wbs_adr_i(28 DOWNTO 2);       
+                 END IF;
+               ELSE                                                                                                             -- dma access uses complete address (no LONGADD usage)
+                        vme_adr_out(31 DOWNTO 2) <= wbs_adr_i(31 DOWNTO 2);
+               END IF;
 
-           	else																																			-- A16
-           		vme_adr_out(31 DOWNTO 2) <= "0000000000000000" & wbs_adr_i(15 DOWNTO 2);
+              else                                                                                                         -- A16
+                 vme_adr_out(31 DOWNTO 2) <= "0000000000000000" & wbs_adr_i(15 DOWNTO 2);
             END if;
-            	
+               
          END IF;
          
          IF en_vme_adr_in = '1' THEN                         -- samples adress and am at falling edge asn 
@@ -702,22 +702,29 @@ BEGIN
    END PROCESS lg_dec;
    
    -- vme_acc_type:
-   --                  M S B D  A
-   -- A16/D16          m 0 0 00 10
-   -- A16/D32          m 0 0 01 10
-   -- A24/D16          m 0 0 00 00
-   -- A24/D32          m 0 0 01 00
-   -- CR/CSR           x 0 0 10 00
-   -- A32/D32          m 0 0 01 01
-   -- IACK             m 0 0 00 11
-   -- A32/D32/BLT      m 0 1 01 01
-   -- A32/D64/BLT      m 0 1 11 01
-   -- A24/D16/BLT      m 0 1 00 00
-   -- A24/D32/BLT      m 0 1 01 00
-   --  " swapped       m 1 x xx xx
+   --                  M D R S B D  A
+   --                  8 7 6 5 4 32 10
+   -- A16/D16          m d u 0 0 00 10
+   -- A16/D32          m d u 0 0 01 10
+   -- A24/D16          m d u 0 0 00 00
+   -- A24/D32          m d u 0 0 01 00
+   -- CR/CSR           x d u 0 0 10 00
+   -- A32/D32          m d u 0 0 01 01
+   -- IACK             m d u 0 0 00 11
+   -- A32/D32/BLT      m d u 0 1 01 01
+   -- A32/D64/BLT      m d u 0 1 11 01
+   -- A24/D16/BLT      m d u 0 1 00 00
+   -- A24/D32/BLT      m d u 0 1 01 00
+   -- A24/D64/BLT      m d u 0 1 11 00 new
+   --  " swapped       m d u 1 x xx xx
    --
    -- m = 0: non-privileged 
-   -- m = 1: supervisory
+   -- m = 1: supervisory                   
+   --
+   -- d = 0: host access
+   -- d = 1: DMA access
+   --
+   -- u: unused
    
    vam_proc : PROCESS (clk, rst)
    BEGIN
@@ -734,318 +741,367 @@ BEGIN
       ELSIF clk'EVENT AND clk = '1' THEN
          CASE vme_acc_type(4 DOWNTO 0) IS
             WHEN "00011" => vam_out <= "010000";-- x10   IACK-Cycle
-                     iackn_out <= '0';
-                     mstr_cycle_int   <= '0';     -- only one cycle is permitted
-                     ma_d64 <= '0';
-                     IF wbs_sel_i = "1111" THEN
-                        vme_a1 <= '0';         -- longword will be transmitted
-                        dsan_out_int   <= '0';
-                        dsbn_out_int   <= '0';
-                        ma_byte_routing <= '0';
-                        lwordn_mstr_int   <= '0';
-                     ELSIF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+               iackn_out <= '0';
+               mstr_cycle_int   <= '0';     -- only one cycle is permitted
+               ma_d64 <= '0';
+               IF wbs_sel_i = "1111" THEN
+                  vme_a1 <= '0';         -- longword will be transmitted
+                  dsan_out_int   <= '0';
+                  dsbn_out_int   <= '0';
+                  ma_byte_routing <= '0';
+                  lwordn_mstr_int   <= '0';
+               ELSIF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                  vme_a1 <= '0';         -- only low word will be transmitted
+                  dsan_out_int   <= NOT wbs_sel_i(1);
+                  dsbn_out_int   <= NOT wbs_sel_i(0);
+                  ma_byte_routing <= '1';
+                  lwordn_mstr_int   <= '1';
+               ELSE
+                  vme_a1 <= '1';         -- only high word will be transmitted
+                  dsan_out_int   <= NOT wbs_sel_i(3);
+                  dsbn_out_int   <= NOT wbs_sel_i(2);
+                  ma_byte_routing <= '0';
+                  lwordn_mstr_int   <= '1';
+               END IF;
+
+         -- A16 D16 
+            WHEN "00010" =>         
+               IF vme_acc_type(7) = '1' THEN      -- DMA access
+                  IF vme_acc_type(8) = '1' THEN
+                     vam_out <= "101101";   -- x2D   A16 D16 supervisory access
+                  ELSE
+                     vam_out <= "101001";   -- x29   A16 D16 non-privileged access
+                  END IF;
+               ELSE                               -- host access
+                  CASE mstr_reg(9 DOWNTO 8) IS                 
+                     WHEN AM_NON_DAT => vam_out <= "101001";   -- x29   A16 D16 non-privileged access
+                     WHEN OTHERS     => vam_out <= "101101";   -- x2D   A16 D16 supervisory access
+                  END CASE;
+               END IF;
+               iackn_out <= '1';
+               ma_d64 <= '0';
+               lwordn_mstr_int   <= '1';
+               IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
+                  mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmitt 32bit in D16 mode
+               ELSE
+                  mstr_cycle_int   <= '0';
+               END IF;
+               IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                     vme_a1 <= '0';         -- only low word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(1);
+                     dsbn_out_int   <= NOT wbs_sel_i(0);
+                     ma_byte_routing <= '1';
+                  ELSE
+                     vme_a1 <= '1';         -- only high word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                  END IF;
+               ELSE                     -- second word of two
+                  dsan_out_int   <= NOT wbs_sel_i(3);
+                  dsbn_out_int   <= NOT wbs_sel_i(2);
+                  ma_byte_routing <= '0';
+                  vme_a1 <= '1';
+               END IF;
+            
+         -- A24 D16
+            WHEN "00000" => 
+               IF vme_acc_type(7) = '1' THEN      -- DMA access
+                  IF vme_acc_type(8) = '1' THEN
+                     vam_out <= "111101";   -- x3D   A24 D16 supervisory data access 
+                  ELSE
+                     vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
+                  END IF;
+               ELSE
+                  CASE mstr_reg(11 DOWNTO 10) IS
+                     WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
+                     WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
+                     WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
+                     WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
+                  END CASE;
+               END IF;
+               iackn_out <= '1';
+               ma_d64 <= '0';
+               lwordn_mstr_int   <= '1';
+               IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
+                  mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
+               ELSE
+                  mstr_cycle_int   <= '0';
+               END IF;
+               IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                     vme_a1 <= '0';         -- only low word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(1);
+                     dsbn_out_int   <= NOT wbs_sel_i(0);
+                     ma_byte_routing <= '1';
+                  ELSE
+                     vme_a1 <= '1';         -- only high word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                  END IF;
+               ELSE                     -- second word of two
+                  dsan_out_int   <= NOT wbs_sel_i(3);
+                  dsbn_out_int   <= NOT wbs_sel_i(2);
+                  ma_byte_routing <= '0';
+                  vme_a1 <= '1';
+               END IF;
+
+         -- CR/CSR
+            WHEN "01000" => 
+               vam_out <= "101111";   -- x2f   CR/CSR access
+               iackn_out <= '1';
+               ma_d64 <= '0';
+               mstr_cycle_int   <= '0';
+               IF wbs_sel_i = "1111" THEN          -- D32 access
+                  IF vme_acc_type(5) = '1' THEN
+                     ma_byte_routing <= '0';
+                  ELSE
+                     ma_byte_routing <= '1';
+                  END IF;
+                  dsan_out_int <= '0';
+                  dsbn_out_int <= '0';
+                  vme_a1 <= '0';
+                  lwordn_mstr_int   <= '0';
+               ELSE                                -- D16 access
+                  lwordn_mstr_int   <= '1';
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                     vme_a1 <= '0';         -- only low word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(1);
+                     dsbn_out_int   <= NOT wbs_sel_i(0);
+                     ma_byte_routing <= '1';
+                  ELSE
+                     vme_a1 <= '1';         -- only high word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                  END IF;
+               END IF;
+
+         -- A24 D32
+            WHEN "00100" =>      
+               IF vme_acc_type(7) = '1' THEN      -- DMA access
+                  IF vme_acc_type(8) = '1' THEN     
+                     vam_out <= "111101";   -- x3D   A24 D32 supervisory data access
+                  ELSE              
+                     vam_out <= "111001";   -- x39   A24 D32 non-privileged data access
+                  END IF;
+               ELSE
+                  CASE mstr_reg(11 DOWNTO 10) IS               
+                     WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D32 non-privileged data access
+                     WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D32 non-privileged program access
+                     WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D32 supervisory data access    
+                     WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D32 supervisory program access 
+                  END CASE;
+               END IF;
+               iackn_out <= '1';
+               ma_d64 <= '0';
+               IF wbs_sel_i = "1111" THEN
+                  IF vme_acc_type(5) = '1' THEN
+                     ma_byte_routing <= '0';
+                  ELSE
+                     ma_byte_routing <= '1';
+                  END IF;
+                  mstr_cycle_int   <= '0';
+                  dsan_out_int <= '0';
+                  dsbn_out_int <= '0';
+                  vme_a1 <= '0';
+                  lwordn_mstr_int   <= '0';
+               ELSE      -- same as D16 access
+                  lwordn_mstr_int   <= '1';
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
+                     mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
+                  ELSE
+                     mstr_cycle_int   <= '0';
+                  END IF;
+                  IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
+                     IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
                         vme_a1 <= '0';         -- only low word will be transmitted
                         dsan_out_int   <= NOT wbs_sel_i(1);
                         dsbn_out_int   <= NOT wbs_sel_i(0);
                         ma_byte_routing <= '1';
-                        lwordn_mstr_int   <= '1';
                      ELSE
                         vme_a1 <= '1';         -- only high word will be transmitted
                         dsan_out_int   <= NOT wbs_sel_i(3);
                         dsbn_out_int   <= NOT wbs_sel_i(2);
                         ma_byte_routing <= '0';
-                        lwordn_mstr_int   <= '1';
                      END IF;
-
-            WHEN "00010" => 
-                      CASE mstr_reg(9 DOWNTO 8) IS                 -- A16_MODE
-                         WHEN AM_NON_DAT => vam_out <= "101001";   -- x29   A16 D16 non-privileged access
-                         WHEN OTHERS     => vam_out <= "101101";   -- x2D   A16 D16 supervisory access
-                      END CASE;
-                      iackn_out <= '1';
-                      ma_d64 <= '0';
-                       lwordn_mstr_int   <= '1';
-                        IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
-                           mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmitt 32bit in D16 mode
-                        ELSE
-                           mstr_cycle_int   <= '0';
-                        END IF;
-                        IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
-                           IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                              vme_a1 <= '0';         -- only low word will be transmitted
-                              dsan_out_int   <= NOT wbs_sel_i(1);
-                              dsbn_out_int   <= NOT wbs_sel_i(0);
-                              ma_byte_routing <= '1';
-                           ELSE
-                              vme_a1 <= '1';         -- only high word will be transmitted
-                              dsan_out_int   <= NOT wbs_sel_i(3);
-                              dsbn_out_int   <= NOT wbs_sel_i(2);
-                              ma_byte_routing <= '0';
-                           END IF;
-                        ELSE                     -- second word of two
-                           dsan_out_int   <= NOT wbs_sel_i(3);
-                           dsbn_out_int   <= NOT wbs_sel_i(2);
-                           ma_byte_routing <= '0';
-                           vme_a1 <= '1';
-                        END IF;
+                  ELSE                     -- second word of two
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                     vme_a1 <= '1';
+                  END IF;
+               END IF;
             
-            WHEN "00000" => 
-                       CASE mstr_reg(11 DOWNTO 10) IS
-                          WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D16 non-privileged data access
-                          WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D16 non-privileged program access
-                          WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D16 supervisory data access    
-                          WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D16 supervisory program access 
-                       END CASE;
-                      iackn_out <= '1';
-                      ma_d64 <= '0';
-                        lwordn_mstr_int   <= '1';
-                        IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
-                           mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
-                        ELSE
-                           mstr_cycle_int   <= '0';
-                        END IF;
-                        IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
-                         IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                              vme_a1 <= '0';         -- only low word will be transmitted
-                              dsan_out_int   <= NOT wbs_sel_i(1);
-                              dsbn_out_int   <= NOT wbs_sel_i(0);
-                              ma_byte_routing <= '1';
-                           ELSE
-                              vme_a1 <= '1';         -- only high word will be transmitted
-                              dsan_out_int   <= NOT wbs_sel_i(3);
-                              dsbn_out_int   <= NOT wbs_sel_i(2);
-                              ma_byte_routing <= '0';
-                           END IF;
-                        ELSE                     -- second word of two
-                           dsan_out_int   <= NOT wbs_sel_i(3);
-                           dsbn_out_int   <= NOT wbs_sel_i(2);
-                           ma_byte_routing <= '0';
-                           vme_a1 <= '1';
-                        END IF;
-                        
-            WHEN "01000" => 
-                      	vam_out <= "101111";   -- x2f   CR/CSR access
-                      	iackn_out <= '1';
-                      	ma_d64 <= '0';
-                        mstr_cycle_int   <= '0';
-								IF wbs_sel_i = "1111" THEN          -- D32 access
-							      IF vme_acc_type(5) = '1' THEN
-								      ma_byte_routing <= '0';
-								   ELSE
-								      ma_byte_routing <= '1';
-								   END IF;
-								   dsan_out_int <= '0';
-								   dsbn_out_int <= '0';
-								   vme_a1 <= '0';
-									lwordn_mstr_int   <= '0';
-								ELSE                                -- D16 access
-								   lwordn_mstr_int   <= '1';
-							      IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-							         vme_a1 <= '0';         -- only low word will be transmitted
-							         dsan_out_int   <= NOT wbs_sel_i(1);
-							         dsbn_out_int   <= NOT wbs_sel_i(0);
-							         ma_byte_routing <= '1';
-							      ELSE
-							         vme_a1 <= '1';         -- only high word will be transmitted
-							         dsan_out_int   <= NOT wbs_sel_i(3);
-							         dsbn_out_int   <= NOT wbs_sel_i(2);
-							         ma_byte_routing <= '0';
-							      END IF;
-								END IF;
-
-            WHEN "00100" => 
-                       CASE mstr_reg(11 DOWNTO 10) IS               
-                          WHEN AM_NON_DAT => vam_out <= "111001";   -- x39   A24 D32 non-privileged data access
-                          WHEN AM_NON_PRO => vam_out <= "111010";   -- x3A   A24 D32 non-privileged program access
-                          WHEN AM_SUP_DAT => vam_out <= "111101";   -- x3D   A24 D32 supervisory data access    
-                          WHEN OTHERS     => vam_out <= "111110";   -- x3E   A24 D32 supervisory program access 
-                       END CASE;
-                      iackn_out <= '1';
-                      ma_d64 <= '0';
-                      IF wbs_sel_i = "1111" THEN
-                           IF vme_acc_type(5) = '1' THEN
-                            ma_byte_routing <= '0';
-                         ELSE
-                            ma_byte_routing <= '1';
-                         END IF;
-                         mstr_cycle_int   <= '0';
-                          dsan_out_int <= '0';
-                         dsbn_out_int <= '0';
-                         vme_a1 <= '0';
-                           lwordn_mstr_int   <= '0';
-                      ELSE      -- same as D16 access
-                           lwordn_mstr_int   <= '1';
-                           IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
-                              mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
-                           ELSE
-                              mstr_cycle_int   <= '0';
-                           END IF;
-                           IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
-                              IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                                 vme_a1 <= '0';         -- only low word will be transmitted
-                                 dsan_out_int   <= NOT wbs_sel_i(1);
-                                 dsbn_out_int   <= NOT wbs_sel_i(0);
-                                 ma_byte_routing <= '1';
-                              ELSE
-                                 vme_a1 <= '1';         -- only high word will be transmitted
-                                 dsan_out_int   <= NOT wbs_sel_i(3);
-                                 dsbn_out_int   <= NOT wbs_sel_i(2);
-                                 ma_byte_routing <= '0';
-                              END IF;
-                           ELSE                     -- second word of two
-                              dsan_out_int   <= NOT wbs_sel_i(3);
-                              dsbn_out_int   <= NOT wbs_sel_i(2);
-                              ma_byte_routing <= '0';
-                              vme_a1 <= '1';
-                           END IF;
-                      END IF;
+          -- A16 D32
+            WHEN "00110" =>        
+               IF vme_acc_type(7) = '1' THEN      -- DMA access
+                  IF vme_acc_type(8) = '1' THEN     
+                     vam_out <= "101101";   -- x2D   A16 D32 supervisory access
+                  ELSE
+                     vam_out <= "101001";   -- x29   A16 D32 non-privileged access
+                  END IF;
+               ELSE
+                  CASE mstr_reg(9 DOWNTO 8) IS                 -- A16_MODE
+                     WHEN AM_NON_DAT => vam_out <= "101001";   -- x29   A16 D32 non-privileged access
+                     WHEN OTHERS     => vam_out <= "101101";   -- x2D   A16 D32 supervisory access
+                  END CASE;
+               END IF;
+               iackn_out <= '1';
+               ma_d64 <= '0';
+                  IF wbs_sel_i = "1111" THEN
+                     IF vme_acc_type(5) = '1' THEN
+                     ma_byte_routing <= '0';
+                  ELSE
+                     ma_byte_routing <= '1';
+                  END IF;
+                  mstr_cycle_int   <= '0';
+                  dsan_out_int <= '0';
+                  dsbn_out_int <= '0';
+                  vme_a1 <= '0';
+                  lwordn_mstr_int   <= '0';
+               ELSE      -- same as D16 access
+                  lwordn_mstr_int   <= '1';
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
+                     mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmitt 32bit in D16 mode
+                  ELSE
+                     mstr_cycle_int   <= '0';
+                  END IF;
+                  IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
+                     IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                        vme_a1 <= '0';         -- only low word will be transmitted
+                        dsan_out_int   <= NOT wbs_sel_i(1);
+                        dsbn_out_int   <= NOT wbs_sel_i(0);
+                        ma_byte_routing <= '1';
+                     ELSE
+                        vme_a1 <= '1';         -- only high word will be transmitted
+                        dsan_out_int   <= NOT wbs_sel_i(3);
+                        dsbn_out_int   <= NOT wbs_sel_i(2);
+                        ma_byte_routing <= '0';
+                     END IF;
+                  ELSE                     -- second word of two
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                     vme_a1 <= '1';
+                  END IF;
+               END IF;
             
-            WHEN "00110" => 
-                      CASE mstr_reg(9 DOWNTO 8) IS                 -- A16_MODE
-                         WHEN AM_NON_DAT => vam_out <= "101001";   -- x29   A16 D16 non-privileged access
-                         WHEN OTHERS     => vam_out <= "101101";   -- x2D   A16 D16 supervisory access
-                      END CASE;
-                      iackn_out <= '1';
-                      ma_d64 <= '0';
-                        IF wbs_sel_i = "1111" THEN
-                           IF vme_acc_type(5) = '1' THEN
-                            ma_byte_routing <= '0';
-                         ELSE
-                            ma_byte_routing <= '1';
-                         END IF;
-                         mstr_cycle_int   <= '0';
-                          dsan_out_int <= '0';
-                         dsbn_out_int <= '0';
-                         vme_a1 <= '0';
-                           lwordn_mstr_int   <= '0';
-                      ELSE      -- same as D16 access
-                           lwordn_mstr_int   <= '1';
-                           IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
-                              mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmitt 32bit in D16 mode
-                           ELSE
-                              mstr_cycle_int   <= '0';
-                           END IF;
-                           IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
-                              IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                                 vme_a1 <= '0';         -- only low word will be transmitted
-                                 dsan_out_int   <= NOT wbs_sel_i(1);
-                                 dsbn_out_int   <= NOT wbs_sel_i(0);
-                                 ma_byte_routing <= '1';
-                              ELSE
-                                 vme_a1 <= '1';         -- only high word will be transmitted
-                                 dsan_out_int   <= NOT wbs_sel_i(3);
-                                 dsbn_out_int   <= NOT wbs_sel_i(2);
-                                 ma_byte_routing <= '0';
-                              END IF;
-                           ELSE                     -- second word of two
-                              dsan_out_int   <= NOT wbs_sel_i(3);
-                              dsbn_out_int   <= NOT wbs_sel_i(2);
-                              ma_byte_routing <= '0';
-                              vme_a1 <= '1';
-                           END IF;
-                      END IF;
-            
+         -- A32 D32
             WHEN "00101" =>   
-                      CASE mstr_reg(13 DOWNTO 12) IS               -- A32_MODE
-                         WHEN AM_NON_DAT => vam_out <= "001001";   -- x09   A32 D32 non-privileged data access
-                         WHEN AM_NON_PRO => vam_out <= "001010";   -- x0A   A32 D32 non-privileged program access
-                         WHEN AM_SUP_DAT => vam_out <= "001101";   -- x0D   A32 D32 supervisory data access    
-                         WHEN OTHERS     => vam_out <= "001110";   -- x0E   A32 D32 supervisory program access 
-                      END CASE;
-                      iackn_out <= '1';
-                      ma_d64 <= '0';
-                        IF wbs_sel_i = "1111" THEN
-                           IF vme_acc_type(5) = '1' THEN
-                            ma_byte_routing <= '0';
-                         ELSE
-                            ma_byte_routing <= '1';
-                         END IF;
-                         mstr_cycle_int   <= '0';
-                          dsan_out_int <= '0';
-                         dsbn_out_int <= '0';
-                         vme_a1 <= '0';
-                           lwordn_mstr_int   <= '0';
-                      ELSE      -- same as D16 access
-                           lwordn_mstr_int   <= '1';
-                           IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
-                              mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
-                           ELSE
-                              mstr_cycle_int   <= '0';
-                           END IF;
-                           IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
-                              IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                                 vme_a1 <= '0';         -- only low word will be transmitted
-                                 dsan_out_int   <= NOT wbs_sel_i(1);
-                                 dsbn_out_int   <= NOT wbs_sel_i(0);
-                                 ma_byte_routing <= '1';
-                              ELSE
-                                 vme_a1 <= '1';         -- only high word will be transmitted
-                                 dsan_out_int   <= NOT wbs_sel_i(3);
-                                 dsbn_out_int   <= NOT wbs_sel_i(2);
-                                 ma_byte_routing <= '0';
-                              END IF;
-                           ELSE                     -- second word of two
-                              dsan_out_int   <= NOT wbs_sel_i(3);
-                              dsbn_out_int   <= NOT wbs_sel_i(2);
-                              ma_byte_routing <= '0';
-                              vme_a1 <= '1';
-                           END IF;
-                      END IF;
+               IF vme_acc_type(7) = '1' THEN      -- DMA access
+                  IF vme_acc_type(8) = '1' THEN     
+                     vam_out <= "001101";   -- x0D   A32 D32 supervisory data access  
+                  ELSE
+                     vam_out <= "001001";   -- x09   A32 D32 non-privileged data access
+                  END IF;
+               ELSE
+                  CASE mstr_reg(13 DOWNTO 12) IS               -- A32_MODE
+                     WHEN AM_NON_DAT => vam_out <= "001001";   -- x09   A32 D32 non-privileged data access
+                     WHEN AM_NON_PRO => vam_out <= "001010";   -- x0A   A32 D32 non-privileged program access
+                     WHEN AM_SUP_DAT => vam_out <= "001101";   -- x0D   A32 D32 supervisory data access    
+                     WHEN OTHERS     => vam_out <= "001110";   -- x0E   A32 D32 supervisory program access 
+                  END CASE;
+               END IF;
+               iackn_out <= '1';
+               ma_d64 <= '0';
+                  IF wbs_sel_i = "1111" THEN
+                     IF vme_acc_type(5) = '1' THEN
+                     ma_byte_routing <= '0';
+                  ELSE
+                     ma_byte_routing <= '1';
+                  END IF;
+                  mstr_cycle_int   <= '0';
+                  dsan_out_int <= '0';
+                  dsbn_out_int <= '0';
+                  vme_a1 <= '0';
+                  lwordn_mstr_int   <= '0';
+               ELSE      -- same as D16 access
+                  lwordn_mstr_int   <= '1';
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
+                     mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
+                  ELSE
+                     mstr_cycle_int   <= '0';
+                  END IF;
+                  IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
+                     IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                        vme_a1 <= '0';         -- only low word will be transmitted
+                        dsan_out_int   <= NOT wbs_sel_i(1);
+                        dsbn_out_int   <= NOT wbs_sel_i(0);
+                        ma_byte_routing <= '1';
+                     ELSE
+                        vme_a1 <= '1';         -- only high word will be transmitted
+                        dsan_out_int   <= NOT wbs_sel_i(3);
+                        dsbn_out_int   <= NOT wbs_sel_i(2);
+                        ma_byte_routing <= '0';
+                     END IF;
+                  ELSE                     -- second word of two
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                     vme_a1 <= '1';
+                  END IF;
+               END IF;
                       
-            WHEN "10000" => 
-                      IF vme_acc_type(6) = '0' THEN               -- A24_MODE
-                         vam_out <= "111011";-- x3b   A24 D16 blt non-privileged
-                      ELSE
-                         vam_out <= "111111";-- x3f   A24 D16 blt supervisory
-                      END IF;
-                      iackn_out <= '1';
-                      ma_d64 <= '0';
-                        lwordn_mstr_int   <= '1';
-                        IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
-                           mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
-                        ELSE
-                           mstr_cycle_int   <= '0';
-                        END IF;
-                        IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
-                         IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
-                              vme_a1 <= '0';         -- only low word will be transmitted
-                              dsan_out_int   <= NOT wbs_sel_i(1);
-                              dsbn_out_int   <= NOT wbs_sel_i(0);
-                              ma_byte_routing <= '1';
-                           ELSE
-                              vme_a1 <= '1';         -- only high word will be transmitted
-                              dsan_out_int   <= NOT wbs_sel_i(3);
-                              dsbn_out_int   <= NOT wbs_sel_i(2);
-                              ma_byte_routing <= '0';
-                           END IF;
-                        ELSE                     -- second word of two
-                           dsan_out_int   <= NOT wbs_sel_i(3);
-                           dsbn_out_int   <= NOT wbs_sel_i(2);
-                           ma_byte_routing <= '0';
-                           vme_a1 <= '1';
-                        END IF;
+         -- A24 D16 BLT
+            WHEN "10000" =>         
+               IF vme_acc_type(8) = '0' THEN               
+                  vam_out <= "111011";-- x3b   A24 D16 blt non-privileged
+               ELSE
+                  vam_out <= "111111";-- x3f   A24 D16 blt supervisory
+               END IF;
+               iackn_out <= '1';
+               ma_d64 <= '0';
+               lwordn_mstr_int   <= '1';
+               IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') AND (wbs_sel_i(2) = '1' OR wbs_sel_i(3) = '1') THEN
+                  mstr_cycle_int   <= '1';         -- there must be two master cycles in order to transmit 32bit in D16 mode
+               ELSE
+                  mstr_cycle_int   <= '0';
+               END IF;
+               IF second_word = '0' OR (second_word = '1' AND mstr_cycle_int = '0') THEN      -- first word of two
+                  IF (wbs_sel_i(0) = '1' OR wbs_sel_i(1) = '1') THEN
+                     vme_a1 <= '0';         -- only low word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(1);
+                     dsbn_out_int   <= NOT wbs_sel_i(0);
+                     ma_byte_routing <= '1';
+                  ELSE
+                     vme_a1 <= '1';         -- only high word will be transmitted
+                     dsan_out_int   <= NOT wbs_sel_i(3);
+                     dsbn_out_int   <= NOT wbs_sel_i(2);
+                     ma_byte_routing <= '0';
+                  END IF;
+               ELSE                     -- second word of two
+                  dsan_out_int   <= NOT wbs_sel_i(3);
+                  dsbn_out_int   <= NOT wbs_sel_i(2);
+                  ma_byte_routing <= '0';
+                  vme_a1 <= '1';
+               END IF;
                         
-            WHEN "10101" =>   --   A32 D32 blt
-                      IF vme_acc_type(6) = '0' THEN              
-                         vam_out <= "001011";-- x0b   A32 D32 blt non-privileged
-                      ELSE
-                         vam_out <= "001111";-- x0f   A32 D32 blt supervisory
-                      END IF;
-                      iackn_out <= '1';
-                      IF vme_acc_type(5) = '1' THEN
-                         ma_byte_routing <= '0';
-                      ELSE
-                         ma_byte_routing <= '1';
-                      END IF;
-                      mstr_cycle_int   <= '0';
-                       dsan_out_int <= '0';
-                      dsbn_out_int <= '0';
-                      vme_a1 <= '0';
-                        lwordn_mstr_int   <= '0';
-                      ma_d64 <= '0';
+         -- A32 D32 BLT
+            WHEN "10101" =>   
+               IF vme_acc_type(8) = '0' THEN              
+                  vam_out <= "001011";-- x0b   A32 D32 blt non-privileged
+               ELSE
+                  vam_out <= "001111";-- x0f   A32 D32 blt supervisory
+               END IF;
+               iackn_out <= '1';
+               IF vme_acc_type(5) = '1' THEN
+                  ma_byte_routing <= '0';
+               ELSE
+                  ma_byte_routing <= '1';
+               END IF;
+               mstr_cycle_int   <= '0';
+               dsan_out_int <= '0';
+               dsbn_out_int <= '0';
+               vme_a1 <= '0';
+               lwordn_mstr_int   <= '0';
+               ma_d64 <= '0';
                       
+         -- A24 D32 BLT
             WHEN "10100" =>   
-               IF vme_acc_type(6) = '0' THEN               -- A24_MODE
+               IF vme_acc_type(8) = '0' THEN               
                   vam_out <= "111011";-- x3b   A24 D32 blt non-privileged
                ELSE
                   vam_out <= "111111";-- x3f   A24 D32 blt supervisory
@@ -1063,13 +1119,30 @@ BEGIN
                lwordn_mstr_int   <= '0';
                ma_d64            <= '0';
                
-            WHEN "11101" => --   A32 D64 MBLT
-               IF vme_acc_type(6) = '0' THEN
+         -- A24 D64 MBLT
+            WHEN "11100" =>   
+               IF vme_acc_type(8) = '0' THEN               
+                  vam_out <= "111000";-- x38   A24 D64 mblt non-privileged
+               ELSE
+                  vam_out <= "111100";-- x3c   A24 D64 mblt supervisory
+               END IF;
+               lwordn_mstr_int   <= '0';
+               ma_byte_routing   <= '1';
+               mstr_cycle_int    <= '1';   -- D64
+               dsan_out_int      <= '0';
+               dsbn_out_int      <= '0';
+               vme_a1            <= '0';
+               iackn_out         <= '1';
+               ma_d64            <= '1';
+               
+         -- A32 D64 MBLT
+            WHEN "11101" => 
+               IF vme_acc_type(8) = '0' THEN
                   vam_out <= "001000";-- x08   A32 D64 mblt non-privileged
                ELSE
-                  vam_out <= "001100";-- x0c   A32 D32 mblt supervisory
+                  vam_out <= "001100";-- x0c   A32 D64 mblt supervisory
                END IF;
-                 lwordn_mstr_int <= '0';
+               lwordn_mstr_int   <= '0';
                ma_byte_routing   <= '1';
                mstr_cycle_int    <= '1';   -- D64
                dsan_out_int      <= '0';
@@ -1078,11 +1151,11 @@ BEGIN
                iackn_out         <= '1';
                ma_d64            <= '1';
             
-            WHEN OTHERS => --   A32 D64 MBLT
-               IF vme_acc_type(6) = '0' THEN
+            WHEN OTHERS => -- A32 D64 MBLT
+               IF vme_acc_type(8) = '0' THEN
                   vam_out <= "001000";-- x08   A32 D64 mblt non-privileged
                ELSE
-                  vam_out <= "001100";-- x0c   A32 D32 mblt supervisory
+                  vam_out <= "001100";-- x0c   A32 D64 mblt supervisory
                END IF;
                ma_d64            <= '0';
                iackn_out         <= '1';

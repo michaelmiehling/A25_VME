@@ -23,10 +23,11 @@
 -- +-----------------------------+ M D R S B D  A  | M D R S B D  A  +----------+
 -- |16z002-01 VME                |                 | x 0 1 x x xx xx |   800000 |
 -- |16z002-01 VME IACK           |                 | x 0 1 x x xx 11 |       10 |
--- |16z002-01 VME A16D16         |                 | x 0 0 0 0 00 10 |    10000 |
--- |16z002-01 VME A16D32         |                 | x 0 0 0 0 01 10 |    10000 |
+-- |16z002-01 VME A16D16         | m 1 0 0 0 00 10 | x 0 0 0 0 00 10 |    10000 |
+-- |16z002-01 VME A16D32         | m 1 0 0 0 01 10 | x 0 0 0 0 01 10 |    10000 |
 -- |16z002-01 VME A24D16         | m 1 0 0 x 00 00 | x 0 0 0 0 00 00 |  1000000 |
 -- |16z002-01 VME A24D32         | m 1 0 0 x 01 00 | x 0 0 0 0 01 00 |  1000000 |
+-- |16z002-01 VME A24D64         | m 1 0 0 x 11 00 |                 |  1000000 | 
 -- |16z002-01 VME A32D32         | m 1 0 0 x 01 01 | x 0 0 0 0 01 01 | 20000000 |
 -- |16z002-01 VME CR/CSR         |                 | x 0 0 0 0 10 00 |  1000000 |
 -- |16z002-01 VME A32D64         | m 1 0 0 x 11 01 |                 |          |
@@ -138,7 +139,7 @@ PORT (
    mensb_req                  : OUT std_logic;                     -- request line for reg access
    mensb_active               : IN std_logic;                     -- acknoledge line
                               
-   vme_acc_type               : OUT std_logic_vector(6 DOWNTO 0);   -- signal indicates the type of VME access
+   vme_acc_type               : OUT std_logic_vector(8 DOWNTO 0);   -- signal indicates the type of VME access
                               
    run_mstr                   : OUT std_logic;                     -- starts vme master
    mstr_ack                   : IN std_logic;         -- this pulse indicates the end of Master transaction
@@ -158,7 +159,7 @@ ARCHITECTURE vme_wbs_arch OF vme_wbs IS
    SIGNAL vme_acc_type_q   : std_logic_vector(8 DOWNTO 0);
    SIGNAL wbs_ack_o_int      : std_logic;
 BEGIN
-   vme_acc_type <= vme_acc_type_q(8) & vme_acc_type_q(5 DOWNTO 0);
+   vme_acc_type <= vme_acc_type_q;
    wbs_ack_o <= wbs_ack_o_int;
    wbs_sel_int <= wbs_sel_i;
    wb_dma_acc <= wbs_tga_i(7) AND wbs_cyc_i;

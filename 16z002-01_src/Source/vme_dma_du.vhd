@@ -97,6 +97,7 @@ PORT (
    dma_sour_device      : OUT std_logic_vector(2 DOWNTO 0);       -- selects the source device
    dma_dest_device      : OUT std_logic_vector(2 DOWNTO 0);       -- selects the destination device
    dma_vme_am           : OUT std_logic_vector(4 DOWNTO 0);       -- type of dma transmission
+   blk_sgl              : OUT std_logic;                          -- indicates if DMA transfer should be done as block or single accesses
    inc_sour             : OUT std_logic;                          -- indicates if source adress should be incremented
    inc_dest             : OUT std_logic;                          -- indicates if destination adress should be incremented
    dma_size             : OUT std_logic_vector(15 DOWNTO 0);      -- size of data package
@@ -142,6 +143,7 @@ BEGIN
    dma_sour_device   <= act_bd_conf_int(18 DOWNTO 16);
    dma_dest_device   <= act_bd_conf_int(14 DOWNTO 12);
    dma_vme_am        <= act_bd_conf_int(8 DOWNTO 4);
+   blk_sgl           <= act_bd_conf_int(3);
    inc_sour          <= act_bd_conf_int(2);
    inc_dest          <= act_bd_conf_int(1);
    dma_null          <= act_bd_conf_int(0);

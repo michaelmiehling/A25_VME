@@ -113,6 +113,7 @@ PORT (
    dma_sour_device      : IN std_logic_vector(2 DOWNTO 0);        -- selects the source device
    dma_dest_device      : IN std_logic_vector(2 DOWNTO 0);        -- selects the destination device
    dma_vme_am           : IN std_logic_vector(4 DOWNTO 0);        -- type of dma transmission
+   blk_sgl              : IN std_logic;                          -- indicates if DMA transfer should be done as block or single accesses
    inc_sour             : IN std_logic;                           -- indicates if source adress should be incremented
    inc_dest             : IN std_logic;                           -- indicates if destination adress should be incremented
    dma_size             : IN std_logic_vector(15 DOWNTO 0)        -- size of data package
@@ -124,7 +125,7 @@ ARCHITECTURE vme_dma_au_arch OF vme_dma_au IS
    
    CONSTANT dma_size_cnt_val        : std_logic_vector(15 DOWNTO 0):= x"0001";
    SIGNAL dma_act_bd_int            : std_logic_vector(7 DOWNTO 2);
-   SIGNAL inc_int                   : std_logic;
+   SIGNAL blk_int                   : std_logic;
    SIGNAL dma_size_int              : std_logic_vector(15 DOWNTO 0);
    SIGNAL dma_sour_adr_int          : std_logic_vector(31 DOWNTO 2);
    SIGNAL dma_dest_adr_int          : std_logic_vector(31 DOWNTO 2);
@@ -140,13 +141,21 @@ ARCHITECTURE vme_dma_au_arch OF vme_dma_au IS
    SIGNAL almost_boundary_mblt      : std_logic;
    SIGNAL dma_size_en               : std_logic;
    signal tga_int                   : std_logic_vector(8 DOWNTO 0);
+   signal dma_vme_am_conv           : std_logic_vector(1 DOWNTO 0);
    
 BEGIN
    cyc_o_sram  <= cyc_o_sram_int WHEN stb_o = '1' ELSE '0';
    cyc_o_pci   <= cyc_o_pci_int WHEN stb_o = '1' ELSE '0';
    cyc_o_vme   <= cyc_o_vme_int WHEN stb_o = '1' ELSE '0';
 
-   inc_int     <= inc_sour WHEN sour_dest = '1' ELSE inc_dest;
+   -- perform VME block transfer when
+   -- 1. block transfer configured and access to source selected and source address shall be incremented
+   -- 2. block transfer configured and access to destination selected and destination address shall be incremented
+   -- 3. else single transfer
+   blk_int     <= '1' when blk_sgl = '0' and sour_dest = '0' and inc_sour = '0' else
+                  '1' when blk_sgl = '0' and sour_dest = '1' and inc_dest = '0' else
+                  '0';
+                      
    dma_act_bd  <= dma_act_bd_int;
    
    reached_size_int <= '1' WHEN dma_size_int = dma_size ELSE '0';
@@ -163,16 +172,19 @@ BEGIN
    almost_boundary <= almost_boundary_blt OR almost_boundary_mblt;   
       
    sel_o <= (OTHERS => '1');                         -- always longword accessess
+      
+   dma_vme_am_conv <=   "10" when dma_vme_am(1 DOWNTO 0) = "01" else    -- A32
+                        "01" when dma_vme_am(1 DOWNTO 0) = "10" else    -- A16
+                        "00";                                           -- A24
 
-   -- (0)   : A24(=0)
-   -- (1)   : A32(=1)
+   -- (1:0) : 00=A24, 01=A32, 10=A16
    -- (3:2) : 00=D16, 01=D32, 10=D64
    -- (4)   : if increment enabled the burst else single
    -- (5)   : swapped(1) or non swapped (0)
    -- (6)   : =0 always VME bus access (no register access)
    -- (7)   : =1 indicates access to vme_ctrl by DMA
    -- (8)   : 0= non-privileged 1= supervisory
-   tga_int <= dma_vme_am(4) & "10" & NOT dma_vme_am(0) & NOT inc_int & dma_vme_am(3 DOWNTO 2) & '0' & dma_vme_am(1);
+   tga_int <= dma_vme_am(4) & "10" & NOT dma_vme_am(0) & blk_int & dma_vme_am(3 DOWNTO 2) & dma_vme_am_conv;
       
 adr_o_proc : PROCESS(clk, rst)
    BEGIN

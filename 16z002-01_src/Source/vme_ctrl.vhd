@@ -241,116 +241,116 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    COMPONENT vme_du 
    GENERIC (
       LONGADD_SIZE      : integer range 3 TO 8:=3;
-      USE_LONGADD       : boolean := TRUE                          -- If FALSE, bits (7 DOWNTO 5) of SIGNAL longadd will be allocated to vme_adr_out(31 DOWNTO 29)
-                                                                   -- If TRUE, number of bits allocated to vme_adr_out depends on GENERIC LONGADD_SIZE
-      );
-   PORT (
-      clk                    : IN std_logic;                      -- 66 MHz
-      rst                   : IN std_logic;                      -- global reset signal (asynch)
-      startup_rst          : IN std_logic;           -- powerup reset
-      vme_irq                 : OUT std_logic_vector(7 DOWNTO 0);  -- interrupt request to pci-bus
-      berr_irq                : OUT std_logic;                     -- signal berrn interrupt request
-      locmon_irq              : OUT std_logic_vector(1 DOWNTO 0);  -- interrupt request location monitor to pci-bus
-      mailbox_irq             : OUT std_logic_vector(1 DOWNTO 0);  -- interrupt request mailbox to pci-bus
-      
+      USE_LONGADD       : boolean := TRUE                            -- If FALSE, bits (7 DOWNTO 5) of SIGNAL longadd will be allocated to vme_adr_out(31 DOWNTO 29)
+                                                                     -- If TRUE, number of bits allocated to vme_adr_out depends on GENERIC LONGADD_SIZE
+      );                                                             
+   PORT (                                                            
+      clk                     : IN std_logic;                        -- 66 MHz
+      rst                     : IN std_logic;                        -- global reset signal (asynch)
+      startup_rst             : IN std_logic;                        -- powerup reset
+      vme_irq                 : OUT std_logic_vector(7 DOWNTO 0);    -- interrupt request to pci-bus
+      berr_irq                : OUT std_logic;                       -- signal berrn interrupt request
+      locmon_irq              : OUT std_logic_vector(1 DOWNTO 0);    -- interrupt request location monitor to pci-bus
+      mailbox_irq             : OUT std_logic_vector(1 DOWNTO 0);    -- interrupt request mailbox to pci-bus
+   
       -- dma
-      dma_sta               : OUT std_logic_vector(9 DOWNTO 0);
-      clr_dma_en            : IN std_logic;
-      set_dma_err            : IN std_logic;
-      dma_act_bd            : IN std_logic_vector(7 DOWNTO 4);
-      
+      dma_sta                 : OUT std_logic_vector(9 DOWNTO 0);
+      clr_dma_en              : IN std_logic;
+      set_dma_err             : IN std_logic;
+      dma_act_bd              : IN std_logic_vector(7 DOWNTO 4);
+   
       -- arbiter
-      sel_reg_data_in      : IN std_logic;                     -- mux select signal for mensb/vme register access
-      sel_loc_data_out      : IN std_logic_vector(1 DOWNTO 0);   -- mux select signal for 0=reg, 1=vme data_out
-      en_wbm_dat_o         : IN std_logic;                     -- enable for wbm_dat_o
+      sel_reg_data_in         : IN std_logic;                        -- mux select signal for wbb/vme register access
+      sel_loc_data_out        : IN std_logic_vector(1 DOWNTO 0);     -- mux select signal for 0=reg, 1=vme data_out
+      en_wbm_dat_o            : IN std_logic;                        -- enable for wbm_dat_o
       
       -- requester
-      brl                     : OUT std_logic_vector(1 DOWNTO 0);
-
+      brl                     : OUT std_logic_vector(1 DOWNTO 0);    -- bus request leve
+   
       -- vme_au
-      int_adr               : IN std_logic_vector(18 DOWNTO 0);      -- internal adress for reg
-      int_be               : IN std_logic_vector(3 DOWNTO 0);      -- internal byte enables
-      vme_adr_out            : IN std_logic_vector(31 DOWNTO 0);      -- vme adress lines
-      byte_routing         : IN std_logic;                     -- mux select for byte routing
-      vme_adr_in            : OUT std_logic_vector(31 DOWNTO 0);   -- vme adress input lines
-      my_iack               : IN std_logic;
-      d64                  : IN std_logic;                        -- indicates d64 mblt
-      vam_reg                 : IN std_logic_vector(5 DOWNTO 0);    -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
-      vme_adr_in_reg          : IN std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
-      sl_writen_reg           : in std_logic;                        -- vme read/wrtie signal (registered with en_vme_adr_in)
-      iackn_in_reg            : in std_logic;                    -- iack signal (registered with en_vme_adr_in)
-      
-      -- vme_sys_arbiter
-      lwordn               : IN std_logic;                        -- stored for vme slave access
+      int_adr                 : IN std_logic_vector(18 DOWNTO 0);    -- internal adress for reg
+      int_be                  : IN std_logic_vector(3 DOWNTO 0);     -- internal byte enables
+      vme_adr_out             : IN std_logic_vector(31 DOWNTO 0);    -- vme adress lines
+      byte_routing            : IN std_logic;                        -- mux select for byte routing
+      vme_adr_in              : OUT std_logic_vector(31 DOWNTO 0);   -- vme adress input lines
+      my_iack                 : IN std_logic;
+      d64                     : IN std_logic;                        -- indicates d64 mblt
+      vam_reg                 : IN std_logic_vector(5 DOWNTO 0);     -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
+      vme_adr_in_reg          : IN std_logic_vector(31 DOWNTO 2);    -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
+      sl_writen_reg           : IN std_logic;                        -- vme read/wrtie signal (registered with en_vme_adr_in)
+      iackn_in_reg            : IN std_logic;                        -- iack signal (registered with en_vme_adr_in)
+   
+      -- sys_arbiter
+      lwordn                  : IN std_logic;                        -- stored for vme slave access
       
       -- ctrl_mux
-      write_flag            : IN std_logic;                     -- write flag for register write access
+      write_flag              : IN std_logic;                        -- write flag for register write access
+                                                                     
+      -- master                                                      
+      oe_vd                   : IN std_logic;                        -- output enable for vme data
+      oe_va                   : IN std_logic;                        -- output enable for vme adress
+      second_word             : IN std_logic;                        -- indicates data phase of d64
+                                                                     
+      -- slave                                                       
+      sel_vme_data_out        : IN std_logic_vector(1 DOWNTO 0);     -- mux select for vme data out
+      en_vme_data_out_reg     : IN std_logic;                        -- register enable for vme data out
+      en_vme_data_out_reg_high: IN std_logic;                        -- register enable for vme data out high long
+      en_vme_data_in_reg      : IN std_logic;                        -- register enable for vme data in
+      en_vme_data_in_reg_high : IN std_logic;                        -- register enable for vme data in high long
+      clr_intreq              : IN std_logic;                        -- clear interrupt request (intr(3) <= '0'
       
-      -- master
-      oe_vd                   : IN std_logic;                     -- output enable for vme data
-      oe_va                   : IN std_logic;                     -- output enable for vme adress
-      second_word            : IN std_logic;                     -- indicates data phase of d64
-      
-      -- slave
-      sel_vme_data_out      : IN std_logic_vector(1 DOWNTO 0);      -- mux select for vme data out
-      en_vme_data_out_reg   : IN std_logic;                     -- register enable for vme data out
-      en_vme_data_out_reg_high : IN std_logic;                  -- register enable for vme data out high long
-      en_vme_data_in_reg   : IN std_logic;                     -- register enable for vme data in
-      en_vme_data_in_reg_high : IN std_logic;                  -- register enable for vme data in high long
-      clr_intreq            : IN std_logic;                     -- clear interrupt request (intr(3) <= '0'
-      
-      -- vme_wbs
-      wbs_dat_o            : OUT std_logic_vector(31 DOWNTO 0);
-      wbs_dat_i            : IN std_logic_vector(31 DOWNTO 0);
-      wbs_tga_i            : IN std_logic_vector(8 DOWNTO 0);   -- indicates dma(1) or normal(0) access
-      swap                  : IN std_logic;                     -- swapps bytes when enabled
-      
-      -- vme_wbm
-      wbm_ack_i            : IN std_logic;
-      wbm_err_i            : IN std_logic;
-      wbm_dat_o            : OUT std_logic_vector(31 DOWNTO 0);
-      wbm_dat_i            : IN std_logic_vector(31 DOWNTO 0);
-      sel_wbm_dat_o         : IN std_logic;                        -- selects between low and high d32
-      
+      -- wbb_slave
+      wbs_dat_o               : OUT std_logic_vector(31 DOWNTO 0);
+      wbs_dat_i               : IN std_logic_vector(31 DOWNTO 0);
+      wbs_tga_i               : IN std_logic_vector(8 DOWNTO 0);     -- indicates dma(1) or normal(0) access
+      swap                    : IN std_logic;                        -- swapps bytes when enabled
+   
+      -- wbb_master
+      wbm_ack_i               : IN std_logic;
+      wbm_err_i               : IN std_logic;
+      wbm_dat_o               : OUT std_logic_vector(31 DOWNTO 0);
+      wbm_dat_i               : IN std_logic_vector(31 DOWNTO 0);
+      sel_wbm_dat_o           : IN std_logic;                        -- selects between low and high d32
+   
       -- register out
-      longadd                : OUT std_logic_vector(7 DOWNTO 0);      -- upper 3 address bits for A32 mode
-      mstr_reg               : OUT std_logic_vector(13 DOWNTO 0);      -- master register
-      sysc_reg             : OUT std_logic_vector(2 DOWNTO 0);      -- system control register (ato, sysr, sysc)
-      slv16_reg            : OUT std_logic_vector(4 DOWNTO 0);      -- slave A16 base address register
-      slv24_reg            : OUT std_logic_vector(15 DOWNTO 0);   -- slave A24 base address register
-      slv32_reg            : OUT std_logic_vector(23 DOWNTO 0);   -- slave A32 base address register
-      slv24_pci_q            : OUT std_logic_vector(15 DOWNTO 0);   -- slave A24 base address register for PCI
-      slv32_pci_q            : OUT std_logic_vector(23 DOWNTO 0);   -- slave A32 base address register for PCI
-      intr_reg               : OUT std_logic_vector(3 DOWNTO 0);      -- interrupt request register
-      pci_offset_q         : OUT std_logic_vector(31 DOWNTO 2);   -- pci offset address for vme to pci access
+      longadd                 : OUT std_logic_vector(7 DOWNTO 0);    -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
+      mstr_reg                : OUT std_logic_vector(13 DOWNTO 0);   -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
+      sysc_reg                : OUT std_logic_vector(2 DOWNTO 0);    -- system control register (ato, sysr, sysc)
+      slv16_reg               : OUT std_logic_vector(4 DOWNTO 0);    -- slave A16 base address register
+      slv24_reg               : OUT std_logic_vector(15 DOWNTO 0);   -- slave A24 base address register
+      slv32_reg               : OUT std_logic_vector(23 DOWNTO 0);   -- slave A32 base address register
+      slv24_pci_q             : OUT std_logic_vector(15 DOWNTO 0);   -- slave A24 base address register for PCI
+      slv32_pci_q             : OUT std_logic_vector(23 DOWNTO 0);   -- slave A32 base address register for PCI
+      intr_reg                : OUT std_logic_vector(3 DOWNTO 0);    -- interrupt request register
+      pci_offset_q            : OUT std_logic_vector(31 DOWNTO 2);   -- pci offset address for vme to pci access
       
       -- register bits
-      set_berr               : IN std_logic;                     -- if bit is set => berr bit will be set
-      rst_rmw               : IN std_logic;                     -- if bit is set => rmw bit will be cleared
-      set_sysc               : IN std_logic;                     -- if bit is set => sysc bit will be set
-      set_ato               : IN std_logic;                     -- if bit is set => ato bit will be set
-      clr_sysr               : IN std_logic;                     -- if bit is set => sysr bit will be cleared
-      mail_irq               : IN std_logic_vector(7 DOWNTO 0);   -- mailbox interrupt flags
-      loc_am_0               : OUT std_logic_vector(1 DOWNTO 0);   -- loc-monitor #0 - adress modus "00"-A32, "10"-A16, "11"-A24
-      loc_am_1               : OUT std_logic_vector(1 DOWNTO 0);   -- loc-monitor #1 - adress modus "00"-A32, "10"-A16, "11"-A24
-      loc_irq_0            : IN std_logic;                     -- loc-monitor #0 - irq
-      loc_irq_1            : IN std_logic;                     -- loc-monitor #1 - irq
-      loc_rw_0               : OUT std_logic_vector(1 DOWNTO 0);   -- [0]: read; [1]: write
-      loc_rw_1               : OUT std_logic_vector(1 DOWNTO 0);   -- [0]: read; [1]: write
-      loc_adr_0            : OUT std_logic_vector(31 DOWNTO 0);-- location monitor #0 adress
-      loc_adr_1            : OUT std_logic_vector(31 DOWNTO 0);-- location monitor #1 adress
-      loc_sel              : IN std_logic_vector(1 DOWNTO 0);   -- these bits are loaded with combinations of address bits [4:3] if locmon hit address         
-      rst_aonly            : IN std_logic;                     -- resets aonly bit
-      clr_locmon            : OUT std_logic_vector(1 DOWNTO 0);   -- clear address combination bits when clear status bit
-         
+      set_berr                : IN std_logic;                        -- if bit is set => berr bit will be set
+      rst_rmw                 : IN std_logic;                        -- if bit is set => rmw bit will be cleared
+      set_sysc                : IN std_logic;                        -- if bit is set => sysc bit will be set
+      set_ato                 : IN std_logic;                        -- if bit is set => ato bit will be set
+      clr_sysr                : IN std_logic;                        -- if bit is set => sysr bit will be cleared
+      mail_irq                : IN std_logic_vector(7 DOWNTO 0);     -- mailbox interrupt flags
+      loc_am_0                : OUT std_logic_vector(1 DOWNTO 0);    -- loc-monitor #0 - adress modus "00"-A32, "10"-A16, "11"-A24
+      loc_am_1                : OUT std_logic_vector(1 DOWNTO 0);    -- loc-monitor #1 - adress modus "00"-A32, "10"-A16, "11"-A24
+      loc_irq_0               : IN std_logic;                        -- loc-monitor #0 - irq
+      loc_irq_1               : IN std_logic;                        -- loc-monitor #1 - irq
+      loc_rw_0                : OUT std_logic_vector(1 DOWNTO 0);    -- [0]: read; [1]: write
+      loc_rw_1                : OUT std_logic_vector(1 DOWNTO 0);    -- [0]: read; [1]: write
+      loc_adr_0               : OUT std_logic_vector(31 DOWNTO 0);   -- location monitor #0 adress
+      loc_adr_1               : OUT std_logic_vector(31 DOWNTO 0);   -- location monitor #1 adress
+      loc_sel                 : IN std_logic_vector(1 DOWNTO 0);     -- these bits are loaded with combinations of address bits [4:3] if locmon hit address         
+      rst_aonly               : IN std_logic;                        -- resets aonly bit
+      clr_locmon              : OUT std_logic_vector(1 DOWNTO 0);    -- clear address combination bits when clear status bit
+      
       -- irq pins
-      irq_i_n                : IN std_logic_vector(7 DOWNTO 1);
-      irq_o_n               : OUT std_logic_vector(7 DOWNTO 1);
-      acfailn               : IN  std_logic;       -- ACFAIL# input from Power Supply
+      irq_i_n                 : IN std_logic_vector(7 DOWNTO 1);
+      irq_o_n                 : OUT std_logic_vector(7 DOWNTO 1);
+      acfailn                 : IN  std_logic;                       -- ACFAIL# input from Power Supply
       
       --vme
-      ga                      : IN std_logic_vector(4 DOWNTO 0);        -- geographical addresses
-      gap                     : IN std_logic;                           -- geographical addresses parity
+      ga                      : IN std_logic_vector(4 DOWNTO 0);     -- geographical addresses
+      gap                     : IN std_logic;                        -- geographical addresses parity
       vd                      : INOUT std_logic_vector(31 DOWNTO 0);
       va                      : INOUT std_logic_vector(31 DOWNTO 0) 
    );
@@ -454,7 +454,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       mensb_req                  : OUT std_logic;                     -- request line for reg access
       mensb_active               : IN std_logic;                     -- acknoledge line
                                  
-      vme_acc_type               : OUT std_logic_vector(6 DOWNTO 0);   -- signal indicates the type of VME access
+      vme_acc_type               : OUT std_logic_vector(8 DOWNTO 0);   -- signal indicates the type of VME access
                                  
       run_mstr                   : OUT std_logic;                     -- starts vme master
       mstr_ack                   : IN std_logic;         -- this pulse indicates the end of Master transaction
@@ -467,96 +467,101 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    
    COMPONENT vme_au
    GENERIC (
-      A16_REG_MAPPING   : boolean := TRUE;                        -- if true, access to vme slave A16 space goes to vme runtime registers and above 0x800 to sram (compatible to old revisions)
-                                                                  -- if false, access to vme slave A16 space goes to sram
-      LONGADD_SIZE      : integer range 3 TO 8:=3;
-      USE_LONGADD       : boolean := TRUE                          -- If FALSE, bits (7 DOWNTO 5) of SIGNAL longadd will be allocated to vme_adr_out(31 DOWNTO 29)
-                                                                   -- If TRUE, number of bits allocated to vme_adr_out depends on GENERIC LONGADD_SIZE
+      A16_REG_MAPPING   : boolean := TRUE;         -- if true, access to vme slave A16 space goes to vme runtime registers and above 0x800 to sram (compatible to old revisions)
+                                                   -- if false, access to vme slave A16 space goes to sram
+      LONGADD_SIZE      : integer range 3 TO 8:=3; 
+      USE_LONGADD       : boolean := TRUE          -- If FALSE, bits (7 DOWNTO 5) of SIGNAL longadd will be allocated to vme_adr_out(31 DOWNTO 29)
+                                                   -- If TRUE, number of bits allocated to vme_adr_out depends on GENERIC LONGADD_SIZE
       );
    PORT (
-      clk                 : IN std_logic;                      -- 66 MHz
-      rst                : IN std_logic;                      -- global reset signal (asynch)
-      test              : OUT std_logic;
+      clk                     : IN std_logic;                        -- 66 MHz
+      rst                     : IN std_logic;                        -- global reset signal (asynch)
+      test                    : OUT std_logic;
       
       -- mensb slave
-      wbs_adr_i         : IN std_logic_vector(31 DOWNTO 0);      -- mensb adress lines
-      wbs_sel_i         : IN std_logic_vector(3 DOWNTO 0);      -- mensb byte enable lines
-      wbs_we_i            : IN std_logic;
-      vme_acc_type      : IN std_logic_vector(6 DOWNTO 0);      -- signal indicates the type of VME access
-      ma_en_vme_data_out_reg : IN std_logic;                     -- enable of vme_adr_out
-      wbs_tga_i            : IN std_logic_vector(8 DOWNTO 0);
+      wbs_adr_i               : IN std_logic_vector(31 DOWNTO 0);    -- mensb slave adress lines
+      wbs_sel_i               : IN std_logic_vector(3 DOWNTO 0);     -- mensb slave byte enable lines
+      wbs_we_i                : IN std_logic;                        -- mensb slave read/write
+      vme_acc_type            : IN std_logic_vector(8 DOWNTO 0);     -- signal indicates the type of VME slave access
+      ma_en_vme_data_out_reg  : IN std_logic;                        -- enable of vme_adr_out
+      wbs_tga_i               : IN std_logic_vector(8 DOWNTO 0);
       
       -- mensb master
-      wbm_adr_o         : OUT std_logic_vector(31 DOWNTO 0);   -- mensb master adress lines
-      wbm_sel_o         : OUT std_logic_vector(3 DOWNTO 0);      -- mensb master byte enable lines
-      wbm_we_o            : OUT std_logic;                  -- mensb master read/write
-      sram_acc            : OUT std_logic;                  -- sram access is requested by vmebus
-      reg_acc            : OUT std_logic;                  -- reg access is requested by vmebus
-      pci_acc            : OUT std_logic;                  -- pci access is requested by vmebus
-      sl_acc_wb         : OUT std_logic_vector(4 DOWNTO 0);   -- sampled with ld_loc_adr_cnt
+      wbm_adr_o               : OUT std_logic_vector(31 DOWNTO 0);   -- mensb master adress lines
+      wbm_sel_o               : OUT std_logic_vector(3 DOWNTO 0);    -- mensb master byte enable lines
+      wbm_we_o                : OUT std_logic;                       -- mensb master read/write
+      sram_acc                : OUT std_logic;                       -- sram access is requested by vmebus
+      pci_acc                 : OUT std_logic;                       -- pci access is requested by vmebus
+      reg_acc                 : OUT std_logic;                       -- reg access is requested by vmebus
+      sl_acc_wb               : OUT std_logic_vector(4 DOWNTO 0);    -- sampled with ld_loc_adr_cnt
+                              
+      -- vme                  
+      vme_adr_in              : IN std_logic_vector(31 DOWNTO 0);    -- vme address input lines
+      vme_adr_out             : OUT std_logic_vector(31 DOWNTO 0);   -- vme address output lines
       
-      -- vme
-      vme_adr_in         : IN std_logic_vector(31 DOWNTO 0);      -- vme address input lines
-      vme_adr_out         : OUT std_logic_vector(31 DOWNTO 0);   -- vme address output lines
-      asn_in             : IN std_logic;      -- vme adress strobe input
-      vam               : INOUT std_logic_vector(5 DOWNTO 0);   -- vme address modifier
-      dsan_out           : OUT std_logic;                  -- data strobe byte(0) out
-      dsbn_out           : OUT std_logic;                  -- data strobe byte(1) out
-      dsan_in           : IN std_logic;                     -- data strobe byte(0) in
-      dsbn_in           : IN std_logic;                     -- data strobe byte(1) in
-      writen            : INOUT std_logic;                  --write enable      tco = tbd.   tsu <= tbd.   PIN tbd.
-      iackn             : INOUT   std_logic;                  --Handler's output !   PIN tbd. 
-      iackin            : IN std_logic;         -- vme daisy chain interrupt acknoledge input
-      iackoutn            : OUT std_logic;         -- vme daisy chain interrupt acknoledge output
+      ---------------------------------------------------------------------------------------------------
+      -- pins to vmebus
+      asn_in                  : IN std_logic;                        -- vme adress strobe input
+      vam                     : INOUT std_logic_vector(5 DOWNTO 0);  -- vme address modifier
+      dsan_out                : OUT std_logic;                       -- data strobe byte(0) out
+      dsbn_out                : OUT std_logic;                       -- data strobe byte(1) out
+      dsan_in                 : IN std_logic;                        -- data strobe byte(0) in
+      dsbn_in                 : IN std_logic;                        -- data strobe byte(1) in
+      writen                  : INOUT std_logic;                     -- write enable      tco = tbd.   tsu <= tbd.   PIN tbd.
+      iackn                   : INOUT std_logic;                     -- handler's output !   PIN tbd.
+      iackin                  : IN std_logic;                        -- vme daisy chain interrupt acknoledge input
+      iackoutn                : OUT std_logic;                       -- vme daisy chain interrupt acknoledge output
+      ---------------------------------------------------------------------------------------------------
       
-      mensb_active      : IN std_logic;                     -- acknoledge/active signal for mensb slave access
-      
-      -- master
-      mstr_cycle     : OUT std_logic;        -- number of master cycles should be done (0=1x, 1=2x)
-      second_word    : IN std_logic;         -- indicates the second transmission if in D16 mode and 32bit should be transmitted
-      dsn_ena        : IN std_logic;         -- signal switches dsan and dsbn on and off
-      vam_oe         : IN std_logic;         -- vam output enable
-      ma_d64         : OUT std_logic;        -- indicates a d64 burst transmission
-      sl_d64         : OUT std_logic;        -- indicates a d64 burst transmission
+      mensb_active            : IN std_logic;                        -- acknoledge/active signal for mensb slave access
+                                                                     
+      -- vme master                                                  
+      mstr_cycle              : OUT std_logic;                       -- number of master cycles should be done (0=1x, 1=2x)
+      second_word             : IN std_logic;                        -- indicates the second transmission if in D16 mode and 32bit should be transmitted
+      dsn_ena                 : IN std_logic;                        -- signal switches dsan_out and dsbn_out on and off
+      vam_oe                  : IN std_logic;                        -- vam output enable
+      ma_d64                  : OUT std_logic;                       -- indicates a d64 burst transmission
+      sl_d64                  : OUT std_logic;                       -- indicates a d64 burst transmission
       
       -- vme slave
-      sl_acc                  : OUT std_logic_vector(4 DOWNTO 0); -- slave access hits and burst data transmission type
-      sl_acc_valid            : OUT std_logic;                    -- sl_acc has been calculated and is valid
-      asn_in_sl_reg           : IN std_logic;                     -- registered asn signal
-      ld_loc_adr_m_cnt        : IN std_logic;                     -- load address counter
-      inc_loc_adr_m_cnt       : IN std_logic;                     -- increment address counter
-      sl_inc_loc_adr_m_cnt    : IN std_logic;                     -- increment address counter
-      sl_writen_reg           : OUT std_logic;
-      iackn_in_reg            : OUT std_logic;                    -- iack signal (registered with en_vme_adr_in)
-      my_iack                 : OUT std_logic;
-      clr_intreq              : IN std_logic;                     -- clear interrupt request (intr(3) <= '0'
-      sl_en_vme_data_in_reg   : IN std_logic;                     -- register enable for vme data in
-      en_vme_adr_in           : IN std_logic;         -- samples adress and am after asn goes low
+      sl_acc                  : OUT std_logic_vector(4 DOWNTO 0);    -- slave access hits and burst data transmission type
+      sl_acc_valid            : OUT std_logic;                       -- sl_acc has been calculated and is valid
+      asn_in_sl_reg           : IN std_logic;                        -- registered asn signal
+      ld_loc_adr_m_cnt        : IN std_logic;                        -- load address counter
+      inc_loc_adr_m_cnt       : IN std_logic;                        -- increment address counter
+      sl_inc_loc_adr_m_cnt    : IN std_logic;                        -- increment address counter
+      sl_writen_reg           : OUT std_logic;                       
+      iackn_in_reg            : OUT std_logic;                       -- iack signal (registered with en_vme_adr_in)
+      my_iack                 : OUT std_logic;                       
+      clr_intreq              : IN std_logic;                        -- clear interrupt request (intr(3) <= '0'
+      sl_en_vme_data_in_reg   : IN std_logic;                        -- register enable for vme data in
+      en_vme_adr_in           : IN std_logic;                        -- samples adress and am after asn goes low
       
-      -- vme_sys_arbiter
-      sl_byte_routing      : OUT std_logic;               -- to mensb byte routing
-      ma_byte_routing      : OUT std_logic;                  -- signal for byte swapping
-      sl_sel_vme_data_out  : OUT std_logic_vector(1 DOWNTO 0);      -- mux select: 00=wbm_dat_i 01=wbs_dat_i 10=reg_data
-      lwordn_slv           : OUT std_logic;                        -- stored for vme slave access
-      lwordn_mstr          : OUT std_logic;                        -- master access lwordn
+      -- sys_arbiter
+      sl_byte_routing         : OUT std_logic;                       -- to mensb byte routing
+      ma_byte_routing         : OUT std_logic;                       -- signal for byte swapping
+      sl_sel_vme_data_out     : OUT std_logic_vector(1 DOWNTO 0);    -- mux select: 00=loc_data_in_m 01=loc_data_in_s 10=reg_data
+      lwordn_slv              : OUT std_logic;                       -- stored for vme slave access
+      lwordn_mstr             : OUT std_logic;                       -- master access lwordn
       
       -- locmon
-      vam_reg              : OUT std_logic_vector(5 DOWNTO 0);      -- registered vam_in
-      vme_adr_in_reg       : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring (registered with en_vme_adr_in)
-      
-      -- vme_du
-      mstr_reg             : IN std_logic_vector(13 DOWNTO 0);      -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
-      sysc_reg             : IN std_logic_vector(2 DOWNTO 0);      -- system control register (ato, sysr, sysc)
-      longadd              : IN std_logic_vector(7 DOWNTO 0);      -- upper 3 address bits for A32 mode
-      slv16_reg            : IN std_logic_vector(4 DOWNTO 0);      -- slave A16 base address register
-      slv24_reg            : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
-      slv32_reg            : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register
-      slv24_pci_q          : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register for PCI
-      slv32_pci_q          : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register for PCI
-      int_be               : OUT std_logic_vector(3 DOWNTO 0);    -- internal byte enables
-      intr_reg             : IN std_logic_vector(3 DOWNTO 0);     -- interrupt request register
-      pci_offset_q         : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access
-      int_adr              : OUT std_logic_vector(18 DOWNTO 0)      -- internal adress
+      vam_reg                 : OUT std_logic_vector(5 DOWNTO 0);    -- registered vam_in for location monitoring and berr_adr (registered with en_vme_adr_in)
+      vme_adr_in_reg          : OUT std_logic_vector(31 DOWNTO 2);   -- vme adress for location monitoring and berr_adr (registered with en_vme_adr_in)
+                              
+      -- vme_du               
+      mstr_reg                : IN std_logic_vector(13 DOWNTO 0);    -- master register (aonly, postwr, iberr, berr, req, rmw, A16_MODE, A24_MODE, A32_MODE)
+      longadd                 : IN std_logic_vector(7 DOWNTO 0);     -- upper 3 address bits for A32 mode or dependent on LONGADD_SIZE
+      slv16_reg               : IN std_logic_vector(4 DOWNTO 0);     -- slave A16 base address register
+      slv24_reg               : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
+      slv32_reg               : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register
+      slv24_pci_q             : IN std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register for PCI
+      slv32_pci_q             : IN std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register for PCI
+      intr_reg                : IN std_logic_vector(3 DOWNTO 0);     -- interrupt request register
+      sysc_reg                : IN std_logic_vector(2 DOWNTO 0);     -- system control register (ato, sysr, sysc)
+      pci_offset_q            : IN std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access        
+                              
+      int_be                  : OUT std_logic_vector(3 DOWNTO 0);    -- internal byte enables
+      int_adr                 : OUT std_logic_vector(18 DOWNTO 0)    -- internal adress
    );
    END COMPONENT;
    
@@ -825,9 +830,9 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL loc_write_flag               : std_logic;
    SIGNAL sel_loc_data_out             : std_logic_vector(1 DOWNTO 0);
    SIGNAL mensb_req                    : std_logic;
-   SIGNAL vme_acc_type                 : std_logic_vector(6 DOWNTO 0);      -- signal indicates the type of VME access
+   SIGNAL vme_acc_type                 : std_logic_vector(8 DOWNTO 0);     -- signal indicates the type of VME access
    SIGNAL ma_en_vme_data_out_reg       : std_logic;   
-   SIGNAL wb_dma_acc                   : std_logic;                     -- indicates dma_access
+   SIGNAL wb_dma_acc                   : std_logic;                        -- indicates dma_access
                                        
    -- mensb_mstr                       
    SIGNAL mensb_mstr_ack               : std_logic;
@@ -836,7 +841,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL sel_wbm_dat_o                : std_logic;
                                        
    -- vme_du                           
-   SIGNAL clr_locmon                   : std_logic_vector(1 DOWNTO 0);   -- clear address combination bits when clear status bit
+   SIGNAL clr_locmon                   : std_logic_vector(1 DOWNTO 0);     -- clear address combination bits when clear status bit
    SIGNAL vme_adr_out                  : std_logic_vector(31 DOWNTO 0);
    SIGNAL mstr_reg                     : std_logic_vector(13 DOWNTO 0);
    SIGNAL sysc_reg                     : std_logic_vector(2 DOWNTO 0);
@@ -844,24 +849,24 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL slv16_reg                    : std_logic_vector(4 DOWNTO 0);
    SIGNAL slv24_reg                    : std_logic_vector(15 DOWNTO 0);
    SIGNAL slv32_reg                    : std_logic_vector(23 DOWNTO 0);
-   SIGNAL slv24_pci_q                  : std_logic_vector(15 DOWNTO 0);      -- slave A24 base address register
-   SIGNAL slv32_pci_q                  : std_logic_vector(23 DOWNTO 0);      -- slave A32 base address register
+   SIGNAL slv24_pci_q                  : std_logic_vector(15 DOWNTO 0);    -- slave A24 base address register
+   SIGNAL slv32_pci_q                  : std_logic_vector(23 DOWNTO 0);    -- slave A32 base address register
    SIGNAL intr_reg                     : std_logic_vector(3 DOWNTO 0);
-   SIGNAL loc_am_0                     : std_logic_vector(1 DOWNTO 0);   -- loc-monitor #0 - adress modus "00"-A32, "10"-A16, "11"-A24
-   SIGNAL loc_am_1                     : std_logic_vector(1 DOWNTO 0);   -- loc-monitor #1 - adress modus "00"-A32, "10"-A16, "11"-A24
-   SIGNAL loc_irq_0                    : std_logic;                     -- loc-monitor #0 - irq
-   SIGNAL loc_irq_1                    : std_logic;                     -- loc-monitor #1 - irq
-   SIGNAL loc_rw_0                     : std_logic_vector(1 DOWNTO 0);   -- [0]: read; [1]: write
-   SIGNAL loc_rw_1                     : std_logic_vector(1 DOWNTO 0);   -- [0]: read; [1]: write
-   SIGNAL loc_adr_0                    : std_logic_vector(31 DOWNTO 0);-- location monitor #0 adress
-   SIGNAL loc_adr_1                    : std_logic_vector(31 DOWNTO 0);-- location monitor #1 adress
-   SIGNAL loc_sel                      : std_logic_vector(1 DOWNTO 0);   -- these bits are loaded with address bits [4:3] if locmon hit address         
-   SIGNAL pci_offset_q                 : std_logic_vector(31 DOWNTO 2);   -- pci offset address for vme to pci access
+   SIGNAL loc_am_0                     : std_logic_vector(1 DOWNTO 0);     -- loc-monitor #0 - adress modus "00"-A32, "10"-A16, "11"-A24
+   SIGNAL loc_am_1                     : std_logic_vector(1 DOWNTO 0);     -- loc-monitor #1 - adress modus "00"-A32, "10"-A16, "11"-A24
+   SIGNAL loc_irq_0                    : std_logic;                        -- loc-monitor #0 - irq
+   SIGNAL loc_irq_1                    : std_logic;                        -- loc-monitor #1 - irq
+   SIGNAL loc_rw_0                     : std_logic_vector(1 DOWNTO 0);     -- [0]: read; [1]: write
+   SIGNAL loc_rw_1                     : std_logic_vector(1 DOWNTO 0);     -- [0]: read; [1]: write
+   SIGNAL loc_adr_0                    : std_logic_vector(31 DOWNTO 0);    -- location monitor #0 adress
+   SIGNAL loc_adr_1                    : std_logic_vector(31 DOWNTO 0);    -- location monitor #1 adress
+   SIGNAL loc_sel                      : std_logic_vector(1 DOWNTO 0);     -- these bits are loaded with address bits [4:3] if locmon hit address         
+   SIGNAL pci_offset_q                 : std_logic_vector(31 DOWNTO 2);    -- pci offset address for vme to pci access
    SIGNAL FairReqEn                    : std_logic;
    SIGNAL brl                          : std_logic_vector(1 DOWNTO 0);
                                        
    -- vme_au                           
-   SIGNAL sl_acc_wb                    : std_logic_vector(4 DOWNTO 0);   -- sampled with ld_loc_adr_cnt
+   SIGNAL sl_acc_wb                    : std_logic_vector(4 DOWNTO 0);     -- sampled with ld_loc_adr_cnt
    SIGNAL ma_d64                       : std_logic;
    SIGNAL sl_d64                       : std_logic;
    SIGNAL vam_reg                      : std_logic_vector(5 DOWNTO 0);
@@ -874,7 +879,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL sl_byte_routing              : std_logic;
    SIGNAL sl_acc                       : std_logic_vector(4 DOWNTO 0);
    SIGNAL sl_writen_reg                : std_logic;
-   SIGNAL iackn_in_reg                 : std_logic;                    -- iack signal (registered with en_vme_adr_in)
+   SIGNAL iackn_in_reg                 : std_logic;                        -- iack signal (registered with en_vme_adr_in)
    SIGNAL reg_acc                      : std_logic;
    SIGNAL sram_acc                     : std_logic;
    SIGNAL pci_acc                      : std_logic;
@@ -888,7 +893,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    -- vme_sys_arbiter
    SIGNAL d64                          : std_logic;
    SIGNAL vme_adr_locmon               : std_logic_vector(31 DOWNTO 2);
-   SIGNAL en_wbm_dat_o                 : std_logic;                     -- enable for wbm_dat_o
+   SIGNAL en_wbm_dat_o                 : std_logic;                        -- enable for wbm_dat_o
    SIGNAL sel_vme_data_out             : std_logic_vector(1 DOWNTO 0);
    SIGNAL mensb_active                 : std_logic;
    SIGNAL slave_active                 : std_logic;
@@ -901,7 +906,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL sl_en_vme_data_out_reg_high  : std_logic;
    SIGNAL en_vme_data_out_reg_high     : std_logic:='0';
    SIGNAL en_vme_data_in_reg           : std_logic;
-   SIGNAL lwordn                       : std_logic;            -- lwordn for vme_du multiplexer
+   SIGNAL lwordn                       : std_logic;                        -- lwordn for vme_du multiplexer
    SIGNAL swap                         : std_logic;
    SIGNAL en_vme_data_in_reg_high      : std_logic:='0';
    SIGNAL l_fpga_an_int                : std_logic;
@@ -910,7 +915,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL ma_oe_va                     : std_logic;
    SIGNAL ma_oe_vd                     : std_logic;
    SIGNAL ma_en_vme_data_in_reg        : std_logic;
-   SIGNAL ma_en_vme_data_in_reg_high   : std_logic;      -- load high register signal in data switch unit for rd vme
+   SIGNAL ma_en_vme_data_in_reg_high   : std_logic;                        -- load high register signal in data switch unit for rd vme
    SIGNAL dwb                          : std_logic;
    SIGNAL run_mstr                     : std_logic;
    SIGNAL mstr_busy                    : std_logic;
@@ -947,8 +952,8 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL inc_loc_adr_m_cnt            : std_logic;
    SIGNAL sl_inc_loc_adr_m_cnt         : std_logic;
    SIGNAL mensb_mstr_req               : std_logic;
-   SIGNAL loc_keep                     : std_logic;   -- if '1', csn remains active (keeps bus)
-   SIGNAL en_vme_adr_in                : std_logic;   -- samples adress and am after asn goes low
+   SIGNAL loc_keep                     : std_logic;                        -- if '1', csn remains active (keeps bus)
+   SIGNAL en_vme_adr_in                : std_logic;                        -- samples adress and am after asn goes low
    
    -- bustimer
    SIGNAL set_sysc                     : std_logic:='0';

@@ -207,6 +207,7 @@ PORT (
    dma_sour_device      : IN std_logic_vector(2 DOWNTO 0);        -- selects the source device
    dma_dest_device      : IN std_logic_vector(2 DOWNTO 0);        -- selects the destination device
    dma_vme_am           : IN std_logic_vector(4 DOWNTO 0);        -- type of dma transmission
+   blk_sgl              : IN std_logic;                          -- indicates if DMA transfer should be done as block or single accesses
    inc_sour             : IN std_logic;                           -- indicates if source adress should be incremented
    inc_dest             : IN std_logic;                           -- indicates if destination adress should be incremented
    dma_size             : IN std_logic_vector(15 DOWNTO 0)        -- size of data package
@@ -245,6 +246,7 @@ PORT (
    dma_sour_device      : OUT std_logic_vector(2 DOWNTO 0);       -- selects the source device
    dma_dest_device      : OUT std_logic_vector(2 DOWNTO 0);       -- selects the destination device
    dma_vme_am           : OUT std_logic_vector(4 DOWNTO 0);       -- type of dma transmission
+   blk_sgl              : OUT std_logic;                          -- indicates if DMA transfer should be done as block or single accesses
    inc_sour             : OUT std_logic;                          -- indicates if source adress should be incremented
    inc_dest             : OUT std_logic;                          -- indicates if destination adress should be incremented
    dma_size             : OUT std_logic_vector(15 DOWNTO 0);      -- size of data package
@@ -360,6 +362,7 @@ END COMPONENT;
    SIGNAL dma_sour_device     : std_logic_vector(2 DOWNTO 0);
    SIGNAL dma_dest_device     : std_logic_vector(2 DOWNTO 0);
    SIGNAL dma_vme_am          : std_logic_vector(4 DOWNTO 0);
+   SIGNAL blk_sgl             : std_logic;
    SIGNAL inc_sour            : std_logic;
    SIGNAL inc_dest            : std_logic;
    SIGNAL dma_size            : std_logic_vector(15 DOWNTO 0);
@@ -441,6 +444,7 @@ PORT MAP (
    dma_sour_device      => dma_sour_device,
    dma_dest_device      => dma_dest_device,
    dma_vme_am           => dma_vme_am      ,
+   blk_sgl              => blk_sgl,
    inc_sour             => inc_sour         ,
    inc_dest             => inc_dest         ,
    dma_size             => dma_size         
@@ -470,6 +474,7 @@ PORT MAP (
    dma_sour_device      => dma_sour_device   ,
    dma_dest_device      => dma_dest_device   ,
    dma_vme_am           => dma_vme_am         ,
+   blk_sgl              => blk_sgl,
    inc_sour             => inc_sour            ,
    inc_dest             => inc_dest            ,
    dma_size             => dma_size            ,
