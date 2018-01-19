@@ -162,8 +162,9 @@ BEGIN
    almost_reached_size_int <= '1' WHEN (dma_size_int + 1) = dma_size ELSE '0';
 
    adr_o_int(31 DOWNTO 2) <= x"000f_f9" & dma_act_bd_int WHEN get_bd = '1' ELSE    -- switch iram adress [10:2] to adr_o
-              dma_sour_adr_int WHEN sour_dest = '1' ELSE   -- switch source adress to adr_o & dma_access & swap
-              dma_dest_adr_int ;                              -- switch destination adress to adr_o & dma_access & swap
+                             dma_sour_adr     when (sour_dest = '1' and inc_sour = '1')  else
+                             dma_sour_adr_int WHEN (sour_dest = '1' and inc_sour = '0') ELSE   -- switch source adress to adr_o & dma_access & swap
+                             dma_dest_adr_int ;                              -- switch destination adress to adr_o & dma_access & swap
    adr_o_int(1 DOWNTO 0) <= "00";
               
 
@@ -280,7 +281,8 @@ adr_o_proc : PROCESS(clk, rst)
          
          IF load_cnt = '1' THEN
             dma_sour_adr_int <= dma_sour_adr;
-         ELSIF get_bd = '0' AND sour_dest = '1' AND inc_adr = '1' AND inc_sour = '0' THEN
+--         ELSIF get_bd = '0' AND sour_dest = '1' AND inc_adr = '1' AND inc_sour = '0' THEN
+         ELSIF get_bd = '0' AND sour_dest = '1' AND inc_adr = '1' THEN
             dma_sour_adr_int <= dma_sour_adr_int + 1;
          END IF;
          

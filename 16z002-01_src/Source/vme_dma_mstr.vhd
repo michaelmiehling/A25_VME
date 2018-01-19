@@ -245,12 +245,14 @@ BEGIN
                clr_dma_en_int <= '0';
                stb_o <= '0';
                cti_int <= "000";
-            ELSIF ack_i = '1' AND inc_sour = '1' THEN
-               mstr_state     <= read_ws;                -- got ack from source address => waitstate, then new single cycle
-               sour_dest      <= '1';
-               clr_dma_en_int <= '0';
-               stb_o <= '0';
-               cti_int <= "000";                         
+            --GD
+--            ELSIF ack_i = '1' AND inc_sour = '1' THEN
+--               mstr_state     <= read_ws;                -- got ack from source address => waitstate, then new single cycle
+--               sour_dest      <= '1';
+--               clr_dma_en_int <= '0';
+--               stb_o <= '0';
+--               cti_int <= "000";                         
+            --GD
             ELSIF ack_i = '1' AND boundary = '1' THEN
                mstr_state     <= read_ws;                -- got ack from source address => waitstate, then new single cycle
                sour_dest      <= '1';
