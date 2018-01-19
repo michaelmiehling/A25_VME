@@ -90,8 +90,8 @@ PORT (
 END vme_dma_fifo;
 
 ARCHITECTURE vme_dma_fifo_arch OF vme_dma_fifo IS 
-   constant CONST_FIFO_SIZE   : integer := 256;
-   SIGNAL fifo_usedw    : std_logic_vector(7 DOWNTO 0);
+   constant CONST_FIFO_SIZE   : integer := 512;
+   SIGNAL fifo_usedw    : std_logic_vector(8 DOWNTO 0);
    SIGNAL low_level     : std_logic:='0';
    SIGNAL dat_o         : std_logic_vector(31 DOWNTO 0);
 BEGIN
@@ -106,30 +106,30 @@ PROCESS(clk, rst)
          fifo_dat_o <= (OTHERS => '0');
       ELSIF clk'EVENT AND clk = '1' THEN
          -- indicate whether two words can be written to fifo before full
-         IF fifo_usedw = conv_std_logic_vector(CONST_FIFO_SIZE-3, 8) AND fifo_wr = '1' THEN  
+         IF fifo_usedw = conv_std_logic_vector(CONST_FIFO_SIZE-3, 9) AND fifo_wr = '1' THEN  
             fifo_almost_full <= '1';
          ELSIF fifo_rd = '1' THEN
             fifo_almost_full <= '0';
          END IF;
             
          -- indicate whether fifo is full
-         IF fifo_usedw = conv_std_logic_vector(CONST_FIFO_SIZE-2, 8) AND fifo_wr = '1' THEN  
+         IF fifo_usedw = conv_std_logic_vector(CONST_FIFO_SIZE-2, 9) AND fifo_wr = '1' THEN  
             fifo_full <= '1';
          ELSIF fifo_rd = '1' THEN
             fifo_full <= '0';
          END IF;
             
          -- indicate whether fifo is empty
-         IF fifo_usedw = conv_std_logic_vector(1, 8) AND fifo_rd = '1' THEN   
+         IF fifo_usedw = conv_std_logic_vector(1, 9) AND fifo_rd = '1' THEN   
             fifo_empty <= '1';
          ELSIF fifo_wr = '1' THEN
             fifo_empty <= '0';
          END IF;
             
          -- indicate whether one word can be read before empty
-         IF fifo_usedw = conv_std_logic_vector(2, 8) AND fifo_rd = '1' THEN   
+         IF fifo_usedw = conv_std_logic_vector(2, 9) AND fifo_rd = '1' THEN   
             fifo_almost_empty <= '1';
-         ELSIF fifo_usedw = conv_std_logic_vector(0, 8) AND fifo_wr = '1' THEN  -- if fifo is empty an one word gets written
+         ELSIF fifo_usedw = conv_std_logic_vector(0, 9) AND fifo_wr = '1' THEN  -- if fifo is empty an one word gets written
             fifo_almost_empty <= '1';
          ELSIF fifo_wr = '1' OR fifo_rd = '1' THEN
             fifo_almost_empty <= '0';
@@ -149,11 +149,11 @@ PROCESS(clk, rst)
 	GENERIC MAP (
 		add_ram_output_register => "ON",
 		intended_device_family => "Cyclone IV GX",
-		lpm_numwords => 256,
+		lpm_numwords => 512,
 		lpm_showahead => "ON",
 		lpm_type => "scfifo",
 		lpm_width => 32,
-		lpm_widthu => 8,
+		lpm_widthu => 9,
 		overflow_checking => "ON",
 		underflow_checking => "ON",
 		use_eab => "ON")
