@@ -394,7 +394,7 @@ BEGIN
 END PROCESS mstr_fsm;
    
 mstr_out : PROCESS (mstr_state, ack_i, err_i, fifo_empty, fifo_almost_full, reached_size,  
-                     dma_en, dma_null, inc_sour, inc_dest, boundary)
+                     dma_en, dma_null, inc_sour, inc_dest, boundary, fifo_full)
 BEGIN
    CASE mstr_state IS
       WHEN idle =>
@@ -442,10 +442,8 @@ BEGIN
 --            inc_adr  <= '1';                                -- increment source address for last write to fifo before full
 --         ELSIF ack_i = '1' AND reached_size = '1' THEN
 --            inc_adr  <= '0';                                -- no further data should be read => no increment
-         ELSIF ack_i = '1' AND fifo_full /= '1' AND reached_size /= '1' AND inc_sour = '0' AND boundary /= '1' THEN     
-            inc_adr  <= '1';                                -- increment source address
-         ELSIF ack_i = '1' AND fifo_full /= '1' AND reached_size /= '1' AND (inc_sour = '1' OR boundary = '1') THEN         
-            inc_adr  <= '1';                                -- increment source address
+         ELSIF ack_i = '1' and fifo_full = '0' and reached_size = '0' then
+           inc_adr <= '1';
          ELSE 
             inc_adr  <= '0';
          END IF;           
