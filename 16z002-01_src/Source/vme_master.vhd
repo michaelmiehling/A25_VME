@@ -130,6 +130,7 @@ ENTITY vme_master IS
    run_mstr                : IN  std_logic;        -- this pulse triggers start of Master
    mstr_ack                : OUT std_logic;        -- this pulse indicates the end of Master transaction
    mstr_busy               : OUT std_logic;        -- master busy, set when running
+   vme_req                 : out std_logic;        -- request VME interface access
    burst                   : IN std_logic;         -- indicates a vme burst request
    ma_en_vme_data_in_reg   : OUT std_logic;        -- load register signal in data switch unit for rd vme
    ma_en_vme_data_in_reg_high : OUT std_logic;     -- load high register signal in data switch unit for rd vme
@@ -250,6 +251,7 @@ BEGIN
       mstr_ack                   <= '0';
       second_word_int            <= '0';
       mstr_busy                  <= '0';
+      vme_req                    <= '0';
       dwb                        <= '0';
       asn_out_int                <= '1';
       dsn_ena                    <= '0';
@@ -271,6 +273,7 @@ BEGIN
             second_word_int            <= '0';
             mstr_ack                   <= '0';
             mstr_busy                  <= '0';
+            vme_req                    <= '0';
             ma_io_ctrl.am_dir          <= '0';
             ma_io_ctrl.am_oe_n         <= '0';
             IF run_mstr = '1' THEN     
@@ -306,12 +309,14 @@ BEGIN
                ma_io_ctrl.am_dir       <= '1';
                ma_io_ctrl.am_oe_n      <= '1';     -- switch of for dir change
                mstr_busy               <= '1';
+               vme_req                 <= '1';
             ELSE
                mstr_state              <= req_bus;
                ma_io_ctrl.a_dir        <= '0';
                ma_io_ctrl.am_dir       <= '0';
                ma_io_ctrl.am_oe_n      <= '0';
                mstr_busy               <= '0';
+               vme_req                 <= '0';
             END IF;
             dwb                        <= '1';
             asn_out_int                <= asn_out_int;--'1'
@@ -329,6 +334,7 @@ BEGIN
          WHEN got_bus =>                  -- here start second cycles
             mstr_ack                   <= '0';
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             second_word_int            <= second_word_int;
             IF dtackn = '1' AND berrn = '1' THEN   -- 25.04.06
                mstr_state              <= set_adr;
@@ -360,6 +366,7 @@ BEGIN
             
          WHEN set_adr =>
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             mstr_ack                   <= '0';
             second_word_int            <= second_word_int;
             IF wbs_we_i = '0' THEN
@@ -409,6 +416,7 @@ BEGIN
          WHEN set_as =>
             mstr_ack                   <= '0';
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             second_word_int            <= second_word_int;
             IF berrn = '0' THEN
                mstr_state              <= mstr_idle;   -- error
@@ -452,6 +460,7 @@ BEGIN
          WHEN set_ds =>
             mstr_ack                   <= '0';
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             second_word_int            <= second_word_int;
             IF berrn = '0' THEN
                mstr_state              <= mstr_idle;
@@ -487,7 +496,11 @@ BEGIN
                ELSE
                   vam_oe_int           <= '1';--'0'
                END IF;
-               ma_oe_va                <= '0';
+               if burst = '1' then
+                 ma_oe_va              <= '1';
+               else
+                 ma_oe_va              <= '0';
+               end if;
                ma_io_ctrl.d_dir        <= wbs_we_i;
                ma_oe_vd                <= '0';
             ELSE
@@ -537,6 +550,7 @@ BEGIN
             END IF;
             mstr_ack                   <= '0';
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             second_word_int            <= second_word_int;
             ma_io_ctrl.a_dir           <= '0';
             ma_io_ctrl.d_dir           <= '0';
@@ -554,6 +568,7 @@ BEGIN
             
          WHEN got_dtackn =>
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             mstr_ack                   <= '0';
             IF berrn = '0' THEN
                mstr_state              <= mstr_idle;   -- error
@@ -572,7 +587,7 @@ BEGIN
                vam_oe_int              <= '1';
             ELSIF burst = '1' THEN
                soen_int                <= '0';
-               ma_io_ctrl.a_dir        <= '0';
+               ma_io_ctrl.a_dir        <= '1';
                asn_out_int             <= '0';
                ma_io_ctrl.am_dir       <= '1';
                ma_io_ctrl.am_oe_n      <= '0';
@@ -588,7 +603,11 @@ BEGIN
             dsn_ena                    <= '0';
             ma_io_ctrl.d_dir           <= '0';
             ma_oe_vd                   <= '0';
-            ma_oe_va                   <= '0';
+            if burst = '1' then
+              ma_oe_va                 <= '1';
+            else
+              ma_oe_va                 <= '0';
+            end if;
             IF (((mstr_reg(0) = '1' AND wb_dma_acc_q = '0') OR mstr_cycle = '1') AND second_word_int = '0') OR asn_regd = '1' THEN
                brel_int                <= '0';
             ELSE
@@ -612,6 +631,7 @@ BEGIN
             asn_out_int             <= '0';
             mstr_ack                <= '0';  
             mstr_busy               <= '1';         
+            vme_req                 <= '1';         
             vam_oe_int              <= '1';
             rst_rmw_int             <= '0';
             soen_int                <= '0';
@@ -631,7 +651,11 @@ BEGIN
             END IF;
             ma_io_ctrl.d_dir           <= '0';
             ma_oe_vd                   <= '0';
-            ma_oe_va                   <= '0';
+            if burst = '1' then
+              ma_oe_va                 <= '1';
+            else
+              ma_oe_va                 <= '0';
+            end if;
             IF (((mstr_reg(0) = '1' AND wb_dma_acc_q = '0') OR mstr_cycle = '1') AND second_word_int = '0') OR asn_regd = '1' THEN
                brel_int                <= '0';
             ELSE
@@ -647,6 +671,7 @@ BEGIN
                asn_out_int             <= '1';
                mstr_ack                <= '1';
                mstr_busy               <= '0';         
+               vme_req                 <= '0';         
                second_word_int         <= '0';
                vam_oe_int              <= '0';
                rst_rmw_int             <= '0';
@@ -666,7 +691,8 @@ BEGIN
                END IF;
                asn_out_int             <= '0';
                mstr_ack                <= '1';   -- ack imediately next data
-               mstr_busy               <= '1';         
+               mstr_busy               <= '1';
+               vme_req                 <= '1';         
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
                soen_int                <= '0';
@@ -675,6 +701,7 @@ BEGIN
                asn_out_int             <= '0';
                mstr_ack                <= '0';      -- no ack, because first D64 cycle transmits only addresses
                mstr_busy               <= '0';         
+               vme_req                 <= '0';         
                second_word_int         <= '1';      -- now all data transfers
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
@@ -683,7 +710,8 @@ BEGIN
                mstr_state              <= got_bus;   -- then transmit second word
                asn_out_int             <= '0';
                mstr_ack                <= '0';      -- no ack, because first D16 cycle transmits only low word
-               mstr_busy               <= '0';         
+               mstr_busy               <= '0';
+               vme_req                 <= '1';         
                second_word_int         <= '1';
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
@@ -692,7 +720,8 @@ BEGIN
                mstr_state              <= data_stored;   -- wait for run-mstr
                asn_out_int             <= '0';
                mstr_ack                <= '1';      -- ack 4 byte
-               mstr_busy               <= '0';         
+               mstr_busy               <= '0';
+               vme_req                 <= '1';         
                second_word_int         <= '1';   
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
@@ -701,7 +730,12 @@ BEGIN
                mstr_state              <= data_stored;
                asn_out_int             <= '0';
                mstr_ack                <= '1';
-               mstr_busy               <= '0';         
+               mstr_busy               <= '0';
+               if d64 = '1' then
+                 vme_req               <= '0';
+               else
+                 vme_req               <= '1'; -- keep the bus for the whole BLT transfer
+               end if;
                second_word_int         <= second_word_int;
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
@@ -711,6 +745,7 @@ BEGIN
                asn_out_int             <= '1';
                mstr_ack                <= '0';
                mstr_busy               <= '1';         
+               vme_req                 <= '1';         
                second_word_int         <= '1';
                vam_oe_int              <= '0';
                rst_rmw_int             <= '0';
@@ -720,6 +755,7 @@ BEGIN
                asn_out_int             <= '0';
                mstr_ack                <= '1';   -- ack read of rmw
                mstr_busy               <= '0';         
+               vme_req                 <= '0';         
                second_word_int         <= '1';
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
@@ -729,6 +765,7 @@ BEGIN
                asn_out_int             <= '1';
                mstr_ack                <= '1';
                mstr_busy               <= '0';         
+               vme_req                 <= '0';         
                second_word_int         <= '0';
                vam_oe_int              <= '0';
                rst_rmw_int             <= '1';
@@ -750,7 +787,11 @@ BEGIN
             END IF;
             ma_io_ctrl.d_dir           <= '0';
             ma_oe_vd                   <= '0';
-            ma_oe_va                   <= '0';
+            if burst = '1' then
+              ma_oe_va                 <= '1';
+            else
+              ma_oe_va                 <= '0';
+            end if;
             IF (((mstr_reg(0) = '1' AND wb_dma_acc_q = '0') OR mstr_cycle = '1') AND second_word_int = '0') OR asn_regd = '1' THEN
                brel_int                <= '0';
             ELSE
@@ -762,6 +803,7 @@ BEGIN
          WHEN rmw_wait =>
             mstr_ack                   <= '0';
             mstr_busy                  <= '1';
+            vme_req                    <= '1';
             second_word_int            <= second_word_int;
             IF berrn = '0' THEN
                mstr_state              <= mstr_idle;
@@ -789,6 +831,7 @@ BEGIN
          WHEN OTHERS =>
             mstr_ack                   <= '0';
             mstr_busy                  <= '0';
+            vme_req                    <= '0';
             second_word_int            <= '0';
             mstr_state                 <= mstr_idle;           
             dwb                        <= '0';

@@ -78,9 +78,10 @@ PORT (
    ma_io_ctrl                    : IN io_ctrl_type;              
    sl_io_ctrl                    : IN io_ctrl_type;              
                                  
-   mensb_req                     : IN std_logic;               -- request signal for mensb slave access
+   mensb_req                     : IN std_logic;               -- request signal for mensb slave access, from vme_wbs
    slave_req                     : IN std_logic;               -- request signal for slave access
    mstr_busy                     : IN std_logic;               -- master busy
+   mstr_vme_req                  : IN std_logic;               -- master request VME interface
                                  
    mensb_active                  : OUT std_logic;            -- acknoledge/active signal for mensb slave access
    slave_active                  : OUT std_logic;            -- acknoledge/active signal for slave access
@@ -148,17 +149,17 @@ ARCHITECTURE vme_sys_arbiter_arch OF vme_sys_arbiter IS
    SIGNAL mensb_active_int      : std_logic;
    SIGNAL en_vme_data_in_reg_int   : std_logic;
 BEGIN
-   io_ctrl                    <= ma_io_ctrl                    WHEN mstr_busy = '1' ELSE sl_io_ctrl;
+   io_ctrl                    <= ma_io_ctrl                    WHEN mstr_vme_req = '1' ELSE sl_io_ctrl;
 
-   second_word                <= ma_second_word                WHEN mstr_busy = '1' ELSE sl_second_word;
-   en_vme_data_out_reg        <= ma_en_vme_data_out_reg        WHEN mstr_busy = '1' ELSE sl_en_vme_data_out_reg OR reg_en_vme_data_out_reg;
-   en_vme_data_in_reg         <= ma_en_vme_data_in_reg         WHEN mstr_busy = '1' ELSE sl_en_vme_data_in_reg;
-   en_vme_data_in_reg_high    <= ma_en_vme_data_in_reg_high    WHEN mstr_busy = '1' ELSE sl_en_vme_data_in_reg_high;
-   sel_vme_data_out           <= "01"                          WHEN mstr_busy = '1' ELSE sl_sel_vme_data_out;
-   vme_adr_locmon             <= vme_adr_out                   WHEN mstr_busy = '1' ELSE vme_adr_in_reg;
-   d64                        <= ma_d64                        WHEN mstr_busy = '1' ELSE sl_d64;
-   en_vme_data_out_reg_high   <= ma_en_vme_data_out_reg_high   WHEN mstr_busy = '1' ELSE sl_en_vme_data_out_reg_high;
-   byte_routing               <= ma_byte_routing               WHEN mstr_busy = '1' ELSE sl_byte_routing;
+   second_word                <= ma_second_word                WHEN mstr_vme_req = '1' ELSE sl_second_word;
+   en_vme_data_out_reg        <= ma_en_vme_data_out_reg        WHEN mstr_vme_req = '1' ELSE sl_en_vme_data_out_reg OR reg_en_vme_data_out_reg;
+   en_vme_data_in_reg         <= ma_en_vme_data_in_reg         WHEN mstr_vme_req = '1' ELSE sl_en_vme_data_in_reg;
+   en_vme_data_in_reg_high    <= ma_en_vme_data_in_reg_high    WHEN mstr_vme_req = '1' ELSE sl_en_vme_data_in_reg_high;
+   sel_vme_data_out           <= "01"                          WHEN mstr_vme_req = '1' ELSE sl_sel_vme_data_out;
+   vme_adr_locmon             <= vme_adr_out                   WHEN mstr_vme_req = '1' ELSE vme_adr_in_reg;
+   d64                        <= ma_d64                        WHEN mstr_vme_req = '1' ELSE sl_d64;
+   en_vme_data_out_reg_high   <= ma_en_vme_data_out_reg_high   WHEN mstr_vme_req = '1' ELSE sl_en_vme_data_out_reg_high;
+   byte_routing               <= ma_byte_routing               WHEN mstr_vme_req = '1' ELSE sl_byte_routing;
 --   en_vme_data_in_reg <= en_vme_data_in_reg_int;
 
    mensb_active <= mensb_active_int;
@@ -167,30 +168,27 @@ BEGIN
 reg : PROCESS(clk, rst)
 BEGIN
    IF rst = '1' THEN
---      byte_routing <= '0';
       oe_vd <= '0';
       oe_va <= '0';
---      en_vme_data_in_reg_int <= '0';
       lwordn <= '0';
       swap <= '1';
    ELSIF clk'EVENT AND clk = '1' THEN
-      IF mstr_busy = '1' THEN
-         swap <= ma_swap;
---         byte_routing <= ma_byte_routing;
-         oe_vd <= ma_oe_vd;
+      IF mstr_vme_req = '1' THEN
          oe_va <= ma_oe_va;
---         en_vme_data_in_reg_int <= ma_en_vme_data_in_reg;
---         en_vme_data_in_reg_high <= ma_en_vme_data_in_reg_high;
-         lwordn <= lwordn_mstr;
       ELSE
-         swap <= '1';   -- slave swapps always
---         byte_routing <= sl_byte_routing;
          oe_va <= sl_oe_va;
-         oe_vd <= sl_oe_vd;
---         en_vme_data_in_reg_int <= sl_en_vme_data_in_reg;
---         en_vme_data_in_reg_high <= sl_en_vme_data_in_reg_high;
-         lwordn <= lwordn_slv;
       END IF;
+
+      if mstr_busy = '1' then
+        swap <= ma_swap;
+        oe_vd <= ma_oe_vd;
+        lwordn <= lwordn_mstr;
+      else
+        swap <= '1';
+        oe_vd <= sl_oe_vd;
+        lwordn <= lwordn_slv;
+      end if;
+
    END IF;
 END PROCESS reg;   
    

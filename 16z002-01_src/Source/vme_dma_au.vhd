@@ -93,6 +93,10 @@ PORT (
    cyc_o_vme            : OUT std_logic;                          -- chip select for vme
    stb_o                : IN std_logic;                           -- request signal for cyc switching
    
+   -- fifo
+   fifo_empty           : in std_logic;
+   fifo_full            : in std_logic;
+  
    -- vme_dma_mstr
    sour_dest            : IN std_logic;                           -- if set, source adress will be used, otherwise destination ad. for adr_o
    inc_adr              : IN std_logic;                           -- flag indicates when adr should be incremented (depend on sour_dest and get_bd)
@@ -129,6 +133,8 @@ ARCHITECTURE vme_dma_au_arch OF vme_dma_au IS
    SIGNAL dma_size_int              : std_logic_vector(15 DOWNTO 0);
    SIGNAL dma_sour_adr_int          : std_logic_vector(31 DOWNTO 2);
    SIGNAL dma_dest_adr_int          : std_logic_vector(31 DOWNTO 2);
+   signal dma_sour_adr_blt          : std_logic_vector(31 downto 2);
+   signal dma_dest_adr_blt          : std_logic_vector(31 downto 2);
    SIGNAL cyc_o_sram_int            : std_logic;
    SIGNAL cyc_o_pci_int             : std_logic;
    SIGNAL cyc_o_vme_int             : std_logic;
@@ -136,12 +142,20 @@ ARCHITECTURE vme_dma_au_arch OF vme_dma_au IS
    SIGNAL reached_size_int          : std_logic;
    SIGNAL almost_reached_size_int   : std_logic;
    SIGNAL boundary_blt              : std_logic;
+   SIGNAL boundary_blt_d1           : std_logic;
    SIGNAL boundary_mblt             : std_logic;
    SIGNAL almost_boundary_blt       : std_logic;
    SIGNAL almost_boundary_mblt      : std_logic;
    SIGNAL dma_size_en               : std_logic;
    signal tga_int                   : std_logic_vector(8 DOWNTO 0);
    signal dma_vme_am_conv           : std_logic_vector(1 DOWNTO 0);
+   signal trans_blt_src             : std_logic;
+   signal trans_blt_dst             : std_logic;
+   signal fifo_empty_d1             : std_logic;
+   signal fifo_full_d1              : std_logic;
+   signal boundary_blt_edge         : std_logic;
+   signal fifo_empty_edge           : std_logic;
+   signal fifo_full_edge            : std_logic;
    
 BEGIN
    cyc_o_sram  <= cyc_o_sram_int WHEN stb_o = '1' ELSE '0';
@@ -163,8 +177,10 @@ BEGIN
 
    adr_o_int(31 DOWNTO 2) <= x"000f_f9" & dma_act_bd_int WHEN get_bd = '1' ELSE    -- switch iram adress [10:2] to adr_o
                              dma_sour_adr     when (sour_dest = '1' and inc_sour = '1') else -- keep src address from the descriptor
+                             dma_sour_adr_blt when (sour_dest = '1' and inc_sour = '0' and trans_blt_src = '1') else
                              dma_sour_adr_int when (sour_dest = '1' and inc_sour = '0') else -- switch source adress to adr_o & dma_access & swap
                              dma_dest_adr     when (sour_dest = '0' and inc_dest = '1') else -- keep dst address from the descriptor
+                             dma_dest_adr_blt when (sour_dest = '0' and inc_sour = '0' and trans_blt_dst = '1') else
                              dma_dest_adr_int ;                              -- switch destination adress to adr_o & dma_access & swap
    adr_o_int(1 DOWNTO 0) <= "00";
               
@@ -172,6 +188,11 @@ BEGIN
                                                   
    boundary <= boundary_blt OR boundary_mblt;   
    almost_boundary <= almost_boundary_blt OR almost_boundary_mblt;   
+
+   -- rising edge pulses
+   boundary_blt_edge <= boundary_blt and (not boundary_blt_d1);
+   fifo_empty_edge <= fifo_empty and (not fifo_empty_d1);
+   fifo_full_edge  <= fifo_full  and (not fifo_full_d1);
       
    sel_o <= (OTHERS => '1');                         -- always longword accessess
       
@@ -187,6 +208,12 @@ BEGIN
    -- (7)   : =1 indicates access to vme_ctrl by DMA
    -- (8)   : 0= non-privileged 1= supervisory
    tga_int <= dma_vme_am(4) & "10" & NOT dma_vme_am(0) & blk_int & dma_vme_am(3 DOWNTO 2) & dma_vme_am_conv;
+
+   -- A32D32 BLT transfer
+   trans_blt_src <= '1' when (dma_sour_device(1) = '1' and  dma_vme_am(3 downto 2) = "01" and blk_int = '1') else
+                    '0';
+   trans_blt_dst <= '1' when (dma_dest_device(1) = '1' and  dma_vme_am(3 downto 2) = "01" and blk_int = '1') else
+                    '0';
       
 adr_o_proc : PROCESS(clk, rst)
    BEGIN
@@ -202,10 +229,13 @@ adr_o_proc : PROCESS(clk, rst)
          reached_size <= '0';
          almost_reached_size <= '0';
          tga_o <= (OTHERS => '0');
-         boundary_blt <= '0';
+         boundary_blt    <= '0';
+         boundary_blt_d1 <= '0';
          boundary_mblt <= '0';
          almost_boundary_blt <= '0';
          almost_boundary_mblt <= '0';
+         dma_sour_adr_blt     <= (others=>'0');
+         dma_dest_adr_blt     <= (others=>'0');
       ELSIF clk'EVENT AND clk = '1' THEN
          -- rule of vmebus: do not cross 256 byte boundaries (0x100)
          IF dma_vme_am(3) = '0' AND ((dma_dest_device(1) = '1' AND dma_dest_adr_int(7 DOWNTO 2) = "000000" AND sour_dest = '0') OR
@@ -238,7 +268,7 @@ adr_o_proc : PROCESS(clk, rst)
          IF inc_adr = '1' OR get_bd = '1' THEN
             adr_o <= adr_o_int;
          END IF;
-         
+
          IF load_cnt = '1' THEN
             reached_size <= '0';
             if dma_size = conv_std_logic_vector(0, 16) then                -- if just one longword shall be transfered, indicate almost reached
@@ -291,6 +321,24 @@ adr_o_proc : PROCESS(clk, rst)
          ELSIF get_bd = '0' AND sour_dest = '0' AND inc_adr = '1' THEN
             dma_dest_adr_int <= dma_dest_adr_int + 1;
          END IF;
+
+         boundary_blt_d1 <= boundary_blt;
+         fifo_empty_d1   <= fifo_empty;
+         fifo_full_d1    <= fifo_full;
+         -- address regiters for BLT
+         if load_cnt = '1' then
+           dma_sour_adr_blt <= dma_sour_adr;
+         elsif sour_dest = '1' and (boundary_blt_edge = '1' or fifo_full_edge = '1') then
+           -- remember address value for new BLT transfer
+           dma_sour_adr_blt <= dma_sour_adr_int;
+         end if;
+
+         if load_cnt = '1' then
+           dma_dest_adr_blt <= dma_dest_adr;
+         elsif sour_dest = '0' and (boundary_blt_edge = '1' or fifo_empty_edge = '1') then
+           -- remember address value for new BLT transfer
+           dma_dest_adr_blt <= dma_dest_adr_int;
+         end if;
          
          IF start_dma = '1' OR clr_dma_act_bd = '1' THEN
             dma_act_bd_int <= (OTHERS => '0');

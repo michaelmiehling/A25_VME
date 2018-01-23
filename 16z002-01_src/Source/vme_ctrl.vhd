@@ -368,6 +368,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       mensb_req                     : IN std_logic;               -- request signal for mensb slave access
       slave_req                     : IN std_logic;               -- request signal for slave access
       mstr_busy                     : IN std_logic;               -- master busy
+      mstr_vme_req                  : IN std_logic;               -- master request VME interface
                                     
       mensb_active                  : OUT std_logic;            -- acknoledge/active signal for mensb slave access
       slave_active                  : OUT std_logic;            -- acknoledge/active signal for slave access
@@ -576,6 +577,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
       run_mstr                : IN  std_logic;        -- this pulse triggers start of Master
       mstr_ack                : OUT std_logic;        -- this pulse indicates the end of Master transaction
       mstr_busy               : OUT std_logic;        -- master busy, set when running
+      vme_req                 : out std_logic;        -- request VME interface access
       burst                   : IN std_logic;         -- indicates a vme burst request
       ma_en_vme_data_in_reg   : OUT std_logic;        -- load register signal in data switch unit for rd vme
       ma_en_vme_data_in_reg_high : OUT std_logic;     -- load high register signal in data switch unit for rd vme
@@ -919,6 +921,7 @@ ARCHITECTURE vme_ctrl_arch OF vme_ctrl IS
    SIGNAL dwb                          : std_logic;
    SIGNAL run_mstr                     : std_logic;
    SIGNAL mstr_busy                    : std_logic;
+   SIGNAL mstr_vme_req                 : std_logic;
    SIGNAL mstr_ack                     : std_logic;
    SIGNAL brel                         : std_logic;
    SIGNAL rst_rmw                      : std_logic;
@@ -1104,6 +1107,7 @@ BEGIN
       mensb_req            => mensb_req,
       slave_req            => slave_req,
       mstr_busy            => mstr_busy,
+      mstr_vme_req         => mstr_vme_req,
       mensb_active         => mensb_active,
       slave_active         => slave_active,
       
@@ -1274,6 +1278,7 @@ BEGIN
       run_mstr                   => run_mstr,
       mstr_ack                   => mstr_ack,
       mstr_busy                  => mstr_busy,
+      vme_req                    => mstr_vme_req,
       burst                      => burst,
       ma_en_vme_data_in_reg      => ma_en_vme_data_in_reg,
       ma_en_vme_data_in_reg_high => ma_en_vme_data_in_reg_high,

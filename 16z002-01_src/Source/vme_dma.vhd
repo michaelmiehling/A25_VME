@@ -187,6 +187,10 @@ PORT (
    cyc_o_vme            : OUT std_logic;                          -- chip select for vme
    stb_o                : IN std_logic;                           -- request signal for cyc switching
    
+   -- fifo
+   fifo_empty           : in std_logic;
+   fifo_full            : in std_logic;
+
    -- vme_dma_mstr
    sour_dest            : IN std_logic;                           -- if set, source adress will be used, otherwise destination ad. for adr_o
    inc_adr              : IN std_logic;                           -- flag indicates when adr should be incremented (depend on sour_dest and get_bd)
@@ -430,6 +434,8 @@ PORT MAP (
    cyc_o_pci            => cyc_o_pci      ,
    cyc_o_vme            => cyc_o_vme      ,
    stb_o                => stb_o_int,
+   fifo_empty           => fifo_empty,
+   fifo_full            => fifo_full,
    clr_dma_act_bd       => clr_dma_act_bd,
    sour_dest            => sour_dest      ,
    inc_adr              => inc_adr         ,
