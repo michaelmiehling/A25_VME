@@ -182,9 +182,12 @@ ARCHITECTURE vme_master_arch OF vme_master IS
    SIGNAL dtackn_reg               : std_logic;
    SIGNAL berrn              : std_logic;
    SIGNAL berrn_reg         : std_logic;
-   SIGNAL cnt               : std_logic_vector(1 DOWNTO 0);
+   SIGNAL cnt               : std_logic_vector(2 DOWNTO 0);
    SIGNAL cnt_start         : std_logic;
+   SIGNAL cnt_start2        : std_logic;
    SIGNAL cnt_end            : std_logic;
+   SIGNAL cnt_end_d1         : std_logic;
+   SIGNAL cnt_end_p1         : std_logic;
    SIGNAL asn_regd            : std_logic;
    
    SIGNAL second_word_int      : std_logic;
@@ -215,6 +218,7 @@ BEGIN
       rst_aonly <= '0';
       dtackn_reg <= '1';
       wb_dma_acc_q <= '0';
+      cnt_start2 <= '0';
     ELSIF clk'event AND clk = '1' THEN
        IF mstr_state = mstr_idle THEN         -- keep information "dma- or normal-access" as long as access is ongoing
           wb_dma_acc_q <= wb_dma_acc;
@@ -473,8 +477,9 @@ BEGIN
                ma_io_ctrl.d_dir        <= '0';
                ma_oe_vd                <= '0';
                ma_oe_va                <= '0';
-            ELSIF dtackn = '0' AND wbs_we_i = '0' AND d64 = '1' AND second_word_int = '1' THEN
+            ELSIF dtackn = '0' and cnt_end_p1 = '1' AND wbs_we_i = '0' AND d64 = '1' AND second_word_int = '1' THEN
                mstr_state              <= got_low_d64;
+               cnt_start2              <= '1';
                ma_io_ctrl.a_dir        <= '0';  -- address lines used for read data
                asn_out_int             <= '0';
                dsn_ena                 <= '1';
@@ -484,7 +489,7 @@ BEGIN
                ma_io_ctrl.d_dir        <= '0';
                ma_oe_vd                <= '0';
                ma_oe_va                <= '0';  -- address lines used for read data
-            ELSIF dtackn = '0' THEN
+            ELSIF dtackn = '0' and (wbs_we_i = '1' or d64 = '0' or second_word_int = '0') THEN
                mstr_state              <= got_dtackn;
                dsn_ena                 <= '0';
                ma_io_ctrl.a_dir        <= '1';
@@ -525,6 +530,11 @@ BEGIN
                   ma_oe_vd             <= '1';
                END IF;
             END IF;
+            if dtackn = '0' then
+              cnt_start2 <= '1';
+            else
+              cnt_start2 <= '0';
+            end if;
             dwb                        <= '0';
             IF (((mstr_reg(0) = '1' AND wb_dma_acc_q = '0') OR mstr_cycle = '1') AND second_word_int = '0') OR asn_regd = '1' THEN
                brel_int                <= '0';
@@ -532,15 +542,16 @@ BEGIN
                brel_int                <= '1';
             END IF;
             soen_int                   <= '0';
-            IF dtackn = '0' AND wbs_we_i = '0' THEN
-               ma_en_vme_data_in_reg   <= '0';-- '1'   stop sampling when got dtack
+            IF cnt_end_p1 = '1' and wbs_we_i = '0' THEN
+               ma_en_vme_data_in_reg   <= '0'; -- '1'   stop sampling when got dtack
             ELSE
-               ma_en_vme_data_in_reg   <= '1';-- '0'
+               ma_en_vme_data_in_reg   <= '1'; -- '0'
             END IF;
             rst_rmw_int                <= '0';
             ma_en_vme_data_in_reg_high <= '0';
          
          WHEN got_low_d64 =>
+            cnt_start2 <= '0';
             IF cnt_end = '1' THEN
                mstr_state              <= got_dtackn;
                ma_en_vme_data_in_reg_high <= '0';-- '1'   stop sampling when got dtack
@@ -872,6 +883,7 @@ mstr_out : PROCESS (mstr_state, dtackn, mstr_cycle, wbs_we_i, d64, second_word_i
          cnt_start <= '0';
 
       WHEN set_ds =>
+         --cnt_start <= '0';
          IF dtackn = '0' AND wbs_we_i = '0' AND d64 = '1' AND second_word_int = '1' THEN
             cnt_start <= '1';
          ELSE
@@ -900,15 +912,18 @@ cnt_p : PROCESS(clk, rst)
   BEGIN
      IF rst = '1' THEN
         cnt <= (OTHERS => '0');
+        cnt_end_d1 <= '0';
      ELSIF clk'EVENT AND clk = '1' THEN
-        IF cnt /= "00" THEN
+       cnt_end_d1 <= cnt_end;
+        IF cnt /= "000" THEN
            cnt <= cnt - 1;
         ELSIF cnt_start = '1' THEN
-           cnt <= "10";
+           cnt <= "011";
       END IF;
    END IF;
   END PROCESS cnt_p;
 
-   cnt_end <= '1' WHEN cnt = "00" ELSE '0';
+   cnt_end <= '1' WHEN cnt = "000" ELSE '0';
+   cnt_end_p1 <= cnt_end and (not cnt_end_d1);
 
 END vme_master_arch;
