@@ -143,7 +143,11 @@ BEGIN
    dma_sour_device   <= act_bd_conf_int(18 DOWNTO 16);
    dma_dest_device   <= act_bd_conf_int(14 DOWNTO 12);
    dma_vme_am        <= act_bd_conf_int(8 DOWNTO 4);
-   blk_sgl           <= act_bd_conf_int(3);
+   blk_sgl           <= '1' WHEN act_bd_conf_int(7 DOWNTO 4) = "0001" or act_bd_conf_int(7 DOWNTO 4) = "0101" ELSE   -- A16 does not provide block mode => always single will be selected
+                        '0' WHEN act_bd_conf_int(7 DOWNTO 4) = "1100" ELSE                                           -- A24D64 does not provide single mode => always block will be selected
+                        '0' WHEN act_bd_conf_int(7 DOWNTO 4) = "1110" ELSE                                           -- A32D64 does not provide single mode => always block will be selected
+                        act_bd_conf_int(3);
+                           
    inc_sour          <= act_bd_conf_int(2);
    inc_dest          <= act_bd_conf_int(1);
    dma_null          <= act_bd_conf_int(0);
