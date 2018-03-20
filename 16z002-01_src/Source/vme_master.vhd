@@ -695,7 +695,8 @@ BEGIN
                asn_out_int             <= '0';
                mstr_ack                <= '0';      -- no ack, because first D64 cycle transmits only addresses
                mstr_busy               <= '0';         
-               vme_req                 <= '0';         
+--               vme_req                 <= '0';         
+               vme_req                 <= '1';      -- keep the bus for the whole BLT transfer
                second_word_int         <= '1';      -- now all data transfers
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
@@ -725,11 +726,11 @@ BEGIN
                asn_out_int             <= '0';
                mstr_ack                <= '1';
                mstr_busy               <= '0';
-               if d64 = '1' then
-                 vme_req               <= '0';
-               else
+--               if d64 = '1' then
+--                 vme_req               <= '0';
+--               else
                  vme_req               <= '1'; -- keep the bus for the whole BLT transfer
-               end if;
+--               end if;
                second_word_int         <= second_word_int;
                vam_oe_int              <= '1';
                rst_rmw_int             <= '0';
